@@ -455,6 +455,67 @@ git commit -m "feat: wire storefront layout with data-theme scope, nav, and foot
 
 ---
 
+### Task 6: Storefront-only CSS (animations, non-token rules)
+
+**Files:**
+- Create: `app/(storefront)/storefront.css`
+- Modify: `app/(storefront)/layout.tsx`
+
+**Rule:** CSS that is only ever needed inside the storefront (e.g. `@keyframes`, component-level overrides) must NOT go in `app/globals.css`. Create `app/(storefront)/storefront.css` and import it in the storefront layout so it stays scoped to these routes.
+
+- [ ] **Step 1: Revert any animation keyframes added to `globals.css`**
+
+Remove the `@keyframes fadeUp` block from `app/globals.css` if present:
+
+```css
+/* DELETE this entire block from globals.css: */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+```
+
+- [ ] **Step 2: Create `app/(storefront)/storefront.css`**
+
+```css
+/* Storefront-only CSS — imported by app/(storefront)/layout.tsx only */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+```
+
+- [ ] **Step 3: Import in the storefront layout**
+
+Add the import at the top of `app/(storefront)/layout.tsx`:
+
+```tsx
+import "./storefront.css";
+import { StorefrontNav } from "./_components/nav";
+import { StorefrontFooter } from "./_components/footer";
+// ...rest unchanged
+```
+
+- [ ] **Step 4: Verify admin is unaffected**
+
+Run `bun dev`. Navigate to `/admin` — no `@keyframes fadeUp` should appear in the admin's network-loaded CSS (check DevTools → Sources). The storefront CSS file should only load on storefront routes.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add "app/(storefront)/storefront.css" "app/(storefront)/layout.tsx" app/globals.css
+git commit -m "fix: move storefront-only keyframes out of globals into storefront.css"
+```
+
+---
+
 ## Out of Scope (follow-up features)
 
 These belong in individual feature implementations, not this theming layer:

@@ -1,3 +1,4 @@
+import "./storefront.css";
 import { StorefrontNav } from "./_components/nav";
 import { StorefrontFooter } from "./_components/footer";
 

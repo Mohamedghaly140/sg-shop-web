@@ -52,7 +52,7 @@ export function StorefrontNav() {
         <div className="flex justify-center">
           <Link
             href="/"
-            className="font-heading text-xl tracking-[0.2em] uppercase"
+            className="font-heading text-xl tracking-[0.2em] uppercase text-accent hover:opacity-80 transition-opacity"
           >
             SG Couture
           </Link>
