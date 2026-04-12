@@ -222,8 +222,8 @@ export async function POST(req: Request) {
       data: {
         id: data.id,
         email: data.email_addresses[0].email_address,
-        name: `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim() || null,
-        phone: data.phone_numbers[0]?.phone_number ?? null,
+        name: `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim(),
+        phone: data.phone_numbers[0]?.phone_number ?? "",
       },
     });
   }
@@ -233,8 +233,8 @@ export async function POST(req: Request) {
       where: { id: data.id },
       data: {
         email: data.email_addresses[0].email_address,
-        name: `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim() || null,
-        phone: data.phone_numbers[0]?.phone_number ?? null,
+        name: `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim(),
+        phone: data.phone_numbers[0]?.phone_number ?? "",
       },
     });
   }
@@ -508,8 +508,8 @@ enum ProductStatus {
 model User {
   id        String   @id
   email     String   @unique
-  name      String?
-  phone     String?  @unique
+  name      String
+  phone     String   @unique
   role      Role     @default(USER)
   active    Boolean  @default(true)
   createdAt DateTime @default(now()) @map("created_at")
