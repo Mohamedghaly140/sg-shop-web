@@ -1311,15 +1311,15 @@ Changing the sort pushes `?sort=price_asc&page=1` to the URL, which triggers a s
 
 ### nuqs Params by Feature
 
-| Feature          | Params                                                                       |
-| ---------------- | ---------------------------------------------------------------------------- |
-| Products catalog | `category`, `brand`, `minPrice`, `maxPrice`, `size`, `color`, `sort`, `page` |
-| Search           | `q`, `sort`, `page`                                                          |
-| Account orders   | `status`, `page`                                                             |
-| Admin orders     | `status`, `search`, `paymentMethod`, `from`, `to`, `page`                    |
-| Admin products   | `status`, `category`, `search`, `page`                                       |
-| Admin customers  | `search`, `role`, `page`                                                     |
-| Admin analytics  | `range` (7d / 30d / 90d / custom), `from`, `to`                              |
+| Feature                    | Params                                                                       |
+| -------------------------- | ---------------------------------------------------------------------------- |
+| Products catalog           | `category`, `brand`, `minPrice`, `maxPrice`, `size`, `color`, `sort`, `page` |
+| Search                     | `q`, `sort`, `page`                                                          |
+| Account orders             | `status`, `page`                                                             |
+| Admin / orders             | `status`, `search`, `paymentMethod`, `from`, `to`, `page`                    |
+| Admin / products           | `status`, `category`, `search`, `page`                                       |
+| Admin / customers          | `search`, `role`, `page`                                                     |
+| Admin / analytics          | `range` (7d / 30d / 90d / custom), `from`, `to`                              |
 
 ---
 
@@ -1480,50 +1480,51 @@ No `src/` folder. All source lives at the project root.
 │   │   │   └── account.service.ts
 │   │   └── index.tsx
 │   │
-│   ├── admin-dashboard/
-│   │   ├── components/
-│   │   │   ├── StatsCards.tsx
-│   │   │   ├── RecentOrdersTable.tsx
-│   │   │   └── LowStockAlert.tsx
-│   │   ├── services/
-│   │   │   └── admin-dashboard.service.ts
-│   │   └── index.tsx
-│   │
-│   ├── admin-orders/
-│   │   ├── components/
-│   │   │   ├── OrdersTable.tsx
-│   │   │   ├── OrderFilters.tsx
-│   │   │   ├── OrderStatusBadge.tsx
-│   │   │   └── OrderDetailPanel.tsx
-│   │   ├── hooks/
-│   │   │   └── useAdminOrderParams.ts
-│   │   ├── actions/
-│   │   │   └── admin-orders.actions.ts
-│   │   ├── services/
-│   │   │   └── admin-orders.service.ts
-│   │   └── index.tsx
-│   │
-│   ├── admin-products/
-│   │   ├── components/
-│   │   │   ├── ProductsTable.tsx
-│   │   │   ├── ProductForm.tsx
-│   │   │   ├── ImageUploader.tsx
-│   │   │   └── VariantFields.tsx
-│   │   ├── hooks/
-│   │   │   └── useAdminProductParams.ts
-│   │   ├── actions/
-│   │   │   └── admin-products.actions.ts
-│   │   ├── services/
-│   │   │   └── admin-products.service.ts
-│   │   └── index.tsx
-│   │
-│   ├── admin-categories/
-│   ├── admin-brands/
-│   ├── admin-customers/
-│   ├── admin-coupons/
-│   ├── admin-analytics/
-│   ├── admin-settings/
-│   └── admin-users/
+│   └── admin/
+│       ├── dashboard/
+│       │   ├── components/
+│       │   │   ├── StatsCards.tsx
+│       │   │   ├── RecentOrdersTable.tsx
+│       │   │   └── LowStockAlert.tsx
+│       │   ├── services/
+│       │   │   └── dashboard.service.ts
+│       │   └── index.tsx
+│       │
+│       ├── orders/
+│       │   ├── components/
+│       │   │   ├── OrdersTable.tsx
+│       │   │   ├── OrderFilters.tsx
+│       │   │   ├── OrderStatusBadge.tsx
+│       │   │   └── OrderDetailPanel.tsx
+│       │   ├── hooks/
+│       │   │   └── useOrderParams.ts
+│       │   ├── actions/
+│       │   │   └── orders.actions.ts
+│       │   ├── services/
+│       │   │   └── orders.service.ts
+│       │   └── index.tsx
+│       │
+│       ├── products/
+│       │   ├── components/
+│       │   │   ├── ProductsTable.tsx
+│       │   │   ├── ProductForm.tsx
+│       │   │   ├── ImageUploader.tsx
+│       │   │   └── VariantFields.tsx
+│       │   ├── hooks/
+│       │   │   └── useProductParams.ts
+│       │   ├── actions/
+│       │   │   └── products.actions.ts
+│       │   ├── services/
+│       │   │   └── products.service.ts
+│       │   └── index.tsx
+│       │
+│       ├── categories/
+│       ├── brands/
+│       ├── customers/
+│       ├── coupons/
+│       ├── analytics/
+│       ├── settings/
+│       └── users/
 │
 ├── components/
 │   └── ui/                           # shadcn/ui primitives only
