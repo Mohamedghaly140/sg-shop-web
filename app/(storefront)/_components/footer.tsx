@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CopyrightYear } from "./copyright-year";
 
 const shopLinks = [
   { label: "All Products", href: "/products" },
@@ -75,19 +76,20 @@ export function StorefrontFooter() {
             <p className="font-sans text-sm text-muted-foreground">
               New arrivals, early access, and nothing else.
             </p>
-            <div className="flex gap-0 border-b border-foreground">
+            {/* TODO: wire up newsletter Server Action */}
+            <form className="flex gap-0 border-b border-foreground">
               <input
                 type="email"
                 placeholder="Your email"
                 className="flex-1 bg-transparent font-sans text-sm py-2 text-foreground placeholder:text-muted-foreground focus:outline-none"
               />
               <button
-                type="button"
+                type="submit"
                 className="font-sans text-xs tracking-widest uppercase py-2 px-4 hover:text-accent transition-colors"
               >
                 Join
               </button>
-            </div>
+            </form>
           </div>
         </div>
       </div>
@@ -96,7 +98,7 @@ export function StorefrontFooter() {
       <div className="border-t border-border">
         <div className="max-w-7xl mx-auto px-8 py-6 flex items-center justify-between">
           <p className="font-sans text-xs text-muted-foreground">
-            © {new Date().getFullYear()} SG Couture. All rights reserved.
+            © <CopyrightYear /> SG Couture. All rights reserved.
           </p>
         </div>
       </div>

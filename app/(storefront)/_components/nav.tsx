@@ -29,10 +29,12 @@ export function StorefrontNav() {
   return (
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
-        scrolled ? "bg-background border-b border-border" : "bg-transparent"
+        scrolled
+          ? "bg-background border-b border-border text-foreground"
+          : "bg-transparent text-foreground"
       }`}
     >
-      <nav className="max-w-7xl mx-auto px-8 py-6 grid grid-cols-3 items-center">
+      <nav aria-label="Main" className="max-w-7xl mx-auto px-8 py-6 grid grid-cols-3 items-center">
         {/* Left links */}
         <div className="flex items-center gap-8">
           {leftLinks.map((link) => (
