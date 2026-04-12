@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, Inter, DM_Serif_Display, DM_Sans } from "next/font/g
 import { Toaster } from "@/components/ui/sonner";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import ThemeProvider from "@/components/theme/theme-provider";
+import { ClerkProvider } from "@clerk/nextjs";
+import { shadcn } from "@clerk/ui/themes";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -56,10 +58,12 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col">
-        <ThemeProvider>
-          <NuqsAdapter>{children}</NuqsAdapter>
-          <Toaster />
-        </ThemeProvider>
+        <ClerkProvider appearance={{ theme: shadcn }}>
+          <ThemeProvider>
+            <NuqsAdapter>{children}</NuqsAdapter>
+            <Toaster />
+          </ThemeProvider>
+        </ClerkProvider>
       </body>
     </html>
   );
