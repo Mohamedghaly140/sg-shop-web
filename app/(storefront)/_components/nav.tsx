@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Search, Heart, ShoppingBag, User } from "lucide-react";
+import { Show, UserButton } from "@clerk/nextjs";
 
 const leftLinks = [
   { label: "Shop", href: "/products" },
@@ -14,7 +15,6 @@ const rightIcons = [
   { icon: Search, label: "Search", href: "/search" },
   { icon: Heart, label: "Wishlist", href: "/account/wishlist" },
   { icon: ShoppingBag, label: "Cart", href: "/cart" },
-  { icon: User, label: "Account", href: "/account" },
 ] as const;
 
 export function StorefrontNav() {
@@ -70,6 +70,27 @@ export function StorefrontNav() {
               <Icon size={18} strokeWidth={1.5} />
             </Link>
           ))}
+
+          {/* Auth icon */}
+          <Show when="signed-out">
+            <Link
+              href="/sign-in"
+              aria-label="Sign in"
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <User size={18} strokeWidth={1.5} />
+            </Link>
+          </Show>
+          <Show when="signed-in">
+            <UserButton
+              appearance={{
+                elements: {
+                  avatarBox: "size-[18px]",
+                  userButtonTrigger: "focus:shadow-none",
+                },
+              }}
+            />
+          </Show>
         </div>
       </nav>
     </header>

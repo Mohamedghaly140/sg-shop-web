@@ -1,3 +1,4 @@
+import { clerkClient } from "@clerk/nextjs/server";
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -23,6 +24,16 @@ export async function POST(req: NextRequest) {
 
     await prisma.user.create({
       data: { id, email, name, phone, role },
+    });
+
+    const existingPublic =
+      public_metadata && typeof public_metadata === "object" && !Array.isArray(public_metadata)
+        ? { ...(public_metadata as Record<string, unknown>) }
+        : {};
+
+    const client = await clerkClient();
+    await client.users.updateUser(id, {
+      publicMetadata: { ...existingPublic, role },
     });
   }
 
@@ -50,9 +61,8 @@ export async function POST(req: NextRequest) {
   if (evt.type === "user.deleted") {
     const { id } = evt.data;
     if (id) {
-      await prisma.user.update({
+      await prisma.user.deleteMany({
         where: { id },
-        data: { active: false },
       });
     }
   }
