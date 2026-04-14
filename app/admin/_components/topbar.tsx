@@ -3,6 +3,7 @@
 import { Menu } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 const PAGE_TITLES: Record<string, string> = {
   "/admin": "Dashboard",
@@ -38,13 +39,15 @@ export function AdminTopbar({ onToggle }: AdminTopbarProps) {
   return (
     <header className="flex h-[52px] flex-shrink-0 items-center justify-between border-b border-[#1f1f1f] bg-[#141414] px-4">
       <div className="flex items-center gap-3">
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={onToggle}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-[#6b7280] transition-colors hover:bg-[#1f1f1f] hover:text-[#d1d5db]"
           aria-label="Toggle sidebar"
+          className="h-7 w-7 text-[#6b7280] hover:bg-[#1f1f1f] hover:text-[#d1d5db]"
         >
           <Menu className="h-4 w-4" />
-        </button>
+        </Button>
         <span className="text-[13px] font-semibold text-[#e5e5e5]">
           {title}
         </span>

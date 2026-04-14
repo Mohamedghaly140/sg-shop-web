@@ -15,6 +15,8 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
@@ -83,17 +85,20 @@ export function AdminSidebar({ collapsed, role }: AdminSidebarProps) {
       </nav>
 
       {/* Bottom: admin-only + settings */}
-      {(bottomItems.length > 0) && (
-        <div className="flex flex-col gap-0.5 border-t border-[#1f1f1f] p-2">
-          {bottomItems.map((item) => (
-            <NavItem
-              key={item.href}
-              item={item}
-              active={isActive(item.href)}
-              collapsed={collapsed}
-            />
-          ))}
-        </div>
+      {bottomItems.length > 0 && (
+        <>
+          <Separator className="bg-[#1f1f1f]" />
+          <div className="flex flex-col gap-0.5 p-2">
+            {bottomItems.map((item) => (
+              <NavItem
+                key={item.href}
+                item={item}
+                active={isActive(item.href)}
+                collapsed={collapsed}
+              />
+            ))}
+          </div>
+        </>
       )}
     </aside>
   );
@@ -109,19 +114,23 @@ function NavItem({ item, active, collapsed }: NavItemProps) {
   const Icon = item.icon;
 
   const inner = (
-    <Link
-      href={item.href}
+    <Button
+      variant="ghost"
+      size="sm"
+      asChild
       className={cn(
-        "flex items-center gap-2.5 rounded-lg px-2 py-2 text-[13px] transition-colors",
+        "w-full justify-start gap-2.5 text-[13px]",
         active
-          ? "bg-[#262626] text-white"
+          ? "bg-[#262626] text-white hover:bg-[#262626] hover:text-white"
           : "text-[#6b7280] hover:bg-[#1a1a1a] hover:text-[#d1d5db]",
         collapsed && "justify-center px-0",
       )}
     >
-      <Icon className="h-4 w-4 flex-shrink-0" />
-      {!collapsed && <span>{item.label}</span>}
-    </Link>
+      <Link href={item.href}>
+        <Icon className="h-4 w-4 flex-shrink-0" />
+        {!collapsed && <span>{item.label}</span>}
+      </Link>
+    </Button>
   );
 
   if (!collapsed) return inner;
