@@ -1,0 +1,149 @@
+<h2>Which admin sidebar style fits best?</h2>
+<p class="subtitle">These are full-page mockups of how the admin shell would look and behave</p>
+
+<div class="cards">
+
+  <!-- Option A: Fixed Wide Sidebar -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="display:flex;height:200px;font-size:11px;background:#f8f8f8;border-radius:6px;overflow:hidden;">
+        <!-- Sidebar -->
+        <div style="width:180px;background:#0f0f0f;color:#e5e5e5;display:flex;flex-direction:column;padding:12px 0;flex-shrink:0;">
+          <div style="padding:0 12px 16px;font-weight:700;font-size:13px;color:#fff;letter-spacing:.5px;">SG Admin</div>
+          <div style="padding:6px 12px;background:rgba(255,255,255,0.1);border-radius:4px;margin:0 8px 2px;color:#fff;display:flex;align-items:center;gap:6px;">
+            <span>⊞</span> Dashboard
+          </div>
+          <div style="padding:6px 12px;margin:0 8px 2px;color:#999;display:flex;align-items:center;gap:6px;">
+            <span>📦</span> Orders
+          </div>
+          <div style="padding:6px 12px;margin:0 8px 2px;color:#999;display:flex;align-items:center;gap:6px;">
+            <span>🏷️</span> Products
+          </div>
+          <div style="padding:6px 12px;margin:0 8px 2px;color:#999;display:flex;align-items:center;gap:6px;">
+            <span>👥</span> Customers
+          </div>
+          <div style="padding:6px 12px;margin:0 8px 2px;color:#999;display:flex;align-items:center;gap:6px;">
+            <span>📊</span> Analytics
+          </div>
+          <div style="flex:1"></div>
+          <div style="padding:6px 12px;margin:0 8px 2px;color:#999;display:flex;align-items:center;gap:6px;">
+            <span>⚙️</span> Settings
+          </div>
+        </div>
+        <!-- Main -->
+        <div style="flex:1;display:flex;flex-direction:column;">
+          <div style="height:36px;background:#fff;border-bottom:1px solid #eee;display:flex;align-items:center;padding:0 12px;justify-content:space-between;">
+            <span style="color:#888;font-size:10px;">Dashboard</span>
+            <div style="width:22px;height:22px;border-radius:50%;background:#ddd;"></div>
+          </div>
+          <div style="padding:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div style="background:#fff;border:1px solid #eee;border-radius:6px;padding:8px;">
+              <div style="font-size:9px;color:#888;">Revenue</div>
+              <div style="font-weight:700;color:#111;font-size:14px;">$12.4k</div>
+            </div>
+            <div style="background:#fff;border:1px solid #eee;border-radius:6px;padding:8px;">
+              <div style="font-size:9px;color:#888;">Orders</div>
+              <div style="font-weight:700;color:#111;font-size:14px;">142</div>
+            </div>
+            <div style="background:#fff;border:1px solid #eee;border-radius:6px;padding:8px;">
+              <div style="font-size:9px;color:#888;">Customers</div>
+              <div style="font-weight:700;color:#111;font-size:14px;">890</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Fixed Wide Sidebar</h3>
+      <p>Always-visible ~200px sidebar with icons + labels. Clean and readable. No toggle — full nav always shown. Classic admin look.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Collapsible Sidebar -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="display:flex;height:200px;font-size:11px;background:#f8f8f8;border-radius:6px;overflow:hidden;">
+        <!-- Sidebar collapsed to icons only -->
+        <div style="width:50px;background:#0f0f0f;color:#e5e5e5;display:flex;flex-direction:column;align-items:center;padding:12px 0;flex-shrink:0;gap:4px;">
+          <div style="font-weight:700;color:#fff;font-size:13px;margin-bottom:8px;">SG</div>
+          <div style="width:32px;height:32px;background:rgba(255,255,255,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;">⊞</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#666;">📦</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#666;">🏷️</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#666;">👥</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#666;">📊</div>
+          <div style="flex:1"></div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#666;">⚙️</div>
+        </div>
+        <!-- Expanded state hint -->
+        <div style="width:150px;background:#1a1a1a;color:#e5e5e5;display:flex;flex-direction:column;padding:12px 0;">
+          <div style="padding:0 10px 16px;font-size:10px;color:#666;">← expand</div>
+          <div style="padding:6px 10px;background:rgba(255,255,255,0.1);border-radius:4px;margin:0 6px 2px;color:#fff;">Dashboard</div>
+          <div style="padding:6px 10px;margin:0 6px 2px;color:#666;">Orders</div>
+          <div style="padding:6px 10px;margin:0 6px 2px;color:#666;">Products</div>
+          <div style="padding:6px 10px;margin:0 6px 2px;color:#666;">Customers</div>
+        </div>
+        <!-- Main -->
+        <div style="flex:1;display:flex;flex-direction:column;">
+          <div style="height:36px;background:#fff;border-bottom:1px solid #eee;display:flex;align-items:center;padding:0 10px;">
+            <span style="color:#888;font-size:9px;">← toggle</span>
+          </div>
+          <div style="padding:10px;display:flex;flex-direction:column;gap:6px;">
+            <div style="background:#fff;border:1px solid #eee;border-radius:5px;padding:7px;font-size:9px;">
+              <div style="color:#888;margin-bottom:2px;">Revenue</div>
+              <div style="font-weight:700;">$12.4k</div>
+            </div>
+            <div style="background:#fff;border:1px solid #eee;border-radius:5px;padding:7px;font-size:9px;">
+              <div style="color:#888;margin-bottom:2px;">Orders</div>
+              <div style="font-weight:700;">142</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Collapsible Sidebar</h3>
+      <p>Sidebar collapses to icon-only rail (~50px), expands to full labels on hover or toggle. Maximizes content space when collapsed.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Top Nav + Left Sidebar -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="display:flex;flex-direction:column;height:200px;font-size:11px;background:#f8f8f8;border-radius:6px;overflow:hidden;">
+        <!-- Top nav -->
+        <div style="height:40px;background:#0f0f0f;color:#fff;display:flex;align-items:center;padding:0 14px;gap:20px;flex-shrink:0;">
+          <span style="font-weight:700;font-size:13px;">SG Admin</span>
+          <span style="color:#aaa;font-size:10px;">Orders</span>
+          <span style="color:#aaa;font-size:10px;">Products</span>
+          <span style="color:#aaa;font-size:10px;">Customers</span>
+          <div style="flex:1"></div>
+          <div style="width:22px;height:22px;border-radius:50%;background:#333;"></div>
+        </div>
+        <!-- Body with thin sidebar for sub-nav -->
+        <div style="display:flex;flex:1;overflow:hidden;">
+          <div style="width:130px;background:#fafafa;border-right:1px solid #eee;padding:10px 0;flex-shrink:0;">
+            <div style="padding:4px 10px;font-size:9px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Products</div>
+            <div style="padding:5px 10px;background:#f0f0f0;border-radius:3px;margin:0 6px 2px;font-size:10px;">All Products</div>
+            <div style="padding:5px 10px;margin:0 6px 2px;color:#888;font-size:10px;">Categories</div>
+            <div style="padding:5px 10px;margin:0 6px 2px;color:#888;font-size:10px;">Brands</div>
+          </div>
+          <div style="flex:1;padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div style="background:#fff;border:1px solid #eee;border-radius:5px;padding:8px;font-size:10px;">
+              <div style="color:#888;font-size:9px;">Revenue</div>
+              <div style="font-weight:700;font-size:14px;">$12.4k</div>
+            </div>
+            <div style="background:#fff;border:1px solid #eee;border-radius:5px;padding:8px;font-size:10px;">
+              <div style="color:#888;font-size:9px;">Orders</div>
+              <div style="font-weight:700;font-size:14px;">142</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Top Nav + Contextual Sub-sidebar</h3>
+      <p>Primary nav lives in a top bar. A narrower sidebar shows context-specific sub-navigation per section. App-like feel.</p>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,141 @@
+<h2>Which color theme for the admin?</h2>
+<p class="subtitle">The storefront is light/warm. The admin can have its own distinct feel.</p>
+
+<div class="cards">
+
+  <!-- Option A: Dark sidebar + light content -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="display:flex;height:200px;font-size:11px;border-radius:6px;overflow:hidden;">
+        <!-- Collapsed sidebar -->
+        <div style="width:52px;background:#111827;display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:6px;flex-shrink:0;">
+          <div style="color:#fff;font-weight:800;font-size:12px;margin-bottom:6px;">S</div>
+          <div style="width:32px;height:32px;background:#374151;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;">⊞</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#6b7280;">📦</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#6b7280;">🏷️</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#6b7280;">👥</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#6b7280;">📊</div>
+          <div style="flex:1"></div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#6b7280;">⚙️</div>
+        </div>
+        <!-- Main -->
+        <div style="flex:1;background:#f9fafb;display:flex;flex-direction:column;">
+          <div style="height:40px;background:#ffffff;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;padding:0 14px;justify-content:space-between;">
+            <span style="font-size:10px;color:#374151;font-weight:600;">Dashboard</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:18px;height:18px;background:#f3f4f6;border-radius:4px;"></div>
+              <div style="width:24px;height:24px;border-radius:50%;background:#e5e7eb;"></div>
+            </div>
+          </div>
+          <div style="padding:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;">
+              <div style="font-size:9px;color:#9ca3af;margin-bottom:3px;">Revenue</div>
+              <div style="font-weight:700;color:#111827;font-size:15px;">$12.4k</div>
+            </div>
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;">
+              <div style="font-size:9px;color:#9ca3af;margin-bottom:3px;">Orders</div>
+              <div style="font-weight:700;color:#111827;font-size:15px;">142</div>
+            </div>
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;">
+              <div style="font-size:9px;color:#9ca3af;margin-bottom:3px;">Customers</div>
+              <div style="font-weight:700;color:#111827;font-size:15px;">890</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Dark sidebar + light content</h3>
+      <p>Classic admin contrast: dark nav rail, white/gray content area. High readability, clear separation between nav and content.</p>
+    </div>
+  </div>
+
+  <!-- Option B: All-light / neutral -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="display:flex;height:200px;font-size:11px;border-radius:6px;overflow:hidden;border:1px solid #e5e7eb;">
+        <!-- Light sidebar -->
+        <div style="width:52px;background:#ffffff;border-right:1px solid #e5e7eb;display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:6px;flex-shrink:0;">
+          <div style="color:#111827;font-weight:800;font-size:12px;margin-bottom:6px;">S</div>
+          <div style="width:32px;height:32px;background:#f3f4f6;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;">⊞</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#9ca3af;">📦</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#9ca3af;">🏷️</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#9ca3af;">👥</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#9ca3af;">📊</div>
+          <div style="flex:1"></div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#9ca3af;">⚙️</div>
+        </div>
+        <!-- Main -->
+        <div style="flex:1;background:#f9fafb;display:flex;flex-direction:column;">
+          <div style="height:40px;background:#f9fafb;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;padding:0 14px;justify-content:space-between;">
+            <span style="font-size:10px;color:#374151;font-weight:600;">Dashboard</span>
+            <div style="width:24px;height:24px;border-radius:50%;background:#e5e7eb;"></div>
+          </div>
+          <div style="padding:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;">
+              <div style="font-size:9px;color:#9ca3af;margin-bottom:3px;">Revenue</div>
+              <div style="font-weight:700;color:#111827;font-size:15px;">$12.4k</div>
+            </div>
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;">
+              <div style="font-size:9px;color:#9ca3af;margin-bottom:3px;">Orders</div>
+              <div style="font-weight:700;color:#111827;font-size:15px;">142</div>
+            </div>
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;">
+              <div style="font-size:9px;color:#9ca3af;margin-bottom:3px;">Customers</div>
+              <div style="font-weight:700;color:#111827;font-size:15px;">890</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — All-light / minimal</h3>
+      <p>Seamless light theme throughout. Sidebar blends in with content area using borders. Feels clean and airy, similar to Linear or Notion.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Full dark -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="display:flex;height:200px;font-size:11px;border-radius:6px;overflow:hidden;">
+        <!-- Dark sidebar -->
+        <div style="width:52px;background:#0d0d0d;display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:6px;flex-shrink:0;border-right:1px solid #1f1f1f;">
+          <div style="color:#fff;font-weight:800;font-size:12px;margin-bottom:6px;">S</div>
+          <div style="width:32px;height:32px;background:#262626;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;">⊞</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#4b4b4b;">📦</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#4b4b4b;">🏷️</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#4b4b4b;">👥</div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#4b4b4b;">📊</div>
+          <div style="flex:1"></div>
+          <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;color:#4b4b4b;">⚙️</div>
+        </div>
+        <!-- Dark main -->
+        <div style="flex:1;background:#141414;display:flex;flex-direction:column;">
+          <div style="height:40px;background:#141414;border-bottom:1px solid #1f1f1f;display:flex;align-items:center;padding:0 14px;justify-content:space-between;">
+            <span style="font-size:10px;color:#e5e5e5;font-weight:600;">Dashboard</span>
+            <div style="width:24px;height:24px;border-radius:50%;background:#262626;"></div>
+          </div>
+          <div style="padding:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div style="background:#1c1c1c;border:1px solid #2a2a2a;border-radius:8px;padding:10px;">
+              <div style="font-size:9px;color:#555;margin-bottom:3px;">Revenue</div>
+              <div style="font-weight:700;color:#f5f5f5;font-size:15px;">$12.4k</div>
+            </div>
+            <div style="background:#1c1c1c;border:1px solid #2a2a2a;border-radius:8px;padding:10px;">
+              <div style="font-size:9px;color:#555;margin-bottom:3px;">Orders</div>
+              <div style="font-weight:700;color:#f5f5f5;font-size:15px;">142</div>
+            </div>
+            <div style="background:#1c1c1c;border:1px solid #2a2a2a;border-radius:8px;padding:10px;">
+              <div style="font-size:9px;color:#555;margin-bottom:3px;">Customers</div>
+              <div style="font-weight:700;color:#f5f5f5;font-size:15px;">890</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Full dark theme</h3>
+      <p>Everything dark. Easier on the eyes for long sessions. Matches the SG brand's dark/luxe aesthetic. Sidebar and content are the same dark family.</p>
+    </div>
+  </div>
+
+</div>
