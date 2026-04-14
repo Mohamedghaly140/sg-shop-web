@@ -1,15 +1,23 @@
-export default function AdminLayout({
+import { auth } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
+import { AdminShell } from "./_components/shell";
+
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role?: string })?.role as
+    | "ADMIN"
+    | "MANAGER";
+  const cookieStore = await cookies();
+  const defaultCollapsed =
+    cookieStore.get("admin_sidebar_collapsed")?.value === "true";
+
   return (
-    <div className="flex h-full">
-      <aside>Admin Sidebar</aside>
-      <div className="flex flex-1 flex-col">
-        <header>Admin Topbar</header>
-        <main className="flex-1 p-6">{children}</main>
-      </div>
-    </div>
+    <AdminShell defaultCollapsed={defaultCollapsed} role={role ?? "MANAGER"}>
+      {children}
+    </AdminShell>
   );
 }
