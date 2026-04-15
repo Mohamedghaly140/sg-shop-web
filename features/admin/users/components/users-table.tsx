@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { PencilIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { LucidePencil, LucideChevronLeft, LucideChevronRight, LucideUsers, LucideSearchX } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,17 +31,50 @@ const roleStyles: Record<string, string> = {
   USER: "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
 };
 
+function EmptyState({ hasFilters, onClear }: { hasFilters: boolean; onClear: () => void }) {
+  if (hasFilters) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
+        <div className="rounded-full bg-muted p-4">
+          <LucideSearchX className="w-6 h-6 text-muted-foreground" />
+        </div>
+        <div>
+          <p className="text-sm font-medium">No users match your filters</p>
+          <p className="text-xs text-muted-foreground mt-1">Try adjusting your search or filters</p>
+        </div>
+        <Button variant="outline" size="sm" onClick={onClear}>
+          Clear filters
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
+      <div className="rounded-full bg-muted p-4">
+        <LucideUsers className="w-6 h-6 text-muted-foreground" />
+      </div>
+      <div>
+        <p className="text-sm font-medium">No users yet</p>
+        <p className="text-xs text-muted-foreground mt-1">Create your first user to get started</p>
+      </div>
+      <UpsertUserDialog mode="create" />
+    </div>
+  );
+}
+
 export function UsersTable({ users, pageCount, currentUserId }: UsersTableProps) {
   const [params, setParams] = useUsersParams();
   const page = params.page ?? 1;
+  const hasFilters = !!(params.search || params.role || params.active !== null);
+
+  const clearFilters = () => setParams({ search: null, role: null, active: null, page: 1 });
 
   return (
     <div className="space-y-3">
       <div className="rounded-md border">
         {users.length === 0 ? (
-          <p className="py-10 text-center text-sm text-muted-foreground">
-            No users found
-          </p>
+          <EmptyState hasFilters={hasFilters} onClear={clearFilters} />
         ) : (
           <Table>
             <TableHeader>
@@ -94,7 +127,7 @@ export function UsersTable({ users, pageCount, currentUserId }: UsersTableProps)
                         user={user}
                         trigger={
                           <Button variant="ghost" size="icon">
-                            <PencilIcon className="w-4 h-4" />
+                            <LucidePencil className="w-4 h-4" />
                           </Button>
                         }
                       />
@@ -118,7 +151,7 @@ export function UsersTable({ users, pageCount, currentUserId }: UsersTableProps)
             disabled={page <= 1}
             onClick={() => setParams({ page: page - 1 })}
           >
-            <ChevronLeftIcon className="w-4 h-4" />
+            <LucideChevronLeft className="w-4 h-4" />
             Previous
           </Button>
           <span className="text-sm text-muted-foreground">
@@ -131,7 +164,7 @@ export function UsersTable({ users, pageCount, currentUserId }: UsersTableProps)
             onClick={() => setParams({ page: page + 1 })}
           >
             Next
-            <ChevronRightIcon className="w-4 h-4" />
+            <LucideChevronRight className="w-4 h-4" />
           </Button>
         </div>
       )}

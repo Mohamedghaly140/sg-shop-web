@@ -1,4 +1,4 @@
-import { Minus, TrendingDown, TrendingUp } from "lucide-react";
+import { LucideMinus, LucideTrendingDown, LucideTrendingUp } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -37,7 +37,7 @@ export function StatCard({ label, value, current, previous, icon: Icon }: Props)
             <span className="text-muted-foreground">No previous data</span>
           ) : trend > 0 ? (
             <>
-              <TrendingUp className="h-3 w-3 text-green-500" />
+              <LucideTrendingUp className="h-3 w-3 text-green-500" />
               <Badge
                 variant="outline"
                 className="border-green-500/30 bg-green-500/10 px-1 py-0 text-xs text-green-500"
@@ -48,7 +48,7 @@ export function StatCard({ label, value, current, previous, icon: Icon }: Props)
             </>
           ) : trend < 0 ? (
             <>
-              <TrendingDown className="h-3 w-3 text-red-500" />
+              <LucideTrendingDown className="h-3 w-3 text-red-500" />
               <Badge
                 variant="outline"
                 className="border-red-500/30 bg-red-500/10 px-1 py-0 text-xs text-red-500"
@@ -59,7 +59,7 @@ export function StatCard({ label, value, current, previous, icon: Icon }: Props)
             </>
           ) : (
             <>
-              <Minus className="h-3 w-3 text-muted-foreground" />
+              <LucideMinus className="h-3 w-3 text-muted-foreground" />
               <span className="text-muted-foreground">No change vs last month</span>
             </>
           )}

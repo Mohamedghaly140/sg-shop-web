@@ -3,16 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  ClipboardList,
-  Package,
-  Folder,
-  Tag,
-  Users,
-  Ticket,
-  BarChart3,
-  Settings,
-  ShieldCheck,
+  LucideLayoutDashboard,
+  LucideClipboardList,
+  LucidePackage,
+  LucideFolder,
+  LucideTag,
+  LucideUsers,
+  LucideTicket,
+  LucideBarChart3,
+  LucideSettings,
+  LucideShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -24,19 +24,19 @@ import {
 } from "@/components/ui/tooltip";
 
 const NAV_ITEMS = [
-  { label: "Dashboard", href: "/admin", icon: LayoutDashboard, exact: true },
-  { label: "Orders", href: "/admin/orders", icon: ClipboardList },
-  { label: "Products", href: "/admin/products", icon: Package },
-  { label: "Categories", href: "/admin/categories", icon: Folder },
-  { label: "Brands", href: "/admin/brands", icon: Tag },
-  { label: "Customers", href: "/admin/customers", icon: Users },
-  { label: "Coupons", href: "/admin/coupons", icon: Ticket },
-  { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+  { label: "Dashboard", href: "/admin", icon: LucideLayoutDashboard, exact: true },
+  { label: "Orders", href: "/admin/orders", icon: LucideClipboardList },
+  { label: "Products", href: "/admin/products", icon: LucidePackage },
+  { label: "Categories", href: "/admin/categories", icon: LucideFolder },
+  { label: "Brands", href: "/admin/brands", icon: LucideTag },
+  { label: "Customers", href: "/admin/customers", icon: LucideUsers },
+  { label: "Coupons", href: "/admin/coupons", icon: LucideTicket },
+  { label: "Analytics", href: "/admin/analytics", icon: LucideBarChart3 },
 ];
 
 const ADMIN_ONLY_ITEMS = [
-  { label: "Settings", href: "/admin/settings", icon: Settings },
-  { label: "Users", href: "/admin/users", icon: ShieldCheck },
+  { label: "Settings", href: "/admin/settings", icon: LucideSettings },
+  { label: "Users", href: "/admin/users", icon: LucideShieldCheck },
 ];
 
 interface AdminSidebarProps {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { PlusIcon } from "lucide-react";
+import { LucidePlus } from "lucide-react";
 import type { Value as PhoneValue } from "react-phone-number-input";
 
 import { Button } from "@/components/ui/button";
@@ -65,7 +65,7 @@ export function UpsertUserDialog(props: UpsertUserDialogProps) {
       <DialogTrigger asChild>
         {props.trigger ?? (
           <Button size="sm">
-            <PlusIcon className="w-4 h-4" />
+            <LucidePlus className="w-4 h-4" />
             New User
           </Button>
         )}

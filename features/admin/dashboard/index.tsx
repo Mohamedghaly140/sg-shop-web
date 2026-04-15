@@ -1,4 +1,4 @@
-import { AlertTriangle, Banknote, Clock, ShoppingCart, Tag, TrendingUp, Users } from "lucide-react";
+import { LucideAlertTriangle, LucideBanknote, LucideClock, LucideShoppingCart, LucideTag, LucideTrendingUp, LucideUsers } from "lucide-react";
 
 import { AlertCard } from "./components/alert-card";
 import { LowStockAlerts } from "./components/low-stock-alerts";
@@ -32,28 +32,28 @@ export default async function AdminDashboardFeature() {
           value={fmt(metrics.revenue.current)}
           current={metrics.revenue.current}
           previous={metrics.revenue.previous}
-          icon={Banknote}
+          icon={LucideBanknote}
         />
         <StatCard
           label="Orders This Month"
           value={metrics.orders.current.toLocaleString()}
           current={metrics.orders.current}
           previous={metrics.orders.previous}
-          icon={ShoppingCart}
+          icon={LucideShoppingCart}
         />
         <StatCard
           label="New Customers"
           value={metrics.newCustomers.current.toLocaleString()}
           current={metrics.newCustomers.current}
           previous={metrics.newCustomers.previous}
-          icon={Users}
+          icon={LucideUsers}
         />
         <StatCard
           label="Avg Order Value"
           value={fmt(metrics.avgOrderValue.current)}
           current={metrics.avgOrderValue.current}
           previous={metrics.avgOrderValue.previous}
-          icon={TrendingUp}
+          icon={LucideTrendingUp}
         />
       </div>
 
@@ -63,7 +63,7 @@ export default async function AdminDashboardFeature() {
           label="Pending Orders"
           value={metrics.pendingOrders}
           description="Awaiting confirmation"
-          icon={Clock}
+          icon={LucideClock}
           href="/admin/orders?status=PENDING"
           variant="warning"
         />
@@ -71,7 +71,7 @@ export default async function AdminDashboardFeature() {
           label="Low Stock Products"
           value={metrics.lowStockCount}
           description="Active products below 10 units"
-          icon={AlertTriangle}
+          icon={LucideAlertTriangle}
           href="/admin/products?lowStock=true"
           variant="danger"
         />
@@ -79,7 +79,7 @@ export default async function AdminDashboardFeature() {
           label="Active Coupons"
           value={metrics.activeCoupons}
           description="Currently valid"
-          icon={Tag}
+          icon={LucideTag}
           href="/admin/coupons"
           variant="info"
         />

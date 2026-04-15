@@ -108,6 +108,8 @@ Images upload **directly from the browser** to Cloudinary via the Upload Widget 
 
 - Component props types must be prefixed with the component name: `AdminUsersPageProps`, not `Props`.
 - Prefer Prisma-generated types (`User`, `Order`, etc. from `@/generated/prisma/client`) over hand-written row types. Use `Pick<User, "id" | "name" | ...>` when only a subset of fields is needed.
+- Lucide icons must be prefixed with `Lucide`: `LucideSearch`, `LucideTrash2`, `LucidePlus`, etc. Never i  
+  import bare names like `Search`, `Trash2`, or `Plus`.
 
 ## Database (Supabase + Prisma)
 

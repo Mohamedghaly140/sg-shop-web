@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useRef } from "react";
-import { Trash2Icon } from "lucide-react";
+import { LucideTrash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -39,7 +39,7 @@ export function DeleteUserButton({ userId, userName }: DeleteUserButtonProps) {
       <ConfirmDialog
         trigger={
           <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-            <Trash2Icon className="w-4 h-4" />
+            <LucideTrash2 className="w-4 h-4" />
           </Button>
         }
         title="Delete User"

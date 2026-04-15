@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { LucideMenu } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -46,7 +46,7 @@ export function AdminTopbar({ onToggle }: AdminTopbarProps) {
           aria-label="Toggle sidebar"
           className="h-7 w-7 text-[#6b7280] hover:bg-[#1f1f1f] hover:text-[#d1d5db]"
         >
-          <Menu className="h-4 w-4" />
+          <LucideMenu className="h-4 w-4" />
         </Button>
         <span className="text-[13px] font-semibold text-[#e5e5e5]">
           {title}

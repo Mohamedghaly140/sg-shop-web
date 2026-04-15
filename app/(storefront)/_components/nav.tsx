@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Heart, ShoppingBag, User } from "lucide-react";
+import { LucideSearch, LucideHeart, LucideShoppingBag, LucideUser } from "lucide-react";
 import { Show, UserButton } from "@clerk/nextjs";
 
 const leftLinks = [
@@ -12,9 +12,9 @@ const leftLinks = [
 ];
 
 const rightIcons = [
-  { icon: Search, label: "Search", href: "/search" },
-  { icon: Heart, label: "Wishlist", href: "/account/wishlist" },
-  { icon: ShoppingBag, label: "Cart", href: "/cart" },
+  { icon: LucideSearch, label: "Search", href: "/search" },
+  { icon: LucideHeart, label: "Wishlist", href: "/account/wishlist" },
+  { icon: LucideShoppingBag, label: "Cart", href: "/cart" },
 ] as const;
 
 export function StorefrontNav() {
@@ -78,7 +78,7 @@ export function StorefrontNav() {
               aria-label="Sign in"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              <User size={18} strokeWidth={1.5} />
+              <LucideUser size={18} strokeWidth={1.5} />
             </Link>
           </Show>
           <Show when="signed-in">
