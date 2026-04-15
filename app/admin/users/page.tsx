@@ -1,5 +1,9 @@
 import AdminUsersFeature from "@/features/admin/users";
 
-export default function AdminUsersPage() {
-  return <AdminUsersFeature />;
+type AdminUsersPageProps = {
+  searchParams: Promise<Record<string, string | string[]>>;
+};
+
+export default function AdminUsersPage({ searchParams }: AdminUsersPageProps) {
+  return <AdminUsersFeature searchParams={searchParams} />;
 }

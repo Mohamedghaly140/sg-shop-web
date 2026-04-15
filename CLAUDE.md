@@ -104,6 +104,11 @@ const humanOrderId = result[0].id; // "ORD-000001"
 
 Images upload **directly from the browser** to Cloudinary via the Upload Widget — no binary data passes through the Next.js server. The DB stores only `imageId` (public ID) and `imageUrl` (delivery URL). When deleting a product/category/brand, call `cloudinary.uploader.destroy(imageId)` in the service function.
 
+## Naming conventions
+
+- Component props types must be prefixed with the component name: `AdminUsersPageProps`, not `Props`.
+- Prefer Prisma-generated types (`User`, `Order`, etc. from `@/generated/prisma/client`) over hand-written row types. Use `Pick<User, "id" | "name" | ...>` when only a subset of fields is needed.
+
 ## Database (Supabase + Prisma)
 
 Two URLs required — the pooler URL for runtime, the direct URL for migrations only:
