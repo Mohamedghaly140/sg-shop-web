@@ -19,4 +19,4 @@ export const usersParserSchema = {
 
 export const usersSearchParamsCache = createSearchParamsCache(usersParserSchema);
 
-export const useUsersParams = () => useQueryStates(usersParserSchema);
+export const useUsersParams = () => useQueryStates(usersParserSchema, { shallow: false });
