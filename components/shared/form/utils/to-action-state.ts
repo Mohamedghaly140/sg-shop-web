@@ -1,4 +1,5 @@
 // import { AxiosError } from "axios";
+import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 import { ZodError } from "zod";
 
 export type ActionState = {
@@ -24,6 +25,17 @@ export const fromErrorToActionState = (
   formData?: FormData,
   response?: Record<string, string | number>
 ): ActionState => {
+  if (isClerkAPIResponseError(error)) {
+    const message = error.errors[0]?.longMessage ?? error.errors[0]?.message ?? "An error occurred";
+    return {
+      status: "ERROR",
+      message,
+      fieldErrors: {},
+      payload: toPayload(formData),
+      timestamp: Date.now(),
+      response,
+    };
+  }
   if (error instanceof ZodError) {
     return {
       status: "ERROR",

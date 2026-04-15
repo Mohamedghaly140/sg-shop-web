@@ -30,7 +30,7 @@ const createUserSchema = z.object({
   email: z.email("Invalid email address"),
   phone: z.string().min(7, "Phone must be at least 7 characters"),
   password: z.string().min(8, "Password must be at least 8 characters"),
-  role: z.nativeEnum(Role),
+  role: z.enum(Role),
 });
 
 export async function createUserAction(
@@ -54,9 +54,11 @@ export async function createUserAction(
     const clerk = await clerkClient();
     const clerkUser = await clerk.users.createUser({
       emailAddress: [parsed.email],
+      phoneNumber: [parsed.phone],
       password: parsed.password,
       firstName,
       lastName,
+      username: parsed.email.split("@")[0].replace(/[^a-zA-Z0-9_.-]/g, "_"),
       publicMetadata: { role: parsed.role },
     });
 
