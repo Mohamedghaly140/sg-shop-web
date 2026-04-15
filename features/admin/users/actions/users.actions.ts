@@ -27,7 +27,7 @@ async function requireAdmin() {
 
 const createUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
+  email: z.email("Invalid email address"),
   phone: z.string().min(7, "Phone must be at least 7 characters"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   role: z.nativeEnum(Role),
@@ -103,15 +103,16 @@ export async function updateUserAction(
     });
 
     const clerk = await clerkClient();
-    await Promise.all([
-      prisma.user.update({
-        where: { id: parsed.userId },
-        data: { role: parsed.role, active: parsed.active },
-      }),
-      clerk.users.updateUser(parsed.userId, {
-        publicMetadata: { role: parsed.role },
-      }),
-    ]);
+    // Update Clerk first (source of truth for roles), then mirror to DB.
+    // Sequential order prevents the webhook from overwriting a successful DB
+    // update if Clerk had already failed.
+    await clerk.users.updateUser(parsed.userId, {
+      publicMetadata: { role: parsed.role },
+    });
+    await prisma.user.update({
+      where: { id: parsed.userId },
+      data: { role: parsed.role, active: parsed.active },
+    });
 
     revalidatePath("/admin/users");
     return toActionState("SUCCESS", "User updated successfully");
