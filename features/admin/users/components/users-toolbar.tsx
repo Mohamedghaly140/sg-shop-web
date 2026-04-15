@@ -26,26 +26,26 @@ export function UsersToolbar({ total }: UsersToolbarProps) {
     [setParams]
   );
 
-  const handleRole = (value: string) => {
+  const handleRole = useCallback((value: string) => {
     setParams({
       role: (value === "ALL" ? null : value) as "USER" | "MANAGER" | "ADMIN" | null,
       page: 1,
     });
-  };
+  }, [setParams]);
 
-  const handleActive = (value: string) => {
+  const handleActive = useCallback((value: string) => {
     setParams({
-      active: (value === "ALL" ? null : value) as "true" | "false" | null,
+      active: value === "ALL" ? null : value === "true",
       page: 1,
     });
-  };
+  }, [setParams]);
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-1 gap-2">
         <Input
           placeholder="Search by name or email…"
-          defaultValue={params.search ?? ""}
+          value={params.search ?? ""}
           onChange={handleSearch}
           className="max-w-xs"
         />
@@ -64,7 +64,7 @@ export function UsersToolbar({ total }: UsersToolbarProps) {
           </SelectContent>
         </Select>
         <Select
-          value={params.active ?? "ALL"}
+          value={params.active === null || params.active === undefined ? "ALL" : String(params.active)}
           onValueChange={handleActive}
         >
           <SelectTrigger className="w-[130px]">

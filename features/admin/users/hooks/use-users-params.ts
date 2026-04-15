@@ -1,5 +1,6 @@
 import {
   createSearchParamsCache,
+  parseAsBoolean,
   parseAsInteger,
   parseAsString,
   parseAsStringEnum,
@@ -11,9 +12,9 @@ export const PAGE_SIZE = 20;
 // nullable role/active = no filter applied
 export const usersParserSchema = {
   page: parseAsInteger.withDefault(1),
-  search: parseAsString.withDefault(""),
+  search: parseAsString.withDefault("").withOptions({ throttleMs: 300 }),
   role: parseAsStringEnum(["USER", "MANAGER", "ADMIN"]),
-  active: parseAsStringEnum(["true", "false"]),
+  active: parseAsBoolean,
 };
 
 export const usersSearchParamsCache = createSearchParamsCache(usersParserSchema);

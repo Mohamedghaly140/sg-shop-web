@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import { usersSearchParamsCache } from "./hooks/use-users-params";
 import { getUsers } from "./services/get-users";
 import { UsersToolbar } from "./components/users-toolbar";
@@ -8,6 +9,7 @@ type AdminUsersFeatureProps = {
 };
 
 export default async function AdminUsersFeature({ searchParams }: AdminUsersFeatureProps) {
+  const { userId: currentUserId } = await auth();
   const params = await usersSearchParamsCache.parse(searchParams);
   const { users, total, pageCount } = await getUsers(params);
 
@@ -20,7 +22,7 @@ export default async function AdminUsersFeature({ searchParams }: AdminUsersFeat
         </p>
       </div>
       <UsersToolbar total={total} />
-      <UsersTable users={users} pageCount={pageCount} />
+      <UsersTable users={users} pageCount={pageCount} currentUserId={currentUserId} />
     </div>
   );
 }

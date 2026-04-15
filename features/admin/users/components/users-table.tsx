@@ -22,6 +22,7 @@ import type { User } from "@/generated/prisma/client";
 type UsersTableProps = {
   users: Pick<User, "id" | "name" | "email" | "phone" | "role" | "active" | "createdAt">[];
   pageCount: number;
+  currentUserId: string | null;
 };
 
 const roleStyles: Record<string, string> = {
@@ -30,7 +31,7 @@ const roleStyles: Record<string, string> = {
   USER: "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
 };
 
-export function UsersTable({ users, pageCount }: UsersTableProps) {
+export function UsersTable({ users, pageCount, currentUserId }: UsersTableProps) {
   const [params, setParams] = useUsersParams();
   const page = params.page ?? 1;
 
@@ -97,7 +98,9 @@ export function UsersTable({ users, pageCount }: UsersTableProps) {
                           </Button>
                         }
                       />
-                      <DeleteUserButton userId={user.id} userName={user.name} />
+                      {user.id !== currentUserId && (
+                        <DeleteUserButton userId={user.id} userName={user.name} />
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

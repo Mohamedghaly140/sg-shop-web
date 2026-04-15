@@ -109,6 +109,11 @@ export async function updateUserAction(
     await clerk.users.updateUser(parsed.userId, {
       publicMetadata: { role: parsed.role },
     });
+    if (parsed.active) {
+      await clerk.users.unbanUser(parsed.userId);
+    } else {
+      await clerk.users.banUser(parsed.userId);
+    }
     await prisma.user.update({
       where: { id: parsed.userId },
       data: { role: parsed.role, active: parsed.active },
@@ -134,9 +139,15 @@ export async function deleteUserAction(
   try {
     await requireAdmin();
 
+    const { userId: currentUserId } = await auth();
+
     const { userId } = deleteUserSchema.parse({
       userId: formData.get("userId"),
     });
+
+    if (userId === currentUserId) {
+      throw new Error("You cannot delete your own account");
+    }
 
     await prisma.user.delete({ where: { id: userId } });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { PlusIcon } from "lucide-react";
 import type { Value as PhoneValue } from "react-phone-number-input";
 
@@ -44,6 +44,12 @@ export function UpsertUserDialog(props: UpsertUserDialogProps) {
 
   const action = props.mode === "create" ? createUserAction : updateUserAction;
   const [actionState, formAction] = useActionState(action, EMPTY_ACTION_STATE);
+
+  useEffect(() => {
+    if (actionState.status === "ERROR" && actionState.payload?.phone) {
+      setPhone(actionState.payload.phone as PhoneValue);
+    }
+  }, [actionState.timestamp]);
 
   return (
     <Dialog
@@ -115,7 +121,7 @@ export function UpsertUserDialog(props: UpsertUserDialogProps) {
                 type="password"
                 placeholder="Min. 8 characters"
                 actionState={actionState}
-                defaultValue={actionState.payload?.password ?? ""}
+                defaultValue=""
               />
             </>
           )}

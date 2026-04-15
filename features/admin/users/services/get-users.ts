@@ -7,7 +7,7 @@ type GetUsersParams = {
   page: number;
   search: string;
   role: "USER" | "MANAGER" | "ADMIN" | null;
-  active: "true" | "false" | null;
+  active: boolean | null;
 };
 
 type GetUsersResult = {
@@ -32,7 +32,7 @@ export async function getUsers({
         }
       : {}),
     ...(role ? { role: role as Role } : {}),
-    ...(active !== null ? { active: active === "true" } : {}),
+    ...(active !== null ? { active } : {}),
   };
 
   const [users, total] = await Promise.all([

@@ -2,6 +2,7 @@
 
 import { useActionState, useRef } from "react";
 import { Trash2Icon } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
@@ -24,6 +25,9 @@ export function DeleteUserButton({ userId, userName }: DeleteUserButtonProps) {
   useActionFeedback(actionState, {
     onSuccess: () => {
       // revalidatePath in action handles table refresh
+    },
+    onError: ({ actionState }) => {
+      toast.error(actionState.message || "Failed to delete user");
     },
   });
 
