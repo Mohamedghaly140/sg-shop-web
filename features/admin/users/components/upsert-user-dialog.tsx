@@ -46,7 +46,16 @@ export function UpsertUserDialog(props: UpsertUserDialogProps) {
   const [actionState, formAction] = useActionState(action, EMPTY_ACTION_STATE);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) {
+          setPhone("" as PhoneValue);
+          setIsActive(user?.active ?? true);
+        }
+        setOpen(next);
+      }}
+    >
       <DialogTrigger asChild>
         {props.trigger ?? (
           <Button size="sm">
