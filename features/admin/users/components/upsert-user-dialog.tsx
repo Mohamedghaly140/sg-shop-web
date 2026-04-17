@@ -111,7 +111,6 @@ export function UpsertUserDialog(props: UpsertUserDialogProps) {
                   international={true}
                   defaultCountry="EG"
                   placeholder="+20 100 000 0000"
-                  defaultValue={actionState.payload?.phone ?? user?.phone ?? ""}
                 />
                 <FieldError actionState={actionState} name="phone" />
               </div>

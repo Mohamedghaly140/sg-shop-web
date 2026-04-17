@@ -1,10 +1,26 @@
 "use client";
 
 import { format } from "date-fns";
-import { LucidePencil, LucideChevronLeft, LucideChevronRight, LucideUsers, LucideSearchX } from "lucide-react";
+import { LucidePencil, LucideUsers, LucideSearchX } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -14,7 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { useUsersParams } from "../hooks/use-users-params";
+import { useUsersParams, PAGE_SIZE_OPTIONS } from "../hooks/use-users-params";
 import { UpsertUserDialog } from "./upsert-user-dialog";
 import { DeleteUserButton } from "./delete-user-button";
 import type { User } from "@/generated/prisma/client";
@@ -63,9 +79,26 @@ function EmptyState({ hasFilters, onClear }: { hasFilters: boolean; onClear: () 
   );
 }
 
+function getPageRange(page: number, pageCount: number): (number | "ellipsis")[] {
+  if (pageCount <= 7) return Array.from({ length: pageCount }, (_, i) => i + 1);
+
+  const delta = 1;
+  const left = Math.max(2, page - delta);
+  const right = Math.min(pageCount - 1, page + delta);
+  const pages: (number | "ellipsis")[] = [1];
+
+  if (left > 2) pages.push("ellipsis");
+  for (let i = left; i <= right; i++) pages.push(i);
+  if (right < pageCount - 1) pages.push("ellipsis");
+  pages.push(pageCount);
+
+  return pages;
+}
+
 export function UsersTable({ users, pageCount, currentUserId }: UsersTableProps) {
   const [params, setParams] = useUsersParams();
   const page = params.page ?? 1;
+  const limit = params.limit ?? 20;
   const hasFilters = !!(params.search || params.role || params.active !== null);
 
   const clearFilters = () => setParams({ search: null, role: null, active: null, page: 1 });
@@ -143,29 +176,64 @@ export function UsersTable({ users, pageCount, currentUserId }: UsersTableProps)
         )}
       </div>
 
-      {pageCount > 1 && (
-        <div className="flex items-center justify-end gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page <= 1}
-            onClick={() => setParams({ page: page - 1 })}
-          >
-            <LucideChevronLeft className="w-4 h-4" />
-            Previous
-          </Button>
-          <span className="text-sm text-muted-foreground">
-            Page {page} of {pageCount}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={page >= pageCount}
-            onClick={() => setParams({ page: page + 1 })}
-          >
-            Next
-            <LucideChevronRight className="w-4 h-4" />
-          </Button>
+      {pageCount > 0 && (
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span>Rows per page</span>
+            <Select
+              value={String(limit)}
+              onValueChange={(v) => setParams({ limit: Number(v), page: 1 })}
+            >
+              <SelectTrigger className="h-8 w-[70px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PAGE_SIZE_OPTIONS.map((n) => (
+                  <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {pageCount > 1 && (
+            <Pagination className="w-auto mx-0">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setParams({ page: page - 1 })}
+                    aria-disabled={page <= 1}
+                    className={cn(page <= 1 && "pointer-events-none opacity-50")}
+                  />
+                </PaginationItem>
+
+                {getPageRange(page, pageCount).map((p, i) =>
+                  p === "ellipsis" ? (
+                    <PaginationItem key={`ellipsis-${i}`}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  ) : (
+                    <PaginationItem key={p}>
+                      <PaginationLink
+                        isActive={p === page}
+                        onClick={() => setParams({ page: p })}
+                        className="cursor-pointer"
+                      >
+                        {p}
+                      </PaginationLink>
+                    </PaginationItem>
+                  )
+                )}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setParams({ page: page + 1 })}
+                    aria-disabled={page >= pageCount}
+                    className={cn(page >= pageCount && "pointer-events-none opacity-50")}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </div>
       )}
     </div>

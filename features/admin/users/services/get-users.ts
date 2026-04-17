@@ -1,10 +1,10 @@
 import type { User } from "@/generated/prisma/client";
 import { Role } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
-import { PAGE_SIZE } from "../hooks/use-users-params";
 
 type GetUsersParams = {
   page: number;
+  limit: number;
   search: string;
   role: "USER" | "MANAGER" | "ADMIN" | null;
   active: boolean | null;
@@ -18,6 +18,7 @@ type GetUsersResult = {
 
 export async function getUsers({
   page,
+  limit,
   search,
   role,
   active,
@@ -48,8 +49,8 @@ export async function getUsers({
         createdAt: true,
       },
       orderBy: { createdAt: "desc" },
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
+      skip: (page - 1) * limit,
+      take: limit,
     }),
     prisma.user.count({ where }),
   ]);
@@ -57,6 +58,6 @@ export async function getUsers({
   return {
     users,
     total,
-    pageCount: Math.ceil(total / PAGE_SIZE),
+    pageCount: Math.ceil(total / limit),
   };
 }
