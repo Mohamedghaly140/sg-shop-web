@@ -9,7 +9,8 @@ export default defineConfig({
     seed: "bun prisma/seeds.ts",
   },
   datasource: {
-    url: env("DATABASE_URL"),
-    directUrl: env("DIRECT_URL"),
+    url: env("DIRECT_URL"),
   },
 });
+// ghaly+clerk_test@example.com
+// 12015550100

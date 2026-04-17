@@ -56,20 +56,20 @@ export async function getCoupons({
     const [rows, countRows] = await Promise.all([
       prisma.$queryRaw<RawCouponRow[]>`
         SELECT id, name, discount::text,
-               used_count AS "usedCount", max_usage AS "maxUsage",
-               expire, created_at AS "createdAt"
+               "usedCount", "maxUsage",
+               expire, "createdAt"
         FROM coupons
         WHERE expire > NOW()
-          AND (max_usage = 0 OR used_count < max_usage)
+          AND ("maxUsage" = 0 OR "usedCount" < "maxUsage")
           ${searchPattern ? Prisma.sql`AND name ILIKE ${searchPattern}` : Prisma.empty}
-        ORDER BY created_at DESC
+        ORDER BY "createdAt" DESC
         LIMIT ${limit} OFFSET ${offset}
       `,
       prisma.$queryRaw<[{ count: number }]>`
         SELECT CAST(COUNT(*) AS INTEGER) AS count
         FROM coupons
         WHERE expire > NOW()
-          AND (max_usage = 0 OR used_count < max_usage)
+          AND ("maxUsage" = 0 OR "usedCount" < "maxUsage")
           ${searchPattern ? Prisma.sql`AND name ILIKE ${searchPattern}` : Prisma.empty}
       `,
     ]);
@@ -81,18 +81,18 @@ export async function getCoupons({
     const [rows, countRows] = await Promise.all([
       prisma.$queryRaw<RawCouponRow[]>`
         SELECT id, name, discount::text,
-               used_count AS "usedCount", max_usage AS "maxUsage",
-               expire, created_at AS "createdAt"
+               "usedCount", "maxUsage",
+               expire, "createdAt"
         FROM coupons
-        WHERE max_usage > 0 AND used_count >= max_usage
+        WHERE "maxUsage" > 0 AND "usedCount" >= "maxUsage"
           ${searchPattern ? Prisma.sql`AND name ILIKE ${searchPattern}` : Prisma.empty}
-        ORDER BY created_at DESC
+        ORDER BY "createdAt" DESC
         LIMIT ${limit} OFFSET ${offset}
       `,
       prisma.$queryRaw<[{ count: number }]>`
         SELECT CAST(COUNT(*) AS INTEGER) AS count
         FROM coupons
-        WHERE max_usage > 0 AND used_count >= max_usage
+        WHERE "maxUsage" > 0 AND "usedCount" >= "maxUsage"
           ${searchPattern ? Prisma.sql`AND name ILIKE ${searchPattern}` : Prisma.empty}
       `,
     ]);

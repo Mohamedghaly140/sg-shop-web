@@ -4,8 +4,11 @@ import { NextResponse } from "next/server";
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 const isAccountRoute = createRouteMatcher(["/account(.*)"]);
 const isApiRoute = createRouteMatcher(["/api(.*)"]);
+const isWebhookRoute = createRouteMatcher(["/api/webhooks/(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
+  if (isWebhookRoute(req)) return;
+
   if (isAdminRoute(req)) {
     await auth.protect();
     const { sessionClaims } = await auth();

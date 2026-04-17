@@ -61,7 +61,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       SELECT CAST(COUNT(*) AS INTEGER) AS count
       FROM coupons
       WHERE expire > NOW()
-        AND (max_usage = 0 OR used_count < max_usage)
+        AND ("maxUsage" = 0 OR "usedCount" < "maxUsage")
     `,
     prisma.$queryRaw<{ status: string; count: number }[]>`
       SELECT status::text, CAST(COUNT(*) AS INTEGER) AS count
@@ -70,12 +70,12 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     `,
     prisma.$queryRaw<{ date: Date; revenue: number }[]>`
       SELECT
-        DATE_TRUNC('day', created_at) AS date,
-        COALESCE(SUM(total_order_price), 0)::float8 AS revenue
+        DATE_TRUNC('day', "createdAt") AS date,
+        COALESCE(SUM("totalOrderPrice"), 0)::float8 AS revenue
       FROM orders
-      WHERE created_at >= NOW() - INTERVAL '30 days'
+      WHERE "createdAt" >= NOW() - INTERVAL '30 days'
         AND status NOT IN ('CANCELLED', 'REFUNDED')
-      GROUP BY DATE_TRUNC('day', created_at)
+      GROUP BY DATE_TRUNC('day', "createdAt")
       ORDER BY date ASC
     `,
     prisma.order.findMany({
@@ -96,8 +96,8 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       {
         id: string;
         name: string;
-        image_url: string;
-        category_name: string;
+        imageUrl: string;
+        categoryName: string;
         revenue: number;
         units: number;
       }[]
@@ -105,14 +105,14 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
       SELECT
         p.id,
         p.name,
-        p.image_url,
-        c.name AS category_name,
+        p."imageUrl",
+        c.name AS "categoryName",
         COALESCE(SUM(oi.quantity * oi.price), 0)::float8 AS revenue,
         CAST(COALESCE(SUM(oi.quantity), 0) AS INTEGER) AS units
       FROM products p
-      LEFT JOIN order_items oi ON oi.product_id = p.id
-      JOIN categories c ON p.category_id = c.id
-      GROUP BY p.id, p.name, p.image_url, c.name
+      LEFT JOIN "orderItems" oi ON oi."productId" = p.id
+      JOIN categories c ON p."categoryId" = c.id
+      GROUP BY p.id, p.name, p."imageUrl", "categoryName"
       ORDER BY COALESCE(SUM(oi.quantity * oi.price), 0) DESC
       LIMIT 5
     `,
@@ -166,8 +166,8 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     topProducts: topProductsRaw.map((p) => ({
       id: p.id,
       name: p.name,
-      imageUrl: p.image_url,
-      categoryName: p.category_name,
+      imageUrl: p.imageUrl,
+      categoryName: p.categoryName,
       revenue: p.revenue,
       units: p.units,
     })),
