@@ -1,7 +1,7 @@
 "use server";
 
-import { clerkClient } from "@clerk/nextjs/server";
-import { auth } from "@clerk/nextjs/server";
+import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -16,11 +16,12 @@ import {
 // ─── Guards ───────────────────────────────────────────────────────────────────
 
 async function requireAdmin() {
-  const { sessionClaims } = await auth();
+  const { sessionClaims, userId } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
   if (role !== "ADMIN") {
     throw new Error("Unauthorized: ADMIN role required");
   }
+  return userId;
 }
 
 // ─── Create User ──────────────────────────────────────────────────────────────
@@ -139,9 +140,7 @@ export async function deleteUserAction(
   formData: FormData
 ): Promise<ActionState> {
   try {
-    await requireAdmin();
-
-    const { userId: currentUserId } = await auth();
+    const currentUserId = await requireAdmin();
 
     const { userId } = deleteUserSchema.parse({
       userId: formData.get("userId"),
@@ -151,14 +150,18 @@ export async function deleteUserAction(
       throw new Error("You cannot delete your own account");
     }
 
-    await prisma.user.delete({ where: { id: userId } });
-
+    const clerk = await clerkClient();
     try {
-      const clerk = await clerkClient();
       await clerk.users.deleteUser(userId);
-    } catch {
-      // User may not exist in Clerk (e.g. test data) — DB deletion still succeeds
+    } catch (err: unknown) {
+      if (isClerkAPIResponseError(err) && err.status === 404) {
+        // 404 = user doesn't exist in Clerk (e.g. test data) — proceed to DB deletion
+      } else {
+        throw err;
+      }
     }
+
+    await prisma.user.delete({ where: { id: userId } });
 
     revalidatePath("/admin/users");
     return toActionState("SUCCESS", "User deleted successfully");
