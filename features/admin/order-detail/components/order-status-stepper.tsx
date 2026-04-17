@@ -1,7 +1,7 @@
 import { LucideCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { OrderStatus } from "@/generated/prisma/client";
+import { OrderStatus } from "@/generated/prisma/enums";
 
 const HAPPY_PATH: OrderStatus[] = [
   OrderStatus.PENDING,
@@ -29,7 +29,8 @@ type OrderStatusStepperProps = {
 };
 
 export function OrderStatusStepper({ status }: OrderStatusStepperProps) {
-  const isTerminal = status === OrderStatus.CANCELLED || status === OrderStatus.REFUNDED;
+  const isTerminal =
+    status === OrderStatus.CANCELLED || status === OrderStatus.REFUNDED;
 
   if (isTerminal) {
     return (
@@ -59,9 +60,13 @@ export function OrderStatusStepper({ status }: OrderStatusStepperProps) {
               <div
                 className={cn(
                   "flex h-8 w-8 items-center justify-center rounded-full border-2 text-xs font-semibold transition-colors",
-                  isCompleted && "bg-primary border-primary text-primary-foreground",
-                  isCurrent && "bg-primary border-primary text-primary-foreground ring-4 ring-primary/20",
-                  !isCompleted && !isCurrent && "border-muted-foreground/30 text-muted-foreground",
+                  isCompleted &&
+                    "bg-primary border-primary text-primary-foreground",
+                  isCurrent &&
+                    "bg-primary border-primary text-primary-foreground ring-4 ring-primary/20",
+                  !isCompleted &&
+                    !isCurrent &&
+                    "border-muted-foreground/30 text-muted-foreground",
                 )}
               >
                 {isCompleted ? (
@@ -73,7 +78,11 @@ export function OrderStatusStepper({ status }: OrderStatusStepperProps) {
               <span
                 className={cn(
                   "text-xs font-medium whitespace-nowrap",
-                  isCurrent ? "text-primary" : isCompleted ? "text-foreground" : "text-muted-foreground",
+                  isCurrent
+                    ? "text-primary"
+                    : isCompleted
+                      ? "text-foreground"
+                      : "text-muted-foreground",
                 )}
               >
                 {STEP_LABELS[step]}
@@ -83,7 +92,9 @@ export function OrderStatusStepper({ status }: OrderStatusStepperProps) {
               <div
                 className={cn(
                   "h-0.5 flex-1 mx-2 mb-5 rounded",
-                  index < currentIndex ? "bg-primary" : "bg-muted-foreground/20",
+                  index < currentIndex
+                    ? "bg-primary"
+                    : "bg-muted-foreground/20",
                 )}
               />
             )}

@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import Form from "@/components/shared/form/form";
 import SubmitButton from "@/components/shared/submit-button";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
-import { PaymentMethod } from "@/generated/prisma/client";
+import { PaymentMethod } from "@/generated/prisma/enums";
 import { cn } from "@/lib/utils";
 import { togglePaidAction } from "../actions/orders.actions";
 import type { OrderDetail } from "../services/get-order";

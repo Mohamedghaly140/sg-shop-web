@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { OrderStatus } from "@/generated/prisma/client";
+import { OrderStatus } from "@/generated/prisma/enums";
 import { useOrdersParams } from "../hooks/use-orders-params";
 
 const STATUS_LABELS: Record<OrderStatus, string> = {

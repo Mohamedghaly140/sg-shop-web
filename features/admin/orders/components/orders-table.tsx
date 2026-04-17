@@ -34,7 +34,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { OrderStatus, PaymentMethod } from "@/generated/prisma/client";
+import { OrderStatus, PaymentMethod } from "@/generated/prisma/enums";
 import { useOrdersParams, PAGE_SIZE_OPTIONS } from "../hooks/use-orders-params";
 import type { OrderListItem } from "../services/get-orders";
 

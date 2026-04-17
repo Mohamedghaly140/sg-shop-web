@@ -24,7 +24,7 @@ import SubmitButton from "@/components/shared/submit-button";
 import {
   EMPTY_ACTION_STATE,
 } from "@/components/shared/form/utils/to-action-state";
-import { OrderStatus } from "@/generated/prisma/client";
+import { OrderStatus } from "@/generated/prisma/enums";
 import { updateOrderStatusAction } from "../actions/orders.actions";
 
 const STATUS_LABELS: Record<OrderStatus, string> = {

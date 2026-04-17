@@ -5,7 +5,7 @@ import {
   parseAsStringEnum,
 } from "nuqs/server";
 import { useQueryStates } from "nuqs";
-import { OrderStatus } from "@/generated/prisma/client";
+import { OrderStatus } from "@/generated/prisma/enums";
 
 export const PAGE_SIZE_OPTIONS = [10, 15, 20, 25, 30, 35, 40, 45, 50] as const;
 
