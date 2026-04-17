@@ -430,7 +430,7 @@ DIRECT_URL    = "postgresql://..."   # direct (port 5432) — migrations only
 
 **Price snapshots on `CartItem` and `OrderItem`.** The `price` field is captured at the moment of add/order. Product price changes never retroactively affect existing carts or orders.
 
-**Anonymous support via nullable FKs.** `Cart.userId` and `Order.userId` are nullable. Anonymous carts are keyed by a `sessionToken` cookie. Anonymous orders carry flat `anon_*` columns for contact and shipping info instead of FK references to the `users` and `addresses` tables.
+**Anonymous support via nullable FKs.** `Cart.userId` and `Order.userId` are nullable. Anonymous carts are keyed by a `sessionToken` cookie. Anonymous orders carry flat `anon*` columns for contact and shipping info instead of FK references to the `users` and `addresses` tables.
 
 **`humanOrderId` via PostgreSQL sequence.** Generates readable `ORD-000001` style order IDs. Run once after the first migration:
 
@@ -454,18 +454,13 @@ const humanOrderId = result[0].id; // "ORD-000001"
 ### Full Prisma Schema
 
 ```prisma
-// ─────────────────────────────────────────────────────────────
-// schema.prisma
-// ─────────────────────────────────────────────────────────────
-
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
 // ─────────────────────────────────────────
@@ -512,8 +507,8 @@ model User {
   phone     String   @unique
   role      Role     @default(USER)
   active    Boolean  @default(true)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt      @map("updated_at")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   addresses     Address[]
   orders        Order[]
@@ -537,20 +532,20 @@ model Address {
   city         String
   area         String
   phone        String
-  addressLine1 String  @map("address_line1")
+  addressLine1 String
   details      String
-  postalCode   Int?    @map("postal_code")
+  postalCode   Int?
   latitude     Float?
   longitude    Float?
-  isDefault    Boolean @default(false) @map("is_default")
+  isDefault    Boolean @default(false)
 
-  userId String @map("user_id")
+  userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   orders Order[]
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt      @map("updated_at")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("addresses")
 }
@@ -563,11 +558,11 @@ model Brand {
   id        String    @id @default(cuid())
   name      String    @unique
   slug      String    @unique
-  imageId   String?   @map("image_id")
-  imageUrl  String?   @map("image_url")
+  imageId   String?
+  imageUrl  String?
   products  Product[]
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt      @map("updated_at")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@map("brands")
 }
@@ -580,12 +575,12 @@ model Category {
   id            String        @id @default(cuid())
   name          String        @unique
   slug          String        @unique
-  imageId       String?       @map("image_id")
-  imageUrl      String?       @map("image_url")
+  imageId       String?
+  imageUrl      String?
   subCategories SubCategory[]
   products      Product[]
-  createdAt     DateTime      @default(now()) @map("created_at")
-  updatedAt     DateTime      @updatedAt      @map("updated_at")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@map("categories")
 }
@@ -594,13 +589,13 @@ model SubCategory {
   id         String               @id @default(cuid())
   name       String               @unique
   slug       String               @unique
-  categoryId String               @map("category_id")
+  categoryId String
   category   Category             @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   products   ProductSubCategory[]
-  createdAt  DateTime             @default(now()) @map("created_at")
-  updatedAt  DateTime             @updatedAt      @map("updated_at")
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
 
-  @@map("sub_categories")
+  @@map("subCategories")
 }
 
 // ─────────────────────────────────────────
@@ -616,20 +611,20 @@ model Product {
   sold               Int           @default(0)
   price              Decimal       @db.Decimal(10, 2)
   discount           Decimal       @default(0) @db.Decimal(5, 2)
-  priceAfterDiscount Decimal       @default(0) @db.Decimal(10, 2) @map("price_after_discount")
+  priceAfterDiscount Decimal       @default(0) @db.Decimal(10, 2)
   sizes              String[]
   colors             String[]
-  imageId            String        @map("image_id")
-  imageUrl           String        @map("image_url")
-  ratingsAverage     Decimal?      @db.Decimal(2, 1) @map("ratings_average")
-  ratingsQuantity    Int           @default(0)       @map("ratings_quantity")
+  imageId            String
+  imageUrl           String
+  ratingsAverage     Decimal?      @db.Decimal(2, 1)
+  ratingsQuantity    Int           @default(0)
   status             ProductStatus @default(DRAFT)
   featured           Boolean       @default(false)
 
-  categoryId String   @map("category_id")
+  categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 
-  brandId String? @map("brand_id")
+  brandId String?
   brand   Brand?  @relation(fields: [brandId], references: [id], onDelete: SetNull)
 
   images        ProductImage[]
@@ -639,8 +634,8 @@ model Product {
   orderItems    OrderItem[]
   wishlistedBy  UserWishlist[]
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt      @map("updated_at")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("products")
 }
@@ -648,25 +643,25 @@ model Product {
 // Product additional images (Cloudinary)
 model ProductImage {
   id        String  @id @default(cuid())
-  imageId   String? @map("image_id")
-  imageUrl  String? @map("image_url")
-  sortOrder Int     @default(0) @map("sort_order")
+  imageId   String?
+  imageUrl  String?
+  sortOrder Int     @default(0)
 
-  productId String  @map("product_id")
+  productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@map("product_images")
+  @@map("productImages")
 }
 
 // Product ↔ SubCategory  (many-to-many)
 model ProductSubCategory {
-  productId     String      @map("product_id")
-  subCategoryId String      @map("sub_category_id")
+  productId     String
+  subCategoryId String
   product       Product     @relation(fields: [productId],     references: [id], onDelete: Cascade)
   subCategory   SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
 
   @@id([productId, subCategoryId])
-  @@map("product_subcategories")
+  @@map("productSubCategories")
 }
 
 // ─────────────────────────────────────────
@@ -674,14 +669,13 @@ model ProductSubCategory {
 // ─────────────────────────────────────────
 
 model UserWishlist {
-  userId    String   @map("user_id")
-  productId String   @map("product_id")
-  user      User     @relation(fields: [userId],    references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  addedAt   DateTime @default(now()) @map("added_at")
+  userId    String
+  productId String
+  user      User    @relation(fields: [userId],    references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  addedAt   DateTime @default(now())
 
   @@id([userId, productId])
-  @@map("user_wishlist")
 }
 
 // ─────────────────────────────────────────
@@ -696,14 +690,14 @@ model Review {
   title   String  @default("")
   ratings Decimal @db.Decimal(2, 1)
 
-  userId String @map("user_id")
+  userId String
   user   User   @relation(fields: [userId],    references: [id], onDelete: Cascade)
 
-  productId String  @map("product_id")
+  productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt      @map("updated_at")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, productId])
   @@map("reviews")
@@ -717,18 +711,18 @@ model Review {
 
 model Cart {
   id                      String    @id @default(cuid())
-  totalCartPrice          Decimal?  @db.Decimal(10, 2) @map("total_cart_price")
-  totalPriceAfterDiscount Decimal?  @db.Decimal(10, 2) @map("total_price_after_discount")
-  expiresAt               DateTime? @map("expires_at")
+  totalCartPrice          Decimal?  @db.Decimal(10, 2)
+  totalPriceAfterDiscount Decimal?  @db.Decimal(10, 2)
+  expiresAt               DateTime?
 
-  userId       String? @unique @map("user_id")
+  userId       String? @unique
   user         User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  sessionToken String? @unique @map("session_token")
+  sessionToken String? @unique
 
   items     CartItem[]
-  createdAt DateTime   @default(now()) @map("created_at")
-  updatedAt DateTime   @updatedAt      @map("updated_at")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@map("carts")
 }
@@ -740,13 +734,13 @@ model CartItem {
   size     String?
   price    Decimal? @db.Decimal(10, 2)  // price snapshot at time of adding
 
-  cartId String @map("cart_id")
+  cartId String
   cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
 
-  productId String  @map("product_id")
+  productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
-  @@map("cart_items")
+  @@map("cartItems")
 }
 
 // ─────────────────────────────────────────
@@ -759,11 +753,11 @@ model Coupon {
   id        String   @id @default(cuid())
   name      String   @unique  // uppercase e.g. "SAVE20"
   discount  Decimal  @db.Decimal(5, 2)
-  usedCount Int      @default(0) @map("used_count")
-  maxUsage  Int      @default(0) @map("max_usage")
+  usedCount Int      @default(0)
+  maxUsage  Int      @default(0)
   expire    DateTime
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt      @map("updated_at")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   orders Order[]
 
@@ -774,7 +768,7 @@ model Coupon {
 // ORDER
 //
 // Registered checkout:
-//   userId set, shippingAddressId set. All anon_* fields null.
+//   userId set, shippingAddressId set. All anon* fields null.
 //
 // Anonymous checkout:
 //   userId null, shippingAddressId null.
@@ -788,56 +782,56 @@ model Coupon {
 
 model Order {
   id              String        @id @default(cuid())
-  humanOrderId    String        @unique @map("human_order_id")  // ORD-000001
+  humanOrderId    String        @unique  // ORD-000001
   status          OrderStatus   @default(PENDING)
-  paymentMethod   PaymentMethod @default(CASH)  @map("payment_method")
-  shippingFees    Decimal       @default(0)     @db.Decimal(10, 2) @map("shipping_fees")
-  totalOrderPrice Decimal?      @db.Decimal(10, 2) @map("total_order_price")
-  isPaid          Boolean       @default(false) @map("is_paid")
-  paidAt          DateTime?     @map("paid_at")
-  isDelivered     Boolean       @default(false) @map("is_delivered")
-  deliveredAt     DateTime?     @map("delivered_at")
+  paymentMethod   PaymentMethod @default(CASH)
+  shippingFees    Decimal       @default(0)     @db.Decimal(10, 2)
+  totalOrderPrice Decimal?      @db.Decimal(10, 2)
+  isPaid          Boolean       @default(false)
+  paidAt          DateTime?
+  isDelivered     Boolean       @default(false)
+  deliveredAt     DateTime?
   notes           String?
 
-  stripePaymentIntentId String? @unique @map("stripe_payment_intent_id")
+  stripePaymentIntentId String? @unique
 
   // Registered user
-  userId            String?  @map("user_id")
+  userId            String?
   user              User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
-  shippingAddressId String?  @map("shipping_address_id")
+  shippingAddressId String?
   shippingAddress   Address? @relation(fields: [shippingAddressId], references: [id], onDelete: SetNull)
 
   // Coupon
-  couponId        String?  @map("coupon_id")
+  couponId        String?
   coupon          Coupon?  @relation(fields: [couponId], references: [id], onDelete: SetNull)
-  discountApplied Decimal? @db.Decimal(10, 2) @map("discount_applied")
+  discountApplied Decimal? @db.Decimal(10, 2)
 
   // Anonymous contact
-  anonName  String? @map("anon_name")
-  anonPhone String? @map("anon_phone")
+  anonName  String?
+  anonPhone String?
   anonEmail String? @map("anon_email")
 
   // Anonymous shipping address
-  anonCountry       String? @map("anon_country")
-  anonGovernorate   String? @map("anon_governorate")
-  anonCity          String? @map("anon_city")
-  anonArea          String? @map("anon_area")
-  anonShippingPhone String? @map("anon_shipping_phone")
-  anonAddressLine1  String? @map("anon_address_line1")
-  anonDetails       String? @map("anon_details")
-  anonPostalCode    Int?    @map("anon_postal_code")
-  anonLatitude      Float?  @map("anon_latitude")
-  anonLongitude     Float?  @map("anon_longitude")
+  anonCountry       String?
+  anonGovernorate   String?
+  anonCity          String?
+  anonArea          String?
+  anonShippingPhone String?
+  anonAddressLine1  String?
+  anonDetails       String?
+  anonPostalCode    Int?
+  anonLatitude      Float?
+  anonLongitude     Float?
 
   // Guest order claiming
-  guestToken          String?   @unique @map("guest_token")
-  guestTokenExpiresAt DateTime? @map("guest_token_expires_at")
-  claimedByUserId     String?   @map("claimed_by_user_id")
+  guestToken          String?   @unique
+  guestTokenExpiresAt DateTime?
+  claimedByUserId     String?
 
   items     OrderItem[]
-  createdAt DateTime    @default(now()) @map("created_at")
-  updatedAt DateTime    @updatedAt      @map("updated_at")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
   @@map("orders")
 }
@@ -849,13 +843,13 @@ model OrderItem {
   size     String?
   price    Decimal? @db.Decimal(10, 2)  // price snapshot at time of order
 
-  orderId String @map("order_id")
+  orderId String
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  productId String  @map("product_id")
+  productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
-  @@map("order_items")
+  @@map("orderItems")
 }
 
 // ─────────────────────────────────────────
@@ -870,10 +864,10 @@ model Notification {
   read     Boolean @default(false)
   metadata Json?
 
-  userId String @map("user_id")
+  userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(now())
 
   @@index([userId, read])
   @@map("notifications")
@@ -884,21 +878,21 @@ model Notification {
 
 ```
 users ──1:many──► addresses
-users ──1:1────► carts ──1:many──► cart_items ──many:1──► products
+users ──1:1────► carts ──1:many──► cartItems ──many:1──► products
 users ──1:many──► orders
 users ──1:many──► reviews ──many:1──► products
-users ──many:many──► (user_wishlist) ──► products
+users ──many:many──► (UserWishlist) ──► products
 
-categories ──1:many──► sub_categories
+categories ──1:many──► subCategories
 categories ──1:many──► products
 brands     ──1:many──► products
-products   ──1:many──► product_images
-products   ──many:many──► (product_subcategories) ──► sub_categories
+products   ──1:many──► productImages
+products   ──many:many──► (productSubCategories) ──► subCategories
 
 orders ──many:1──► users       (nullable — anonymous checkout)
 orders ──many:1──► addresses   (nullable — anonymous checkout)
 orders ──many:1──► coupons     (nullable)
-orders ──1:many──► order_items ──many:1──► products
+orders ──1:many──► orderItems ──many:1──► products
 ```
 
 ### Enum Reference

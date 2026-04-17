@@ -1,5 +1,9 @@
 import AdminCouponsFeature from "@/features/admin/coupons";
 
-export default function AdminCouponsPage() {
-  return <AdminCouponsFeature />;
+type AdminCouponsPageProps = {
+  searchParams: Promise<Record<string, string | string[]>>;
+};
+
+export default function AdminCouponsPage({ searchParams }: AdminCouponsPageProps) {
+  return <AdminCouponsFeature searchParams={searchParams} />;
 }
