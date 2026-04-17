@@ -1,4 +1,4 @@
-// import RedirectToast from "@/components/shared/redirect-toast";
+import RedirectToast from "@/components/shared/redirect-toast";
 import React from "react";
 
 interface RootTemplateProps {
@@ -9,7 +9,7 @@ const RootTemplate = ({ children }: RootTemplateProps) => {
   return (
     <>
       <>{children}</>
-      {/* <RedirectToast /> */}
+      <RedirectToast />
     </>
   );
 };

@@ -1,5 +1,9 @@
 import AdminBrandsFeature from "@/features/admin/brands";
 
-export default function AdminBrandsPage() {
-  return <AdminBrandsFeature />;
+type AdminBrandsPageProps = {
+  searchParams: Promise<Record<string, string | string[]>>;
+};
+
+export default function AdminBrandsPage({ searchParams }: AdminBrandsPageProps) {
+  return <AdminBrandsFeature searchParams={searchParams} />;
 }
