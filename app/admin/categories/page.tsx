@@ -1,5 +1,9 @@
 import AdminCategoriesFeature from "@/features/admin/categories";
 
-export default function AdminCategoriesPage() {
-  return <AdminCategoriesFeature />;
+type AdminCategoriesPageProps = {
+  searchParams: Promise<Record<string, string | string[]>>;
+};
+
+export default function AdminCategoriesPage({ searchParams }: AdminCategoriesPageProps) {
+  return <AdminCategoriesFeature searchParams={searchParams} />;
 }

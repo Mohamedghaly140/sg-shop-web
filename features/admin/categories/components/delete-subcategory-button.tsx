@@ -7,21 +7,21 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
-import { deleteBrandAction } from "../actions/brands.actions";
+import { deleteSubcategoryAction } from "../actions/subcategories.actions";
 
-type DeleteBrandButtonProps = {
-  brandId: string;
-  brandName: string;
+type DeleteSubcategoryButtonProps = {
+  subcategoryId: string;
+  subcategoryName: string;
 };
 
-export function DeleteBrandButton({ brandId, brandName }: DeleteBrandButtonProps) {
+export function DeleteSubcategoryButton({ subcategoryId, subcategoryName }: DeleteSubcategoryButtonProps) {
   const [isPending, setIsPending] = useState(false);
 
   const handleDelete = async () => {
     setIsPending(true);
     const formData = new FormData();
-    formData.append("brandId", brandId);
-    const result = await deleteBrandAction(EMPTY_ACTION_STATE, formData);
+    formData.append("subcategoryId", subcategoryId);
+    const result = await deleteSubcategoryAction(EMPTY_ACTION_STATE, formData);
     setIsPending(false);
     if (result.status === "SUCCESS") {
       toast.success(result.message);
@@ -42,8 +42,8 @@ export function DeleteBrandButton({ brandId, brandName }: DeleteBrandButtonProps
           <LucideTrash2 className="w-4 h-4" />
         </Button>
       }
-      title="Delete Brand"
-      description={`Delete "${brandName}"? Products linked to this brand will no longer be associated with it.`}
+      title="Delete Subcategory"
+      description={`Delete "${subcategoryName}"? This cannot be undone.`}
       confirmLabel="Delete"
       onConfirm={handleDelete}
     />

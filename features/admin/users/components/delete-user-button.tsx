@@ -19,12 +19,14 @@ export function DeleteUserButton({ userId, userName }: DeleteUserButtonProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const [actionState, formAction] = useActionState(
     deleteUserAction,
-    EMPTY_ACTION_STATE
+    EMPTY_ACTION_STATE,
   );
 
   useActionFeedback(actionState, {
-    onSuccess: () => {
-      // revalidatePath in action handles table refresh
+    onSuccess: ({ actionState }) => {
+      if (actionState.message) {
+        toast.success(actionState.message);
+      }
     },
     onError: ({ actionState }) => {
       toast.error(actionState.message || "Failed to delete user");
@@ -38,7 +40,11 @@ export function DeleteUserButton({ userId, userName }: DeleteUserButtonProps) {
       </form>
       <ConfirmDialog
         trigger={
-          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-destructive hover:text-destructive"
+          >
             <LucideTrash2 className="w-4 h-4" />
           </Button>
         }
