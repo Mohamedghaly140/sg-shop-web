@@ -17,6 +17,21 @@ import {
 } from "@/features/admin/product-form/schemas/product-schema";
 import { requireAdmin } from "@/lib/require-role";
 
+// ─── Cache invalidation ───────────────────────────────────────────────────────
+
+function revalidateProductCaches() {
+  // Admin
+  revalidatePath("/admin/products");
+  // Storefront — products surface on all these routes
+  revalidatePath("/");
+  revalidatePath("/products");
+  revalidatePath("/products/[slug]", "page");
+  revalidatePath("/search");
+  revalidatePath("/categories/[slug]", "page");
+}
+
+// ─── Slug helpers ─────────────────────────────────────────────────────────────
+
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 function slugifyText(input: string): string {
@@ -30,11 +45,17 @@ function slugifyText(input: string): string {
   return s || "product";
 }
 
-async function allocateUniqueSlug(base: string, excludeId?: string): Promise<string> {
+// Runs inside a transaction so the slug check and the INSERT/UPDATE are atomic.
+async function allocateUniqueSlug(
+  base: string,
+  excludeId?: string,
+  tx?: Prisma.TransactionClient,
+): Promise<string> {
+  const client = tx ?? prisma;
   let candidate = base;
   let n = 2;
   for (;;) {
-    const existing = await prisma.product.findFirst({
+    const existing = await client.product.findFirst({
       where: {
         slug: candidate,
         ...(excludeId ? { NOT: { id: excludeId } } : {}),
@@ -48,14 +69,21 @@ async function allocateUniqueSlug(base: string, excludeId?: string): Promise<str
   }
 }
 
-function resolveSlug(name: string, raw: string | null, excludeId?: string) {
+function resolveSlug(
+  name: string,
+  raw: string | null,
+  excludeId?: string,
+  tx?: Prisma.TransactionClient,
+) {
   const source = raw ?? name;
   const slugified = slugifyText(source);
   if (!slugPattern.test(slugified)) {
     throw new Error("Slug must contain only lowercase letters, numbers, and hyphens");
   }
-  return allocateUniqueSlug(slugified, excludeId);
+  return allocateUniqueSlug(slugified, excludeId, tx);
 }
+
+// ─── Form parsing ─────────────────────────────────────────────────────────────
 
 function parseImagesFromFormData(formData: FormData) {
   const indexed = new Map<number, { imageId?: string; imageUrl?: string; sortOrder?: number }>();
@@ -111,6 +139,8 @@ function computePriceAfterDiscount(price: string, discount: string): Prisma.Deci
   return p.minus(p.times(d).dividedBy(100)).toDecimalPlaces(2);
 }
 
+// ─── Actions ──────────────────────────────────────────────────────────────────
+
 export async function createProductAction(
   _prev: ActionState,
   formData: FormData,
@@ -119,43 +149,46 @@ export async function createProductAction(
     await requireAdmin();
     const data = parseProductFormData(formData);
 
-    const slug = await resolveSlug(data.name, data.slug);
     const price = new Prisma.Decimal(data.price);
     const discount = new Prisma.Decimal(data.discount || "0");
     const priceAfterDiscount = computePriceAfterDiscount(data.price, data.discount || "0");
 
-    const created = await prisma.product.create({
-      data: {
-        name: data.name.trim(),
-        slug,
-        description: data.description,
-        price,
-        discount,
-        priceAfterDiscount,
-        quantity: Number(data.quantity),
-        sizes: data.sizes,
-        colors: data.colors,
-        imageId: data.imageId,
-        imageUrl: data.imageUrl,
-        status: data.status,
-        featured: data.featured,
-        categoryId: data.categoryId,
-        brandId: data.brandId,
-        images: {
-          create: data.images.map((img, i) => ({
-            imageId: img.imageId,
-            imageUrl: img.imageUrl,
-            sortOrder: img.sortOrder ?? i,
-          })),
+    // Slug allocation runs inside the transaction — check and INSERT are atomic.
+    const created = await prisma.$transaction(async (tx) => {
+      const slug = await resolveSlug(data.name, data.slug, undefined, tx);
+      return tx.product.create({
+        data: {
+          name: data.name.trim(),
+          slug,
+          description: data.description,
+          price,
+          discount,
+          priceAfterDiscount,
+          quantity: Number(data.quantity),
+          sizes: data.sizes,
+          colors: data.colors,
+          imageId: data.imageId,
+          imageUrl: data.imageUrl,
+          status: data.status,
+          featured: data.featured,
+          categoryId: data.categoryId,
+          brandId: data.brandId,
+          images: {
+            create: data.images.map((img, i) => ({
+              imageId: img.imageId,
+              imageUrl: img.imageUrl,
+              sortOrder: img.sortOrder ?? i,
+            })),
+          },
+          subCategories: {
+            create: data.subCategoryIds.map((id) => ({ subCategoryId: id })),
+          },
         },
-        subCategories: {
-          create: data.subCategoryIds.map((id) => ({ subCategoryId: id })),
-        },
-      },
-      select: { id: true },
+        select: { id: true },
+      });
     });
 
-    revalidatePath("/admin/products");
+    revalidateProductCaches();
     return toActionState("SUCCESS", "Product created successfully", undefined, {
       id: created.id,
     });
@@ -190,7 +223,6 @@ export async function updateProductAction(
       },
     });
 
-    const slug = await resolveSlug(data.name, data.slug, productId);
     const price = new Prisma.Decimal(data.price);
     const discount = new Prisma.Decimal(data.discount || "0");
     const priceAfterDiscount = computePriceAfterDiscount(data.price, data.discount || "0");
@@ -205,7 +237,10 @@ export async function updateProductAction(
     const staleMainImageId =
       existing.imageId && existing.imageId !== data.imageId ? existing.imageId : null;
 
+    // Slug allocation runs inside the transaction — check and UPDATE are atomic.
     await prisma.$transaction(async (tx) => {
+      const slug = await resolveSlug(data.name, data.slug, productId, tx);
+
       if (removed.length > 0) {
         await tx.productImage.deleteMany({
           where: { id: { in: removed.map((i) => i.id) } },
@@ -263,12 +298,13 @@ export async function updateProductAction(
       });
     });
 
-    await destroyAssets([
+    // Best-effort — DB commit is canonical; log failures but don't surface them.
+    destroyAssets([
       staleMainImageId,
       ...removed.map((r) => r.imageId),
-    ]);
+    ]).catch(err => console.error("[Cloudinary] cleanup failed after product update:", err));
 
-    revalidatePath("/admin/products");
+    revalidateProductCaches();
     revalidatePath(`/admin/products/${productId}`);
     return toActionState("SUCCESS", "Product updated successfully", undefined, {
       id: productId,
@@ -303,12 +339,13 @@ export async function deleteProductAction(
 
     await prisma.product.delete({ where: { id: productId } });
 
-    await destroyAssets([
+    // Best-effort — DB delete is canonical; log failures but don't surface them.
+    destroyAssets([
       product.imageId,
       ...product.images.map((i) => i.imageId),
-    ]);
+    ]).catch(err => console.error("[Cloudinary] cleanup failed after product delete:", err));
 
-    revalidatePath("/admin/products");
+    revalidateProductCaches();
     return toActionState("SUCCESS", "Product deleted successfully");
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2003") {
@@ -342,7 +379,7 @@ export async function updateProductStatusAction(
       data: { status },
     });
 
-    revalidatePath("/admin/products");
+    revalidateProductCaches();
     revalidatePath(`/admin/products/${productId}`);
     return toActionState("SUCCESS", `Product marked as ${status.toLowerCase()}`);
   } catch (error) {
@@ -371,7 +408,7 @@ export async function toggleFeaturedAction(
       data: { featured: featured === "true" },
     });
 
-    revalidatePath("/admin/products");
+    revalidateProductCaches();
     revalidatePath(`/admin/products/${productId}`);
     return toActionState(
       "SUCCESS",
@@ -404,7 +441,11 @@ export async function deleteProductImageAction(
     });
 
     await prisma.productImage.delete({ where: { id: productImageId } });
-    await destroyAsset(image.imageId);
+
+    // Best-effort — DB delete is canonical; log failures but don't surface them.
+    destroyAsset(image.imageId).catch(err =>
+      console.error("[Cloudinary] cleanup failed after image delete:", err),
+    );
 
     revalidatePath(`/admin/products/${productId}/edit`);
     return toActionState("SUCCESS", "Image removed");
@@ -429,35 +470,37 @@ export async function duplicateProductAction(
     });
 
     const baseSlug = slugifyText(`${src.name}-copy`);
-    const slug = await allocateUniqueSlug(baseSlug);
 
     // Images are intentionally not copied — both products would share the same
     // Cloudinary public IDs, so deleting the original would break the duplicate.
-    const created = await prisma.product.create({
-      data: {
-        name: `${src.name} (copy)`,
-        slug,
-        description: src.description,
-        price: src.price,
-        discount: src.discount,
-        priceAfterDiscount: src.priceAfterDiscount,
-        quantity: src.quantity,
-        sizes: src.sizes,
-        colors: src.colors,
-        imageId: "",
-        imageUrl: "",
-        status: ProductStatus.DRAFT,
-        featured: false,
-        categoryId: src.categoryId,
-        brandId: src.brandId,
-        subCategories: {
-          create: src.subCategories.map((s) => ({ subCategoryId: s.subCategoryId })),
+    const created = await prisma.$transaction(async (tx) => {
+      const slug = await allocateUniqueSlug(baseSlug, undefined, tx);
+      return tx.product.create({
+        data: {
+          name: `${src.name} (copy)`,
+          slug,
+          description: src.description,
+          price: src.price,
+          discount: src.discount,
+          priceAfterDiscount: src.priceAfterDiscount,
+          quantity: src.quantity,
+          sizes: src.sizes,
+          colors: src.colors,
+          imageId: "",
+          imageUrl: "",
+          status: ProductStatus.DRAFT,
+          featured: false,
+          categoryId: src.categoryId,
+          brandId: src.brandId,
+          subCategories: {
+            create: src.subCategories.map((s) => ({ subCategoryId: s.subCategoryId })),
+          },
         },
-      },
-      select: { id: true },
+        select: { id: true },
+      });
     });
 
-    revalidatePath("/admin/products");
+    revalidateProductCaches();
     return toActionState("SUCCESS", "Product duplicated", undefined, {
       id: created.id,
     });
