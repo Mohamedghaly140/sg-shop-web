@@ -1,27 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { LucideTrash2 } from "lucide-react";
+import { LucideBan } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
-import { deleteCouponAction } from "../actions/coupons.actions";
+import { deactivateCouponAction } from "../actions/coupons.actions";
 
-type DeleteCouponButtonProps = {
+type DeactivateCouponButtonProps = {
   couponId: string;
-  couponName: string;
 };
 
-export function DeleteCouponButton({ couponId, couponName }: DeleteCouponButtonProps) {
+export function DeactivateCouponButton({ couponId }: DeactivateCouponButtonProps) {
   const [isPending, setIsPending] = useState(false);
 
-  const handleDelete = async () => {
+  const handleDeactivate = async () => {
     setIsPending(true);
     const formData = new FormData();
     formData.append("couponId", couponId);
-    const result = await deleteCouponAction(EMPTY_ACTION_STATE, formData);
+    const result = await deactivateCouponAction(EMPTY_ACTION_STATE, formData);
     setIsPending(false);
     if (result.status === "SUCCESS") {
       toast.success(result.message);
@@ -36,16 +35,16 @@ export function DeleteCouponButton({ couponId, couponName }: DeleteCouponButtonP
         <Button
           variant="ghost"
           size="icon"
-          className="text-destructive hover:text-destructive"
+          className="text-muted-foreground"
           disabled={isPending}
         >
-          <LucideTrash2 className="w-4 h-4" />
+          <LucideBan className="w-4 h-4" />
         </Button>
       }
-      title="Delete Coupon"
-      description={`Delete coupon "${couponName}"? Orders that used this code will retain their applied discount but will no longer reference this coupon.`}
-      confirmLabel="Delete"
-      onConfirm={handleDelete}
+      title="Deactivate Coupon"
+      description="Deactivate this coupon? It will no longer be redeemable. You can re-activate it by editing and setting a new expiry date."
+      confirmLabel="Deactivate"
+      onConfirm={handleDeactivate}
     />
   );
 }

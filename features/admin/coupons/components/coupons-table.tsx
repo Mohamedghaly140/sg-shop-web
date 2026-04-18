@@ -1,13 +1,10 @@
 "use client";
 
-import { useActionState, useRef } from "react";
 import { format } from "date-fns";
-import { LucideBan, LucidePencil, LucideSearchX, LucideTicket } from "lucide-react";
-import { toast } from "sonner";
+import { LucidePencil, LucideSearchX, LucideTicket } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import {
   Pagination,
   PaginationContent,
@@ -33,12 +30,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
-import { useActionFeedback } from "@/components/shared/form/hooks/use-action-feedback";
 import { useCouponsParams, PAGE_SIZE_OPTIONS } from "../hooks/use-coupons-params";
 import { UpsertCouponDialog } from "./upsert-coupon-dialog";
 import { DeleteCouponButton } from "./delete-coupon-button";
-import { deactivateCouponAction } from "../actions/coupons.actions";
+import { DeactivateCouponButton } from "./deactivate-coupon-button";
 import type { CouponRow } from "../services/get-coupons";
 
 type CouponsTableProps = {
@@ -125,40 +120,6 @@ function EmptyState({
       </div>
       <UpsertCouponDialog mode="create" />
     </div>
-  );
-}
-
-function DeactivateCouponButton({ couponId }: { couponId: string }) {
-  const formRef = useRef<HTMLFormElement>(null);
-  const [actionState, formAction] = useActionState(
-    deactivateCouponAction,
-    EMPTY_ACTION_STATE
-  );
-
-  useActionFeedback(actionState, {
-    onSuccess: () => {},
-    onError: ({ actionState }) => {
-      toast.error(actionState.message || "Failed to deactivate coupon");
-    },
-  });
-
-  return (
-    <>
-      <form ref={formRef} action={formAction} className="hidden">
-        <input type="hidden" name="couponId" value={couponId} />
-      </form>
-      <ConfirmDialog
-        trigger={
-          <Button variant="ghost" size="icon" className="text-muted-foreground">
-            <LucideBan className="w-4 h-4" />
-          </Button>
-        }
-        title="Deactivate Coupon"
-        description="Deactivate this coupon? It will no longer be redeemable. You can re-activate it by editing and setting a new expiry date."
-        confirmLabel="Deactivate"
-        onConfirm={() => formRef.current?.requestSubmit()}
-      />
-    </>
   );
 }
 
