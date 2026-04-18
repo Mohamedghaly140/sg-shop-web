@@ -33,6 +33,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useCustomersParams, PAGE_SIZE_OPTIONS } from "../hooks/use-customers-params";
 import type { CustomerListItem } from "../services/get-customers";
+import { ToggleCustomerActiveButton } from "./toggle-customer-active-button";
 
 type CustomersTableProps = {
   customers: CustomerListItem[];
@@ -145,12 +146,18 @@ export function CustomersTable({ customers, pageCount }: CustomersTableProps) {
                     {format(customer.createdAt, "MMM d, yyyy")}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" asChild>
-                      <Link href={`/admin/customers/${customer.id}`}>
-                        <LucideEye className="w-4 h-4" />
-                        <span className="sr-only">View customer</span>
-                      </Link>
-                    </Button>
+                    <div className="flex items-center justify-end gap-1">
+                      <ToggleCustomerActiveButton
+                        customerId={customer.id}
+                        active={customer.active}
+                      />
+                      <Button variant="ghost" size="icon" asChild>
+                        <Link href={`/admin/customers/${customer.id}`}>
+                          <LucideEye className="w-4 h-4" />
+                          <span className="sr-only">View customer</span>
+                        </Link>
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

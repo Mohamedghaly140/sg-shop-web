@@ -8,6 +8,7 @@ import { CustomerProfileCard } from "./components/customer-profile-card";
 import { CustomerStatsCard } from "./components/customer-stats-card";
 import { CustomerAddressesCard } from "./components/customer-addresses-card";
 import { CustomerOrdersTable } from "./components/customer-orders-table";
+import { ToggleCustomerActiveButton } from "../customers/components/toggle-customer-active-button";
 
 type AdminCustomerDetailFeatureProps = {
   id: string;
@@ -25,7 +26,7 @@ export default async function AdminCustomerDetailFeature({ id }: AdminCustomerDe
             <LucideArrowLeft className="w-4 h-4" />
           </Link>
         </Button>
-        <div>
+        <div className="flex-1">
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold">{customer.name}</h1>
             <Badge
@@ -42,6 +43,7 @@ export default async function AdminCustomerDetailFeature({ id }: AdminCustomerDe
           </div>
           <p className="text-sm text-muted-foreground">{customer.email}</p>
         </div>
+        <ToggleCustomerActiveButton customerId={customer.id} active={customer.active} />
       </div>
 
       {/* Stats */}
