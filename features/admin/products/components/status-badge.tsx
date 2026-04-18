@@ -16,13 +16,12 @@ const LABELS: Record<ProductStatus, string> = {
   ARCHIVED: "Archived",
 };
 
-export function ProductStatusBadge({
-  status,
-  className,
-}: {
+type ProductStatusBadgeProps = {
   status: ProductStatus;
   className?: string;
-}) {
+};
+
+export function ProductStatusBadge({ status, className }: ProductStatusBadgeProps) {
   return (
     <Badge className={cn("font-normal capitalize", STYLES[status], className)}>
       {LABELS[status]}

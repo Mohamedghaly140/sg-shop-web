@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -16,14 +15,7 @@ import {
   productFormSchema,
   productImageInputSchema,
 } from "@/features/admin/product-form/schemas/product-schema";
-
-async function requireAdmin() {
-  const { sessionClaims } = await auth();
-  const role = (sessionClaims?.metadata as { role?: string })?.role;
-  if (role !== "ADMIN") {
-    throw new Error("Unauthorized: ADMIN role required");
-  }
-}
+import { requireAdmin } from "@/lib/require-role";
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -432,7 +424,6 @@ export async function duplicateProductAction(
     const src = await prisma.product.findUniqueOrThrow({
       where: { id: productId },
       include: {
-        images: true,
         subCategories: { select: { subCategoryId: true } },
       },
     });
@@ -440,6 +431,8 @@ export async function duplicateProductAction(
     const baseSlug = slugifyText(`${src.name}-copy`);
     const slug = await allocateUniqueSlug(baseSlug);
 
+    // Images are intentionally not copied — both products would share the same
+    // Cloudinary public IDs, so deleting the original would break the duplicate.
     const created = await prisma.product.create({
       data: {
         name: `${src.name} (copy)`,
@@ -451,19 +444,12 @@ export async function duplicateProductAction(
         quantity: src.quantity,
         sizes: src.sizes,
         colors: src.colors,
-        imageId: src.imageId,
-        imageUrl: src.imageUrl,
+        imageId: "",
+        imageUrl: "",
         status: ProductStatus.DRAFT,
         featured: false,
         categoryId: src.categoryId,
         brandId: src.brandId,
-        images: {
-          create: src.images.map((img) => ({
-            imageId: img.imageId,
-            imageUrl: img.imageUrl,
-            sortOrder: img.sortOrder,
-          })),
-        },
         subCategories: {
           create: src.subCategories.map((s) => ({ subCategoryId: s.subCategoryId })),
         },

@@ -8,9 +8,7 @@ export default async function AdminLayout({
   children: React.ReactNode;
 }) {
   const { sessionClaims } = await auth();
-  const role = (sessionClaims?.metadata as { role?: string })?.role as
-    | "ADMIN"
-    | "MANAGER";
+  const role = sessionClaims?.metadata?.role as "ADMIN" | "MANAGER" | undefined;
   const cookieStore = await cookies();
   const defaultCollapsed =
     cookieStore.get("admin_sidebar_collapsed")?.value === "true";

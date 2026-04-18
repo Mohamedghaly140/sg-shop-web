@@ -1,21 +1,29 @@
 import type { Prisma, ProductStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
-export type ProductListItem = {
-  id: string;
-  name: string;
-  slug: string;
+const productListSelect = {
+  id: true,
+  name: true,
+  slug: true,
+  price: true,
+  priceAfterDiscount: true,
+  discount: true,
+  quantity: true,
+  sold: true,
+  imageUrl: true,
+  status: true,
+  featured: true,
+  createdAt: true,
+  category: { select: { id: true, name: true } },
+  brand: { select: { id: true, name: true } },
+} as const;
+
+type ProductListRow = Prisma.ProductGetPayload<{ select: typeof productListSelect }>;
+
+export type ProductListItem = Omit<ProductListRow, "price" | "priceAfterDiscount" | "discount"> & {
   price: string;
   priceAfterDiscount: string;
   discount: string;
-  quantity: number;
-  sold: number;
-  imageUrl: string;
-  status: ProductStatus;
-  featured: boolean;
-  createdAt: Date;
-  category: { id: string; name: string } | null;
-  brand: { id: string; name: string } | null;
 };
 
 type GetProductsParams = {
@@ -61,22 +69,7 @@ export async function getProducts({
   const [rows, total] = await Promise.all([
     prisma.product.findMany({
       where,
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        price: true,
-        priceAfterDiscount: true,
-        discount: true,
-        quantity: true,
-        sold: true,
-        imageUrl: true,
-        status: true,
-        featured: true,
-        createdAt: true,
-        category: { select: { id: true, name: true } },
-        brand: { select: { id: true, name: true } },
-      },
+      select: productListSelect,
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * limit,
       take: limit,

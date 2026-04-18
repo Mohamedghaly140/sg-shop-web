@@ -1,7 +1,7 @@
 "use server";
 
 import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -12,17 +12,7 @@ import {
   fromErrorToActionState,
   toActionState,
 } from "@/components/shared/form/utils/to-action-state";
-
-// ─── Guards ───────────────────────────────────────────────────────────────────
-
-async function requireAdmin() {
-  const { sessionClaims, userId } = await auth();
-  const role = (sessionClaims?.metadata as { role?: string })?.role;
-  if (role !== "ADMIN") {
-    throw new Error("Unauthorized: ADMIN role required");
-  }
-  return userId;
-}
+import { requireAdmin } from "@/lib/require-role";
 
 // ─── Create User ──────────────────────────────────────────────────────────────
 

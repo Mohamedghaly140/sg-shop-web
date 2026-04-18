@@ -12,7 +12,7 @@ export default clerkMiddleware(async (auth, req) => {
   if (isAdminRoute(req)) {
     await auth.protect();
     const { sessionClaims } = await auth();
-    const role = (sessionClaims?.metadata as { role?: string })?.role;
+    const role = sessionClaims?.metadata?.role;
     if (role !== "ADMIN" && role !== "MANAGER") {
       return NextResponse.redirect(new URL("/", req.url));
     }
@@ -28,7 +28,7 @@ export default clerkMiddleware(async (auth, req) => {
   if (!isApiRoute(req)) {
     const { userId, sessionClaims } = await auth();
     if (userId) {
-      const role = (sessionClaims?.metadata as { role?: string })?.role;
+      const role = sessionClaims?.metadata?.role;
       if (role === "ADMIN" || role === "MANAGER") {
         return NextResponse.redirect(new URL("/admin", req.url));
       }

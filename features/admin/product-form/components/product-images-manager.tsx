@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   LucideChevronDown,
   LucideChevronUp,
@@ -37,11 +37,18 @@ export function ProductImagesManager({
 }: ProductImagesManagerProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  // Ref tracks the latest gallery so concurrent onSuccess callbacks
+  // (one per uploaded file) always append to the up-to-date list instead
+  // of overwriting each other via a stale prop closure.
+  const latestValue = useRef(value);
+  latestValue.current = value;
+
   const handleUploaded = (uploaded: UploadedImage[]) => {
-    const next = [...value];
+    const next = [...latestValue.current];
     for (const u of uploaded) {
       if (!next.some(v => v.imageId === u.imageId)) next.push(u);
     }
+    latestValue.current = next;
     onChange(next);
   };
 

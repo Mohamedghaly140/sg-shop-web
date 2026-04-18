@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -11,14 +10,7 @@ import {
   fromErrorToActionState,
   toActionState,
 } from "@/components/shared/form/utils/to-action-state";
-
-async function requireAdmin() {
-  const { sessionClaims } = await auth();
-  const role = (sessionClaims?.metadata as { role?: string })?.role;
-  if (role !== "ADMIN") {
-    throw new Error("Unauthorized: ADMIN role required");
-  }
-}
+import { requireAdmin } from "@/lib/require-role";
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
