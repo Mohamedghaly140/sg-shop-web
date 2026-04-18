@@ -1,5 +1,9 @@
 import AdminCustomersFeature from "@/features/admin/customers";
 
-export default function AdminCustomersPage() {
-  return <AdminCustomersFeature />;
+type AdminCustomersPageProps = {
+  searchParams: Promise<Record<string, string | string[]>>;
+};
+
+export default function AdminCustomersPage({ searchParams }: AdminCustomersPageProps) {
+  return <AdminCustomersFeature searchParams={searchParams} />;
 }
