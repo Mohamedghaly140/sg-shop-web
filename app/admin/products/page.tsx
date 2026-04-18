@@ -1,5 +1,9 @@
 import AdminProductsFeature from "@/features/admin/products";
 
-export default function AdminProductsPage() {
-  return <AdminProductsFeature />;
+type AdminProductsPageProps = {
+  searchParams: Promise<Record<string, string | string[]>>;
+};
+
+export default function AdminProductsPage({ searchParams }: AdminProductsPageProps) {
+  return <AdminProductsFeature searchParams={searchParams} />;
 }

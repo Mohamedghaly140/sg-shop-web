@@ -1,5 +1,12 @@
-import AdminProductFormFeature from "@/features/admin/product-form";
+import AdminProductDetailFeature from "@/features/admin/product-detail";
 
-export default function AdminEditProductPage() {
-  return <AdminProductFormFeature />;
+type AdminProductDetailPageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function AdminProductDetailPage({
+  params,
+}: AdminProductDetailPageProps) {
+  const { id } = await params;
+  return <AdminProductDetailFeature productId={id} />;
 }
