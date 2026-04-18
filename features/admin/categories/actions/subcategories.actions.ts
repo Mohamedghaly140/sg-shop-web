@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import slugify from "slugify";
 
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -12,17 +13,8 @@ import {
 } from "@/components/shared/form/utils/to-action-state";
 import { requireManagerOrAdmin } from "@/lib/require-role";
 
-const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-function slugifyText(input: string): string {
-  const s = input
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return s || "subcategory";
+function makeSlug(name: string): string {
+  return slugify(name, { lower: true, strict: true }) || "subcategory";
 }
 
 async function allocateUniqueSlug(base: string, excludeSubcategoryId?: string): Promise<string> {
@@ -45,28 +37,16 @@ async function allocateUniqueSlug(base: string, excludeSubcategoryId?: string): 
 const createSubcategorySchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
   name: z.string().trim().min(2, "Name must be at least 2 characters"),
-  slugRaw: z.string().trim(),
 });
 
 const updateSubcategorySchema = z.object({
   subcategoryId: z.string().min(1, "Subcategory is required"),
   name: z.string().trim().min(2, "Name must be at least 2 characters"),
-  slugRaw: z.string().trim(),
 });
 
 const deleteSubcategorySchema = z.object({
   subcategoryId: z.string().min(1, "Subcategory is required"),
 });
-
-function resolveSlugInput(name: string, slugRaw: string): string {
-  const trimmed = slugRaw.trim();
-  if (!trimmed) return slugifyText(name);
-  const slugified = slugifyText(trimmed);
-  if (!slugPattern.test(slugified)) {
-    throw new Error("Slug must contain only lowercase letters, numbers, and hyphens");
-  }
-  return slugified;
-}
 
 export async function createSubcategoryAction(
   _prevState: ActionState,
@@ -78,11 +58,9 @@ export async function createSubcategoryAction(
     const parsed = createSubcategorySchema.parse({
       categoryId: formData.get("categoryId"),
       name: formData.get("name"),
-      slugRaw: formData.get("slug") ?? "",
     });
 
-    const baseSlug = resolveSlugInput(parsed.name, parsed.slugRaw);
-    const slug = await allocateUniqueSlug(baseSlug);
+    const slug = await allocateUniqueSlug(makeSlug(parsed.name));
 
     await prisma.subCategory.create({
       data: { name: parsed.name.trim(), slug, categoryId: parsed.categoryId },
@@ -120,11 +98,9 @@ export async function updateSubcategoryAction(
     const parsed = updateSubcategorySchema.parse({
       subcategoryId: formData.get("subcategoryId"),
       name: formData.get("name"),
-      slugRaw: formData.get("slug") ?? "",
     });
 
-    const baseSlug = resolveSlugInput(parsed.name, parsed.slugRaw);
-    const slug = await allocateUniqueSlug(baseSlug, parsed.subcategoryId);
+    const slug = await allocateUniqueSlug(makeSlug(parsed.name), parsed.subcategoryId);
 
     await prisma.subCategory.update({
       where: { id: parsed.subcategoryId },

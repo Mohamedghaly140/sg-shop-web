@@ -60,18 +60,6 @@ export function UpsertBrandDialog(props: UpsertBrandDialogProps) {
           />
 
           <FormControl
-            label="Slug"
-            name="slug"
-            placeholder="Leave blank to generate from name"
-            actionState={actionState}
-            defaultValue={actionState.payload?.slug ?? brand?.slug ?? ""}
-          />
-          <p className="-mt-2 text-xs text-muted-foreground">
-            Lowercase letters, numbers, and hyphens only. Leave blank on create to auto-generate from
-            the name.
-          </p>
-
-          <FormControl
             label="Logo URL"
             name="imageUrl"
             type="url"

@@ -150,19 +150,6 @@ export function ProductForm({ mode, formData, product }: ProductFormProps) {
               <FieldError name="name" actionState={actionState} />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="slug">Slug</Label>
-              <Input
-                id="slug"
-                name="slug"
-                placeholder="Leave blank to generate from name"
-                defaultValue={actionState.payload?.slug ?? product?.slug ?? ""}
-              />
-              <p className="text-xs text-muted-foreground">
-                Lowercase letters, numbers, and hyphens only.
-              </p>
-              <FieldError name="slug" actionState={actionState} />
-            </div>
-            <div className="flex flex-col gap-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
                 id="description"

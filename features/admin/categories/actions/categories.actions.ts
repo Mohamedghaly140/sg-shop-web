@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import slugify from "slugify";
 
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -12,17 +13,8 @@ import {
 } from "@/components/shared/form/utils/to-action-state";
 import { requireManagerOrAdmin } from "@/lib/require-role";
 
-const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-function slugifyText(input: string): string {
-  const s = input
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return s || "category";
+function makeSlug(name: string): string {
+  return slugify(name, { lower: true, strict: true }) || "category";
 }
 
 async function allocateUniqueSlug(base: string, excludeCategoryId?: string): Promise<string> {
@@ -50,30 +42,18 @@ const optionalImageUrlSchema = z
 
 const createCategorySchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters"),
-  slugRaw: z.string().trim(),
   imageUrl: z.string().trim(),
 });
 
 const updateCategorySchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
   name: z.string().trim().min(2, "Name must be at least 2 characters"),
-  slugRaw: z.string().trim(),
   imageUrl: z.string().trim(),
 });
 
 const deleteCategorySchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
 });
-
-function resolveSlugInput(name: string, slugRaw: string): string {
-  const trimmed = slugRaw.trim();
-  if (!trimmed) return slugifyText(name);
-  const slugified = slugifyText(trimmed);
-  if (!slugPattern.test(slugified)) {
-    throw new Error("Slug must contain only lowercase letters, numbers, and hyphens");
-  }
-  return slugified;
-}
 
 export async function createCategoryAction(
   _prevState: ActionState,
@@ -84,13 +64,11 @@ export async function createCategoryAction(
 
     const parsed = createCategorySchema.parse({
       name: formData.get("name"),
-      slugRaw: formData.get("slug") ?? "",
       imageUrl: formData.get("imageUrl") ?? "",
     });
 
     const imageUrl = optionalImageUrlSchema.parse(parsed.imageUrl);
-    const baseSlug = resolveSlugInput(parsed.name, parsed.slugRaw);
-    const slug = await allocateUniqueSlug(baseSlug);
+    const slug = await allocateUniqueSlug(makeSlug(parsed.name));
 
     await prisma.category.create({
       data: { name: parsed.name.trim(), slug, imageUrl, imageId: null },
@@ -128,13 +106,11 @@ export async function updateCategoryAction(
     const parsed = updateCategorySchema.parse({
       categoryId: formData.get("categoryId"),
       name: formData.get("name"),
-      slugRaw: formData.get("slug") ?? "",
       imageUrl: formData.get("imageUrl") ?? "",
     });
 
     const imageUrl = optionalImageUrlSchema.parse(parsed.imageUrl);
-    const baseSlug = resolveSlugInput(parsed.name, parsed.slugRaw);
-    const slug = await allocateUniqueSlug(baseSlug, parsed.categoryId);
+    const slug = await allocateUniqueSlug(makeSlug(parsed.name), parsed.categoryId);
 
     await prisma.category.update({
       where: { id: parsed.categoryId },

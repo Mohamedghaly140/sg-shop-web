@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import slugify from "slugify";
 
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -12,17 +13,8 @@ import {
 } from "@/components/shared/form/utils/to-action-state";
 import { requireAdmin } from "@/lib/require-role";
 
-const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-function slugifyText(input: string): string {
-  const s = input
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return s || "brand";
+function makeSlug(name: string): string {
+  return slugify(name, { lower: true, strict: true }) || "brand";
 }
 
 async function allocateUniqueSlug(base: string, excludeBrandId?: string): Promise<string> {
@@ -52,32 +44,18 @@ const optionalImageUrlSchema = z
 
 const createBrandSchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters"),
-  slugRaw: z.string().trim(),
   imageUrl: z.string().trim(),
 });
 
 const updateBrandSchema = z.object({
   brandId: z.string().min(1, "Brand is required"),
   name: z.string().trim().min(2, "Name must be at least 2 characters"),
-  slugRaw: z.string().trim(),
   imageUrl: z.string().trim(),
 });
 
 const deleteBrandSchema = z.object({
   brandId: z.string().min(1, "Brand is required"),
 });
-
-function resolveSlugInput(name: string, slugRaw: string): string {
-  const trimmed = slugRaw.trim();
-  if (!trimmed) {
-    return slugifyText(name);
-  }
-  const slugified = slugifyText(trimmed);
-  if (!slugPattern.test(slugified)) {
-    throw new Error("Slug must contain only lowercase letters, numbers, and hyphens");
-  }
-  return slugified;
-}
 
 export async function createBrandAction(
   _prevState: ActionState,
@@ -88,14 +66,12 @@ export async function createBrandAction(
 
     const parsed = createBrandSchema.parse({
       name: formData.get("name"),
-      slugRaw: formData.get("slug") ?? "",
       imageUrl: formData.get("imageUrl") ?? "",
     });
 
     const imageUrl = optionalImageUrlSchema.parse(parsed.imageUrl);
 
-    const baseSlug = resolveSlugInput(parsed.name, parsed.slugRaw);
-    const slug = await allocateUniqueSlug(baseSlug);
+    const slug = await allocateUniqueSlug(makeSlug(parsed.name));
 
     await prisma.brand.create({
       data: {
@@ -138,14 +114,12 @@ export async function updateBrandAction(
     const parsed = updateBrandSchema.parse({
       brandId: formData.get("brandId"),
       name: formData.get("name"),
-      slugRaw: formData.get("slug") ?? "",
       imageUrl: formData.get("imageUrl") ?? "",
     });
 
     const imageUrl = optionalImageUrlSchema.parse(parsed.imageUrl);
 
-    const baseSlug = resolveSlugInput(parsed.name, parsed.slugRaw);
-    const slug = await allocateUniqueSlug(baseSlug, parsed.brandId);
+    const slug = await allocateUniqueSlug(makeSlug(parsed.name), parsed.brandId);
 
     await prisma.brand.update({
       where: { id: parsed.brandId },

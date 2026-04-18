@@ -64,17 +64,6 @@ export function UpsertSubcategoryDialog(props: UpsertSubcategoryDialogProps) {
             defaultValue={actionState.payload?.name ?? subcategory?.name ?? ""}
           />
 
-          <FormControl
-            label="Slug"
-            name="slug"
-            placeholder="Leave blank to generate from name"
-            actionState={actionState}
-            defaultValue={actionState.payload?.slug ?? subcategory?.slug ?? ""}
-          />
-          <p className="-mt-2 text-xs text-muted-foreground">
-            Lowercase letters, numbers, and hyphens only. Leave blank on create to auto-generate.
-          </p>
-
           <SubmitButton
             label={props.mode === "create" ? "Create Subcategory" : "Save Changes"}
           />

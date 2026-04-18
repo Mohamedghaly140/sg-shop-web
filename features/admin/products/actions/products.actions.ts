@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import slugify from "slugify";
 
 import { Prisma, ProductStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -32,17 +33,8 @@ function revalidateProductCaches() {
 
 // ─── Slug helpers ─────────────────────────────────────────────────────────────
 
-const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-function slugifyText(input: string): string {
-  const s = input
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return s || "product";
+function makeSlug(name: string): string {
+  return slugify(name, { lower: true, strict: true }) || "product";
 }
 
 // Runs inside a transaction so the slug check and the INSERT/UPDATE are atomic.
@@ -67,20 +59,6 @@ async function allocateUniqueSlug(
     n += 1;
     if (n > 10_000) throw new Error("Could not generate a unique slug");
   }
-}
-
-function resolveSlug(
-  name: string,
-  raw: string | null,
-  excludeId?: string,
-  tx?: Prisma.TransactionClient,
-) {
-  const source = raw ?? name;
-  const slugified = slugifyText(source);
-  if (!slugPattern.test(slugified)) {
-    throw new Error("Slug must contain only lowercase letters, numbers, and hyphens");
-  }
-  return allocateUniqueSlug(slugified, excludeId, tx);
 }
 
 // ─── Form parsing ─────────────────────────────────────────────────────────────
@@ -115,7 +93,6 @@ function parseImagesFromFormData(formData: FormData) {
 function parseProductFormData(formData: FormData) {
   return productFormSchema.parse({
     name: formData.get("name") ?? "",
-    slug: formData.get("slug") ?? "",
     description: formData.get("description") ?? "",
     price: formData.get("price") ?? "",
     discount: formData.get("discount") ?? "",
@@ -155,7 +132,7 @@ export async function createProductAction(
 
     // Slug allocation runs inside the transaction — check and INSERT are atomic.
     const created = await prisma.$transaction(async (tx) => {
-      const slug = await resolveSlug(data.name, data.slug, undefined, tx);
+      const slug = await allocateUniqueSlug(makeSlug(data.name), undefined, tx);
       return tx.product.create({
         data: {
           name: data.name.trim(),
@@ -239,7 +216,7 @@ export async function updateProductAction(
 
     // Slug allocation runs inside the transaction — check and UPDATE are atomic.
     await prisma.$transaction(async (tx) => {
-      const slug = await resolveSlug(data.name, data.slug, productId, tx);
+      const slug = await allocateUniqueSlug(makeSlug(data.name), productId, tx);
 
       if (removed.length > 0) {
         await tx.productImage.deleteMany({
@@ -469,7 +446,7 @@ export async function duplicateProductAction(
       },
     });
 
-    const baseSlug = slugifyText(`${src.name}-copy`);
+    const baseSlug = makeSlug(`${src.name}-copy`);
 
     // Images are intentionally not copied — both products would share the same
     // Cloudinary public IDs, so deleting the original would break the duplicate.

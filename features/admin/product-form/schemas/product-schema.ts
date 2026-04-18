@@ -40,11 +40,6 @@ export type ProductImageInput = z.infer<typeof productImageInputSchema>;
 
 export const productFormSchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters"),
-  slug: z
-    .string()
-    .trim()
-    .transform((s) => (s === "" ? null : s))
-    .nullable(),
   description: z.string().trim().min(10, "Description must be at least 10 characters"),
   price: decimalString("Price"),
   discount: optionalDecimalString,

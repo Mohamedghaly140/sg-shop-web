@@ -62,18 +62,6 @@ export function UpsertCategoryDialog(props: UpsertCategoryDialogProps) {
           />
 
           <FormControl
-            label="Slug"
-            name="slug"
-            placeholder="Leave blank to generate from name"
-            actionState={actionState}
-            defaultValue={actionState.payload?.slug ?? category?.slug ?? ""}
-          />
-          <p className="-mt-2 text-xs text-muted-foreground">
-            Lowercase letters, numbers, and hyphens only. Leave blank on create to auto-generate from
-            the name.
-          </p>
-
-          <FormControl
             label="Cover Image URL"
             name="imageUrl"
             type="url"
