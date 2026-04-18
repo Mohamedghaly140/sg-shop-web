@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { format } from "date-fns";
-import { LucideSearchX, LucideUsers } from "lucide-react";
+import { LucideEye, LucideSearchX, LucideUsers } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -109,6 +109,7 @@ export function CustomersTable({ customers, pageCount }: CustomersTableProps) {
                 <TableHead>Orders</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Joined</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -142,6 +143,14 @@ export function CustomersTable({ customers, pageCount }: CustomersTableProps) {
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {format(customer.createdAt, "MMM d, yyyy")}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="ghost" size="icon" asChild>
+                      <Link href={`/admin/customers/${customer.id}`}>
+                        <LucideEye className="w-4 h-4" />
+                        <span className="sr-only">View customer</span>
+                      </Link>
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
