@@ -111,6 +111,18 @@ Images upload **directly from the browser** to Cloudinary via the Upload Widget 
 - Lucide icons must be prefixed with `Lucide`: `LucideSearch`, `LucideTrash2`, `LucidePlus`, etc. Never i  
   import bare names like `Search`, `Trash2`, or `Plus`.
 
+## Zod v4
+
+This project uses **Zod v4**. Key differences from v3:
+
+- `z.enum()` now accepts enum objects directly — no need for `z.nativeEnum()` (deprecated):
+  ```ts
+  import { ProductStatus } from "@/generated/prisma/enums";
+  z.enum(ProductStatus) // ✅ correct in v4
+  z.nativeEnum(ProductStatus) // ❌ deprecated
+  ```
+- `.Enum` / `.Values` accessors removed; use `.enum` (singular).
+
 ## Database (Supabase + Prisma)
 
 Two URLs required — the pooler URL for runtime, the direct URL for migrations only:
