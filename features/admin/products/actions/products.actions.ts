@@ -214,6 +214,8 @@ export async function updateProductAction(
     const staleMainImageId =
       existing.imageId && existing.imageId !== data.imageId ? existing.imageId : null;
 
+    const existingByImageId = new Map(existing.images.map((img) => [img.imageId, img]));
+
     // Slug allocation runs inside the transaction — check and UPDATE are atomic.
     await prisma.$transaction(async (tx) => {
       const slug = await allocateUniqueSlug(makeSlug(data.name), productId, tx);
@@ -225,7 +227,7 @@ export async function updateProductAction(
       }
 
       for (const [i, img] of data.images.entries()) {
-        const match = existing.images.find((e) => e.imageId === img.imageId);
+        const match = existingByImageId.get(img.imageId);
         if (match) {
           await tx.productImage.update({
             where: { id: match.id },
@@ -441,7 +443,17 @@ export async function duplicateProductAction(
 
     const src = await prisma.product.findUniqueOrThrow({
       where: { id: productId },
-      include: {
+      select: {
+        name: true,
+        description: true,
+        price: true,
+        discount: true,
+        priceAfterDiscount: true,
+        quantity: true,
+        sizes: true,
+        colors: true,
+        categoryId: true,
+        brandId: true,
         subCategories: { select: { subCategoryId: true } },
       },
     });

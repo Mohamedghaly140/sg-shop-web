@@ -31,6 +31,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { getPageRange } from "@/lib/utils/pagination";
+import { EmptyState } from "@/components/shared/empty-state";
 import { PAGE_SIZE_OPTIONS, useProductsParams } from "../hooks/use-products-params";
 import type { ProductListItem } from "../services/get-products";
 import { ProductStatusBadge } from "./status-badge";
@@ -41,61 +43,11 @@ type ProductsTableProps = {
   pageCount: number;
 };
 
-function getPageRange(page: number, pageCount: number): (number | "ellipsis")[] {
-  if (pageCount <= 7) return Array.from({ length: pageCount }, (_, i) => i + 1);
-  const delta = 1;
-  const left = Math.max(2, page - delta);
-  const right = Math.min(pageCount - 1, page + delta);
-  const pages: (number | "ellipsis")[] = [1];
-  if (left > 2) pages.push("ellipsis");
-  for (let i = left; i <= right; i++) pages.push(i);
-  if (right < pageCount - 1) pages.push("ellipsis");
-  pages.push(pageCount);
-  return pages;
-}
-
 function formatMoney(value: string) {
   const n = Number(value);
   return Number.isFinite(n)
     ? n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     : value;
-}
-
-function EmptyState({ hasFilters, onClear }: { hasFilters: boolean; onClear: () => void }) {
-  if (hasFilters) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-        <div className="rounded-full bg-muted p-4">
-          <LucideSearchX className="size-6 text-muted-foreground" />
-        </div>
-        <div>
-          <p className="text-sm font-medium">No products match these filters</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Adjust your search or filters
-          </p>
-        </div>
-        <Button variant="outline" size="sm" onClick={onClear}>
-          Clear filters
-        </Button>
-      </div>
-    );
-  }
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-      <div className="rounded-full bg-muted p-4">
-        <LucidePackage className="size-6 text-muted-foreground" />
-      </div>
-      <div>
-        <p className="text-sm font-medium">No products yet</p>
-        <p className="text-xs text-muted-foreground mt-1">
-          Create your first product to get started
-        </p>
-      </div>
-      <Button size="sm" asChild>
-        <Link href="/admin/products/new">New product</Link>
-      </Button>
-    </div>
-  );
 }
 
 export function ProductsTable({ products, pageCount }: ProductsTableProps) {
@@ -111,21 +63,37 @@ export function ProductsTable({ products, pageCount }: ProductsTableProps) {
       params.featured !== null,
   );
 
-  const clearFilters = () =>
-    setParams({
-      search: null,
-      status: null,
-      categoryId: null,
-      brandId: null,
-      featured: null,
-      page: 1,
-    });
+  function handleClearFilters() {
+    setParams({ search: null, status: null, categoryId: null, brandId: null, featured: null, page: 1 });
+  }
 
   return (
     <div className="space-y-3">
       <div className="rounded-md border">
         {products.length === 0 ? (
-          <EmptyState hasFilters={hasFilters} onClear={clearFilters} />
+          hasFilters ? (
+            <EmptyState
+              icon={<LucideSearchX className="size-6 text-muted-foreground" />}
+              title="No products match these filters"
+              description="Adjust your search or filters"
+              action={
+                <Button variant="outline" size="sm" onClick={handleClearFilters}>
+                  Clear filters
+                </Button>
+              }
+            />
+          ) : (
+            <EmptyState
+              icon={<LucidePackage className="size-6 text-muted-foreground" />}
+              title="No products yet"
+              description="Create your first product to get started"
+              action={
+                <Button size="sm" asChild>
+                  <Link href="/admin/products/new">New product</Link>
+                </Button>
+              }
+            />
+          )
         ) : (
           <Table>
             <TableHeader>
@@ -188,9 +156,7 @@ export function ProductsTable({ products, pageCount }: ProductsTableProps) {
                       <div className="flex flex-col text-xs">
                         <span>{product.category?.name ?? "—"}</span>
                         {product.brand && (
-                          <span className="text-muted-foreground">
-                            {product.brand.name}
-                          </span>
+                          <span className="text-muted-foreground">{product.brand.name}</span>
                         )}
                       </div>
                     </TableCell>

@@ -30,6 +30,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { getPageRange } from "@/lib/utils/pagination";
+import { EmptyState } from "@/components/shared/empty-state";
 import { useUsersParams, PAGE_SIZE_OPTIONS } from "../hooks/use-users-params";
 import { UpsertUserDialog } from "./upsert-user-dialog";
 import { DeleteUserButton } from "./delete-user-button";
@@ -42,58 +44,10 @@ type UsersTableProps = {
 };
 
 const roleStyles: Record<string, string> = {
-  ADMIN: "border-purple-500/30 bg-purple-500/10 text-purple-400",
+  ADMIN:   "border-purple-500/30 bg-purple-500/10 text-purple-400",
   MANAGER: "border-blue-500/30 bg-blue-500/10 text-blue-400",
-  USER: "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
+  USER:    "border-zinc-500/30 bg-zinc-500/10 text-zinc-400",
 };
-
-function EmptyState({ hasFilters, onClear }: { hasFilters: boolean; onClear: () => void }) {
-  if (hasFilters) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-        <div className="rounded-full bg-muted p-4">
-          <LucideSearchX className="w-6 h-6 text-muted-foreground" />
-        </div>
-        <div>
-          <p className="text-sm font-medium">No users match your filters</p>
-          <p className="text-xs text-muted-foreground mt-1">Try adjusting your search or filters</p>
-        </div>
-        <Button variant="outline" size="sm" onClick={onClear}>
-          Clear filters
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-      <div className="rounded-full bg-muted p-4">
-        <LucideUsers className="w-6 h-6 text-muted-foreground" />
-      </div>
-      <div>
-        <p className="text-sm font-medium">No users yet</p>
-        <p className="text-xs text-muted-foreground mt-1">Create your first user to get started</p>
-      </div>
-      <UpsertUserDialog mode="create" />
-    </div>
-  );
-}
-
-function getPageRange(page: number, pageCount: number): (number | "ellipsis")[] {
-  if (pageCount <= 7) return Array.from({ length: pageCount }, (_, i) => i + 1);
-
-  const delta = 1;
-  const left = Math.max(2, page - delta);
-  const right = Math.min(pageCount - 1, page + delta);
-  const pages: (number | "ellipsis")[] = [1];
-
-  if (left > 2) pages.push("ellipsis");
-  for (let i = left; i <= right; i++) pages.push(i);
-  if (right < pageCount - 1) pages.push("ellipsis");
-  pages.push(pageCount);
-
-  return pages;
-}
 
 export function UsersTable({ users, pageCount, currentUserId }: UsersTableProps) {
   const [params, setParams] = useUsersParams();
@@ -101,13 +55,33 @@ export function UsersTable({ users, pageCount, currentUserId }: UsersTableProps)
   const limit = params.limit ?? 20;
   const hasFilters = !!(params.search || params.role || params.active !== null);
 
-  const clearFilters = () => setParams({ search: null, role: null, active: null, page: 1 });
+  function handleClearFilters() {
+    setParams({ search: null, role: null, active: null, page: 1 });
+  }
 
   return (
     <div className="space-y-3">
       <div className="rounded-md border">
         {users.length === 0 ? (
-          <EmptyState hasFilters={hasFilters} onClear={clearFilters} />
+          hasFilters ? (
+            <EmptyState
+              icon={<LucideSearchX className="size-6 text-muted-foreground" />}
+              title="No users match your filters"
+              description="Try adjusting your search or filters"
+              action={
+                <Button variant="outline" size="sm" onClick={handleClearFilters}>
+                  Clear filters
+                </Button>
+              }
+            />
+          ) : (
+            <EmptyState
+              icon={<LucideUsers className="size-6 text-muted-foreground" />}
+              title="No users yet"
+              description="Create your first user to get started"
+              action={<UpsertUserDialog mode="create" />}
+            />
+          )
         ) : (
           <Table>
             <TableHeader>
@@ -125,9 +99,7 @@ export function UsersTable({ users, pageCount, currentUserId }: UsersTableProps)
               {users.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {user.email}
-                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{user.email}</TableCell>
                   <TableCell className="text-sm">{user.phone}</TableCell>
                   <TableCell>
                     <Badge
@@ -144,7 +116,7 @@ export function UsersTable({ users, pageCount, currentUserId }: UsersTableProps)
                         "text-xs",
                         user.active
                           ? "border-green-500/30 bg-green-500/10 text-green-500"
-                          : "border-red-500/30 bg-red-500/10 text-red-500"
+                          : "border-red-500/30 bg-red-500/10 text-red-500",
                       )}
                     >
                       {user.active ? "Active" : "Inactive"}
@@ -189,7 +161,9 @@ export function UsersTable({ users, pageCount, currentUserId }: UsersTableProps)
               </SelectTrigger>
               <SelectContent>
                 {PAGE_SIZE_OPTIONS.map((n) => (
-                  <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                  <SelectItem key={n} value={String(n)}>
+                    {n}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -221,7 +195,7 @@ export function UsersTable({ users, pageCount, currentUserId }: UsersTableProps)
                         {p}
                       </PaginationLink>
                     </PaginationItem>
-                  )
+                  ),
                 )}
 
                 <PaginationItem>

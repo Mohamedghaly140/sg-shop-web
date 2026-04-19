@@ -31,6 +31,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { getPageRange } from "@/lib/utils/pagination";
+import { EmptyState } from "@/components/shared/empty-state";
 import { useCategoriesParams, PAGE_SIZE_OPTIONS } from "../hooks/use-categories-params";
 import { UpsertCategoryDialog } from "./upsert-category-dialog";
 import { DeleteCategoryButton } from "./delete-category-button";
@@ -42,69 +44,39 @@ type CategoriesTableProps = {
   pageCount: number;
 };
 
-function EmptyState({ hasFilters, onClear }: { hasFilters: boolean; onClear: () => void }) {
-  if (hasFilters) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-        <div className="rounded-full bg-muted p-4">
-          <LucideSearchX className="w-6 h-6 text-muted-foreground" />
-        </div>
-        <div>
-          <p className="text-sm font-medium">No categories match your search</p>
-          <p className="text-xs text-muted-foreground mt-1">Try a different keyword</p>
-        </div>
-        <Button variant="outline" size="sm" onClick={onClear}>
-          Clear search
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-      <div className="rounded-full bg-muted p-4">
-        <LucideFolder className="w-6 h-6 text-muted-foreground" />
-      </div>
-      <div>
-        <p className="text-sm font-medium">No categories yet</p>
-        <p className="text-xs text-muted-foreground mt-1">
-          Create your first category to get started
-        </p>
-      </div>
-      <UpsertCategoryDialog mode="create" />
-    </div>
-  );
-}
-
-function getPageRange(page: number, pageCount: number): (number | "ellipsis")[] {
-  if (pageCount <= 7) return Array.from({ length: pageCount }, (_, i) => i + 1);
-
-  const delta = 1;
-  const left = Math.max(2, page - delta);
-  const right = Math.min(pageCount - 1, page + delta);
-  const pages: (number | "ellipsis")[] = [1];
-
-  if (left > 2) pages.push("ellipsis");
-  for (let i = left; i <= right; i++) pages.push(i);
-  if (right < pageCount - 1) pages.push("ellipsis");
-  pages.push(pageCount);
-
-  return pages;
-}
-
 export function CategoriesTable({ categories, pageCount }: CategoriesTableProps) {
   const [params, setParams] = useCategoriesParams();
   const page = params.page ?? 1;
   const limit = params.limit ?? 10;
   const hasFilters = !!(params.search && params.search.length > 0);
 
-  const clearFilters = () => setParams({ search: null, page: 1 });
+  function handleClearFilters() {
+    setParams({ search: null, page: 1 });
+  }
 
   return (
     <div className="space-y-3">
       <div className="rounded-md border">
         {categories.length === 0 ? (
-          <EmptyState hasFilters={hasFilters} onClear={clearFilters} />
+          hasFilters ? (
+            <EmptyState
+              icon={<LucideSearchX className="size-6 text-muted-foreground" />}
+              title="No categories match your search"
+              description="Try a different keyword"
+              action={
+                <Button variant="outline" size="sm" onClick={handleClearFilters}>
+                  Clear search
+                </Button>
+              }
+            />
+          ) : (
+            <EmptyState
+              icon={<LucideFolder className="size-6 text-muted-foreground" />}
+              title="No categories yet"
+              description="Create your first category to get started"
+              action={<UpsertCategoryDialog mode="create" />}
+            />
+          )
         ) : (
           <Table>
             <TableHeader>
@@ -222,7 +194,7 @@ export function CategoriesTable({ categories, pageCount }: CategoriesTableProps)
                         {p}
                       </PaginationLink>
                     </PaginationItem>
-                  )
+                  ),
                 )}
 
                 <PaginationItem>

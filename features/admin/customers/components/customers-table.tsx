@@ -31,6 +31,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { getPageRange } from "@/lib/utils/pagination";
+import { EmptyState } from "@/components/shared/empty-state";
 import { useCustomersParams, PAGE_SIZE_OPTIONS } from "../hooks/use-customers-params";
 import type { CustomerListItem } from "../services/get-customers";
 import { ToggleCustomerActiveButton } from "./toggle-customer-active-button";
@@ -40,66 +42,38 @@ type CustomersTableProps = {
   pageCount: number;
 };
 
-function EmptyState({ hasFilters, onClear }: { hasFilters: boolean; onClear: () => void }) {
-  if (hasFilters) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-        <div className="rounded-full bg-muted p-4">
-          <LucideSearchX className="w-6 h-6 text-muted-foreground" />
-        </div>
-        <div>
-          <p className="text-sm font-medium">No customers match your filters</p>
-          <p className="text-xs text-muted-foreground mt-1">Try adjusting your search or filters</p>
-        </div>
-        <Button variant="outline" size="sm" onClick={onClear}>
-          Clear filters
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-      <div className="rounded-full bg-muted p-4">
-        <LucideUsers className="w-6 h-6 text-muted-foreground" />
-      </div>
-      <div>
-        <p className="text-sm font-medium">No customers yet</p>
-        <p className="text-xs text-muted-foreground mt-1">Customers will appear here once they sign up</p>
-      </div>
-    </div>
-  );
-}
-
-function getPageRange(page: number, pageCount: number): (number | "ellipsis")[] {
-  if (pageCount <= 7) return Array.from({ length: pageCount }, (_, i) => i + 1);
-
-  const delta = 1;
-  const left = Math.max(2, page - delta);
-  const right = Math.min(pageCount - 1, page + delta);
-  const pages: (number | "ellipsis")[] = [1];
-
-  if (left > 2) pages.push("ellipsis");
-  for (let i = left; i <= right; i++) pages.push(i);
-  if (right < pageCount - 1) pages.push("ellipsis");
-  pages.push(pageCount);
-
-  return pages;
-}
-
 export function CustomersTable({ customers, pageCount }: CustomersTableProps) {
   const [params, setParams] = useCustomersParams();
   const page = params.page ?? 1;
   const limit = params.limit ?? 10;
   const hasFilters = !!(params.search || params.active !== null);
 
-  const clearFilters = () => setParams({ search: null, active: null, page: 1 });
+  function handleClearFilters() {
+    setParams({ search: null, active: null, page: 1 });
+  }
 
   return (
     <div className="space-y-3">
       <div className="rounded-md border">
         {customers.length === 0 ? (
-          <EmptyState hasFilters={hasFilters} onClear={clearFilters} />
+          hasFilters ? (
+            <EmptyState
+              icon={<LucideSearchX className="size-6 text-muted-foreground" />}
+              title="No customers match your filters"
+              description="Try adjusting your search or filters"
+              action={
+                <Button variant="outline" size="sm" onClick={handleClearFilters}>
+                  Clear filters
+                </Button>
+              }
+            />
+          ) : (
+            <EmptyState
+              icon={<LucideUsers className="size-6 text-muted-foreground" />}
+              title="No customers yet"
+              description="Customers will appear here once they sign up"
+            />
+          )
         ) : (
           <Table>
             <TableHeader>
@@ -117,10 +91,7 @@ export function CustomersTable({ customers, pageCount }: CustomersTableProps) {
               {customers.map((customer) => (
                 <TableRow key={customer.id}>
                   <TableCell className="font-medium">
-                    <Link
-                      href={`/admin/customers/${customer.id}`}
-                      className="hover:underline"
-                    >
+                    <Link href={`/admin/customers/${customer.id}`} className="hover:underline">
                       {customer.name}
                     </Link>
                   </TableCell>
@@ -136,7 +107,7 @@ export function CustomersTable({ customers, pageCount }: CustomersTableProps) {
                         "text-xs",
                         customer.active
                           ? "border-green-500/30 bg-green-500/10 text-green-500"
-                          : "border-red-500/30 bg-red-500/10 text-red-500"
+                          : "border-red-500/30 bg-red-500/10 text-red-500",
                       )}
                     >
                       {customer.active ? "Active" : "Inactive"}
@@ -179,7 +150,9 @@ export function CustomersTable({ customers, pageCount }: CustomersTableProps) {
               </SelectTrigger>
               <SelectContent>
                 {PAGE_SIZE_OPTIONS.map((n) => (
-                  <SelectItem key={n} value={String(n)}>{n}</SelectItem>
+                  <SelectItem key={n} value={String(n)}>
+                    {n}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -211,7 +184,7 @@ export function CustomersTable({ customers, pageCount }: CustomersTableProps) {
                         {p}
                       </PaginationLink>
                     </PaginationItem>
-                  )
+                  ),
                 )}
 
                 <PaginationItem>

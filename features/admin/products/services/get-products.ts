@@ -1,5 +1,6 @@
 import type { Prisma, ProductStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import type { DecimalToString } from "@/types/utils";
 
 const productListSelect = {
   id: true,
@@ -20,11 +21,7 @@ const productListSelect = {
 
 type ProductListRow = Prisma.ProductGetPayload<{ select: typeof productListSelect }>;
 
-export type ProductListItem = Omit<ProductListRow, "price" | "priceAfterDiscount" | "discount"> & {
-  price: string;
-  priceAfterDiscount: string;
-  discount: string;
-};
+export type ProductListItem = DecimalToString<ProductListRow, "price" | "priceAfterDiscount" | "discount">;
 
 type GetProductsParams = {
   page: number;

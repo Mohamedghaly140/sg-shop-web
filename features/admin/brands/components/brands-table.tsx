@@ -30,6 +30,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { getPageRange } from "@/lib/utils/pagination";
+import { EmptyState } from "@/components/shared/empty-state";
 import { useBrandsParams, PAGE_SIZE_OPTIONS } from "../hooks/use-brands-params";
 import { UpsertBrandDialog } from "./upsert-brand-dialog";
 import { DeleteBrandButton } from "./delete-brand-button";
@@ -40,80 +42,39 @@ type BrandsTableProps = {
   pageCount: number;
 };
 
-function EmptyState({
-  hasFilters,
-  onClear,
-}: {
-  hasFilters: boolean;
-  onClear: () => void;
-}) {
-  if (hasFilters) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-        <div className="rounded-full bg-muted p-4">
-          <LucideSearchX className="w-6 h-6 text-muted-foreground" />
-        </div>
-        <div>
-          <p className="text-sm font-medium">No brands match your search</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Try a different keyword
-          </p>
-        </div>
-        <Button variant="outline" size="sm" onClick={onClear}>
-          Clear search
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-      <div className="rounded-full bg-muted p-4">
-        <LucideTag className="w-6 h-6 text-muted-foreground" />
-      </div>
-      <div>
-        <p className="text-sm font-medium">No brands yet</p>
-        <p className="text-xs text-muted-foreground mt-1">
-          Create your first brand to get started
-        </p>
-      </div>
-      <UpsertBrandDialog mode="create" />
-    </div>
-  );
-}
-
-function getPageRange(
-  page: number,
-  pageCount: number,
-): (number | "ellipsis")[] {
-  if (pageCount <= 7) return Array.from({ length: pageCount }, (_, i) => i + 1);
-
-  const delta = 1;
-  const left = Math.max(2, page - delta);
-  const right = Math.min(pageCount - 1, page + delta);
-  const pages: (number | "ellipsis")[] = [1];
-
-  if (left > 2) pages.push("ellipsis");
-  for (let i = left; i <= right; i++) pages.push(i);
-  if (right < pageCount - 1) pages.push("ellipsis");
-  pages.push(pageCount);
-
-  return pages;
-}
-
 export function BrandsTable({ brands, pageCount }: BrandsTableProps) {
   const [params, setParams] = useBrandsParams();
   const page = params.page ?? 1;
   const limit = params.limit ?? 10;
   const hasFilters = !!(params.search && params.search.length > 0);
 
-  const clearFilters = () => setParams({ search: null, page: 1 });
+  function handleClearFilters() {
+    setParams({ search: null, page: 1 });
+  }
 
   return (
     <div className="space-y-3">
       <div className="rounded-md border">
         {brands.length === 0 ? (
-          <EmptyState hasFilters={hasFilters} onClear={clearFilters} />
+          hasFilters ? (
+            <EmptyState
+              icon={<LucideSearchX className="size-6 text-muted-foreground" />}
+              title="No brands match your search"
+              description="Try a different keyword"
+              action={
+                <Button variant="outline" size="sm" onClick={handleClearFilters}>
+                  Clear search
+                </Button>
+              }
+            />
+          ) : (
+            <EmptyState
+              icon={<LucideTag className="size-6 text-muted-foreground" />}
+              title="No brands yet"
+              description="Create your first brand to get started"
+              action={<UpsertBrandDialog mode="create" />}
+            />
+          )
         ) : (
           <Table>
             <TableHeader>
@@ -126,7 +87,7 @@ export function BrandsTable({ brands, pageCount }: BrandsTableProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {brands.map(brand => (
+              {brands.map((brand) => (
                 <TableRow key={brand.id}>
                   <TableCell>
                     {brand.imageUrl ? (
@@ -162,10 +123,7 @@ export function BrandsTable({ brands, pageCount }: BrandsTableProps) {
                           </Button>
                         }
                       />
-                      <DeleteBrandButton
-                        brandId={brand.id}
-                        brandName={brand.name}
-                      />
+                      <DeleteBrandButton brandId={brand.id} brandName={brand.name} />
                     </div>
                   </TableCell>
                 </TableRow>
@@ -181,13 +139,13 @@ export function BrandsTable({ brands, pageCount }: BrandsTableProps) {
             <span>Rows per page</span>
             <Select
               value={String(limit)}
-              onValueChange={v => setParams({ limit: Number(v), page: 1 })}
+              onValueChange={(v) => setParams({ limit: Number(v), page: 1 })}
             >
               <SelectTrigger className="h-8 w-[70px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {PAGE_SIZE_OPTIONS.map(n => (
+                {PAGE_SIZE_OPTIONS.map((n) => (
                   <SelectItem key={n} value={String(n)}>
                     {n}
                   </SelectItem>
@@ -203,9 +161,7 @@ export function BrandsTable({ brands, pageCount }: BrandsTableProps) {
                   <PaginationPrevious
                     onClick={() => setParams({ page: page - 1 })}
                     aria-disabled={page <= 1}
-                    className={cn(
-                      page <= 1 && "pointer-events-none opacity-50",
-                    )}
+                    className={cn(page <= 1 && "pointer-events-none opacity-50")}
                   />
                 </PaginationItem>
 
@@ -231,9 +187,7 @@ export function BrandsTable({ brands, pageCount }: BrandsTableProps) {
                   <PaginationNext
                     onClick={() => setParams({ page: page + 1 })}
                     aria-disabled={page >= pageCount}
-                    className={cn(
-                      page >= pageCount && "pointer-events-none opacity-50",
-                    )}
+                    className={cn(page >= pageCount && "pointer-events-none opacity-50")}
                   />
                 </PaginationItem>
               </PaginationContent>

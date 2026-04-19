@@ -30,6 +30,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { getPageRange } from "@/lib/utils/pagination";
+import { EmptyState } from "@/components/shared/empty-state";
 import { useCouponsParams, PAGE_SIZE_OPTIONS } from "../hooks/use-coupons-params";
 import { UpsertCouponDialog } from "./upsert-coupon-dialog";
 import { DeleteCouponButton } from "./delete-coupon-button";
@@ -53,75 +55,11 @@ function getCouponStatus(coupon: {
   return "active";
 }
 
-const statusStyles: Record<CouponStatus, string> = {
-  active: "border-green-500/30 bg-green-500/10 text-green-500",
-  expired: "border-red-500/30 bg-red-500/10 text-red-500",
-  exhausted: "border-orange-500/30 bg-orange-500/10 text-orange-400",
+const COUPON_STATUS: Record<CouponStatus, { label: string; className: string }> = {
+  active:    { label: "Active",    className: "border-green-500/30 bg-green-500/10 text-green-500" },
+  expired:   { label: "Expired",   className: "border-red-500/30 bg-red-500/10 text-red-500" },
+  exhausted: { label: "Exhausted", className: "border-orange-500/30 bg-orange-500/10 text-orange-400" },
 };
-
-const statusLabels: Record<CouponStatus, string> = {
-  active: "Active",
-  expired: "Expired",
-  exhausted: "Exhausted",
-};
-
-function getPageRange(page: number, pageCount: number): (number | "ellipsis")[] {
-  if (pageCount <= 7) return Array.from({ length: pageCount }, (_, i) => i + 1);
-
-  const delta = 1;
-  const left = Math.max(2, page - delta);
-  const right = Math.min(pageCount - 1, page + delta);
-  const pages: (number | "ellipsis")[] = [1];
-
-  if (left > 2) pages.push("ellipsis");
-  for (let i = left; i <= right; i++) pages.push(i);
-  if (right < pageCount - 1) pages.push("ellipsis");
-  pages.push(pageCount);
-
-  return pages;
-}
-
-function EmptyState({
-  hasFilters,
-  onClear,
-}: {
-  hasFilters: boolean;
-  onClear: () => void;
-}) {
-  if (hasFilters) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-        <div className="rounded-full bg-muted p-4">
-          <LucideSearchX className="w-6 h-6 text-muted-foreground" />
-        </div>
-        <div>
-          <p className="text-sm font-medium">No coupons match your filters</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Try adjusting your search or filters
-          </p>
-        </div>
-        <Button variant="outline" size="sm" onClick={onClear}>
-          Clear filters
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-      <div className="rounded-full bg-muted p-4">
-        <LucideTicket className="w-6 h-6 text-muted-foreground" />
-      </div>
-      <div>
-        <p className="text-sm font-medium">No coupons yet</p>
-        <p className="text-xs text-muted-foreground mt-1">
-          Create your first coupon to get started
-        </p>
-      </div>
-      <UpsertCouponDialog mode="create" />
-    </div>
-  );
-}
 
 export function CouponsTable({ coupons, pageCount }: CouponsTableProps) {
   const [params, setParams] = useCouponsParams();
@@ -129,13 +67,33 @@ export function CouponsTable({ coupons, pageCount }: CouponsTableProps) {
   const limit = params.limit ?? 10;
   const hasFilters = !!(params.search || params.status);
 
-  const clearFilters = () => setParams({ search: null, status: null, page: 1 });
+  function handleClearFilters() {
+    setParams({ search: null, status: null, page: 1 });
+  }
 
   return (
     <div className="space-y-3">
       <div className="rounded-md border">
         {coupons.length === 0 ? (
-          <EmptyState hasFilters={hasFilters} onClear={clearFilters} />
+          hasFilters ? (
+            <EmptyState
+              icon={<LucideSearchX className="size-6 text-muted-foreground" />}
+              title="No coupons match your filters"
+              description="Try adjusting your search or filters"
+              action={
+                <Button variant="outline" size="sm" onClick={handleClearFilters}>
+                  Clear filters
+                </Button>
+              }
+            />
+          ) : (
+            <EmptyState
+              icon={<LucideTicket className="size-6 text-muted-foreground" />}
+              title="No coupons yet"
+              description="Create your first coupon to get started"
+              action={<UpsertCouponDialog mode="create" />}
+            />
+          )
         ) : (
           <Table>
             <TableHeader>
@@ -154,9 +112,7 @@ export function CouponsTable({ coupons, pageCount }: CouponsTableProps) {
                 const status = getCouponStatus(coupon);
                 return (
                   <TableRow key={coupon.id}>
-                    <TableCell className="font-mono font-medium">
-                      {coupon.name}
-                    </TableCell>
+                    <TableCell className="font-mono font-medium">{coupon.name}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-xs">
                         {Number(coupon.discount).toFixed(0)}%
@@ -189,9 +145,9 @@ export function CouponsTable({ coupons, pageCount }: CouponsTableProps) {
                     <TableCell>
                       <Badge
                         variant="outline"
-                        className={cn("text-xs", statusStyles[status])}
+                        className={cn("text-xs", COUPON_STATUS[status].className)}
                       >
-                        {statusLabels[status]}
+                        {COUPON_STATUS[status].label}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
@@ -211,10 +167,7 @@ export function CouponsTable({ coupons, pageCount }: CouponsTableProps) {
                         {status === "active" && (
                           <DeactivateCouponButton couponId={coupon.id} />
                         )}
-                        <DeleteCouponButton
-                          couponId={coupon.id}
-                          couponName={coupon.name}
-                        />
+                        <DeleteCouponButton couponId={coupon.id} couponName={coupon.name} />
                       </div>
                     </TableCell>
                   </TableRow>
@@ -272,16 +225,14 @@ export function CouponsTable({ coupons, pageCount }: CouponsTableProps) {
                         {p}
                       </PaginationLink>
                     </PaginationItem>
-                  )
+                  ),
                 )}
 
                 <PaginationItem>
                   <PaginationNext
                     onClick={() => setParams({ page: page + 1 })}
                     aria-disabled={page >= pageCount}
-                    className={cn(
-                      page >= pageCount && "pointer-events-none opacity-50"
-                    )}
+                    className={cn(page >= pageCount && "pointer-events-none opacity-50")}
                   />
                 </PaginationItem>
               </PaginationContent>

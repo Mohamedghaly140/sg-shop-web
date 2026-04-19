@@ -2,11 +2,8 @@
 
 import { format } from "date-fns";
 import Link from "next/link";
-import {
-  LucideEye,
-  LucidePackage,
-  LucideSearchX,
-} from "lucide-react";
+import { LucideEye, LucidePackage, LucideSearchX } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,26 +31,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { getPageRange } from "@/lib/utils/pagination";
+import { EmptyState } from "@/components/shared/empty-state";
 import { OrderStatus, PaymentMethod } from "@/generated/prisma/enums";
 import { useOrdersParams, PAGE_SIZE_OPTIONS } from "../hooks/use-orders-params";
 import type { OrderListItem } from "../services/get-orders";
 
-const STATUS_BADGE_CLASS: Record<OrderStatus, string> = {
-  PENDING:    "bg-amber-100 text-amber-800 border-amber-200",
-  PROCESSING: "bg-blue-100 text-blue-800 border-blue-200",
-  SHIPPED:    "bg-indigo-100 text-indigo-800 border-indigo-200",
-  DELIVERED:  "bg-green-100 text-green-800 border-green-200",
-  CANCELLED:  "bg-red-100 text-red-800 border-red-200",
-  REFUNDED:   "bg-orange-100 text-orange-800 border-orange-200",
-};
-
-const STATUS_LABELS: Record<OrderStatus, string> = {
-  PENDING: "Pending",
-  PROCESSING: "Processing",
-  SHIPPED: "Shipped",
-  DELIVERED: "Delivered",
-  CANCELLED: "Cancelled",
-  REFUNDED: "Refunded",
+const ORDER_STATUS: Record<OrderStatus, { label: string; className: string }> = {
+  PENDING:    { label: "Pending",    className: "bg-amber-100 text-amber-800 border-amber-200" },
+  PROCESSING: { label: "Processing", className: "bg-blue-100 text-blue-800 border-blue-200" },
+  SHIPPED:    { label: "Shipped",    className: "bg-indigo-100 text-indigo-800 border-indigo-200" },
+  DELIVERED:  { label: "Delivered",  className: "bg-green-100 text-green-800 border-green-200" },
+  CANCELLED:  { label: "Cancelled",  className: "bg-red-100 text-red-800 border-red-200" },
+  REFUNDED:   { label: "Refunded",   className: "bg-orange-100 text-orange-800 border-orange-200" },
 };
 
 type OrdersTableProps = {
@@ -61,63 +51,38 @@ type OrdersTableProps = {
   pageCount: number;
 };
 
-function EmptyState({ hasFilters, onClear }: { hasFilters: boolean; onClear: () => void }) {
-  if (hasFilters) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-        <div className="rounded-full bg-muted p-4">
-          <LucideSearchX className="w-6 h-6 text-muted-foreground" />
-        </div>
-        <div>
-          <p className="text-sm font-medium">No orders match your filters</p>
-          <p className="text-xs text-muted-foreground mt-1">Try a different keyword or status</p>
-        </div>
-        <Button variant="outline" size="sm" onClick={onClear}>
-          Clear filters
-        </Button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
-      <div className="rounded-full bg-muted p-4">
-        <LucidePackage className="w-6 h-6 text-muted-foreground" />
-      </div>
-      <div>
-        <p className="text-sm font-medium">No orders yet</p>
-        <p className="text-xs text-muted-foreground mt-1">Orders will appear here once customers checkout</p>
-      </div>
-    </div>
-  );
-}
-
-function getPageRange(page: number, pageCount: number): (number | "ellipsis")[] {
-  if (pageCount <= 7) return Array.from({ length: pageCount }, (_, i) => i + 1);
-  const delta = 1;
-  const left = Math.max(2, page - delta);
-  const right = Math.min(pageCount - 1, page + delta);
-  const pages: (number | "ellipsis")[] = [1];
-  if (left > 2) pages.push("ellipsis");
-  for (let i = left; i <= right; i++) pages.push(i);
-  if (right < pageCount - 1) pages.push("ellipsis");
-  pages.push(pageCount);
-  return pages;
-}
-
 export function OrdersTable({ orders, pageCount }: OrdersTableProps) {
   const [params, setParams] = useOrdersParams();
   const page = params.page ?? 1;
   const limit = params.limit ?? 10;
   const hasFilters = !!(params.search?.length || params.status);
 
-  const clearFilters = () => setParams({ search: null, status: null, page: 1 });
+  function handleClearFilters() {
+    setParams({ search: null, status: null, page: 1 });
+  }
 
   return (
     <div className="space-y-3">
       <div className="rounded-md border">
         {orders.length === 0 ? (
-          <EmptyState hasFilters={hasFilters} onClear={clearFilters} />
+          hasFilters ? (
+            <EmptyState
+              icon={<LucideSearchX className="size-6 text-muted-foreground" />}
+              title="No orders match your filters"
+              description="Try a different keyword or status"
+              action={
+                <Button variant="outline" size="sm" onClick={handleClearFilters}>
+                  Clear filters
+                </Button>
+              }
+            />
+          ) : (
+            <EmptyState
+              icon={<LucidePackage className="size-6 text-muted-foreground" />}
+              title="No orders yet"
+              description="Orders will appear here once customers checkout"
+            />
+          )
         ) : (
           <Table>
             <TableHeader>
@@ -144,22 +109,22 @@ export function OrdersTable({ orders, pageCount }: OrdersTableProps) {
                   <TableCell>
                     <Badge
                       variant="outline"
-                      className={cn("text-xs font-medium", STATUS_BADGE_CLASS[order.status])}
+                      className={cn("text-xs font-medium", ORDER_STATUS[order.status].className)}
                     >
-                      {STATUS_LABELS[order.status]}
+                      {ORDER_STATUS[order.status].label}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-sm">{order.paymentMethod === PaymentMethod.CARD ? "Card" : "Cash"}</span>
+                      <span className="text-sm">
+                        {order.paymentMethod === PaymentMethod.CARD ? "Card" : "Cash"}
+                      </span>
                       <span className={cn("text-xs", order.isPaid ? "text-green-600" : "text-muted-foreground")}>
                         {order.isPaid ? "Paid" : "Unpaid"}
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-center text-sm">
-                    {order.itemsCount}
-                  </TableCell>
+                  <TableCell className="text-center text-sm">{order.itemsCount}</TableCell>
                   <TableCell className="text-sm font-medium">
                     {order.totalOrderPrice != null
                       ? `EGP ${order.totalOrderPrice.toFixed(2)}`
