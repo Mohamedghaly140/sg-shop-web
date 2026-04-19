@@ -7,7 +7,7 @@ type GetCategoriesParams = {
   search: string;
 };
 
-export type CategoryRow = Pick<Category, "id" | "name" | "slug" | "imageUrl" | "createdAt"> & {
+export type CategoryRow = Pick<Category, "id" | "name" | "slug" | "imageId" | "imageUrl" | "createdAt"> & {
   subCategories: Pick<SubCategory, "id" | "name" | "slug">[];
 };
 
@@ -38,6 +38,7 @@ export async function getCategories({
         id: true,
         name: true,
         slug: true,
+        imageId: true,
         imageUrl: true,
         createdAt: true,
         subCategories: {

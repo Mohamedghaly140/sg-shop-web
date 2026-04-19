@@ -38,7 +38,7 @@ import { DeleteBrandButton } from "./delete-brand-button";
 import type { Brand } from "@/generated/prisma/client";
 
 type BrandsTableProps = {
-  brands: Pick<Brand, "id" | "name" | "slug" | "imageUrl" | "createdAt">[];
+  brands: Pick<Brand, "id" | "name" | "slug" | "imageId" | "imageUrl" | "createdAt">[];
   pageCount: number;
 };
 

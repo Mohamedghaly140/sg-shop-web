@@ -12,6 +12,7 @@ import {
   toActionState,
 } from "@/components/shared/form/utils/to-action-state";
 import { requireAdmin } from "@/lib/require-role";
+import { destroyAsset } from "@/lib/cloudinary";
 
 function makeSlug(name: string): string {
   return slugify(name, { lower: true, strict: true }) || "brand";
@@ -36,21 +37,18 @@ async function allocateUniqueSlug(base: string, excludeBrandId?: string): Promis
   }
 }
 
-const optionalImageUrlSchema = z
-  .string()
-  .trim()
-  .transform((s) => (s === "" ? null : s))
-  .pipe(z.union([z.null(), z.url("Invalid image URL")]));
+function parseOptionalString(val: FormDataEntryValue | null): string | null {
+  const s = typeof val === "string" ? val.trim() : "";
+  return s || null;
+}
 
 const createBrandSchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters"),
-  imageUrl: z.string().trim(),
 });
 
 const updateBrandSchema = z.object({
   brandId: z.string().min(1, "Brand is required"),
   name: z.string().trim().min(2, "Name must be at least 2 characters"),
-  imageUrl: z.string().trim(),
 });
 
 const deleteBrandSchema = z.object({
@@ -64,22 +62,14 @@ export async function createBrandAction(
   try {
     await requireAdmin();
 
-    const parsed = createBrandSchema.parse({
-      name: formData.get("name"),
-      imageUrl: formData.get("imageUrl") ?? "",
-    });
-
-    const imageUrl = optionalImageUrlSchema.parse(parsed.imageUrl);
+    const parsed = createBrandSchema.parse({ name: formData.get("name") });
+    const imageId = parseOptionalString(formData.get("imageId"));
+    const imageUrl = parseOptionalString(formData.get("imageUrl"));
 
     const slug = await allocateUniqueSlug(makeSlug(parsed.name));
 
     await prisma.brand.create({
-      data: {
-        name: parsed.name.trim(),
-        slug,
-        imageUrl,
-        imageId: null,
-      },
+      data: { name: parsed.name.trim(), slug, imageId, imageUrl },
     });
 
     revalidatePath("/admin/brands");
@@ -114,21 +104,28 @@ export async function updateBrandAction(
     const parsed = updateBrandSchema.parse({
       brandId: formData.get("brandId"),
       name: formData.get("name"),
-      imageUrl: formData.get("imageUrl") ?? "",
     });
 
-    const imageUrl = optionalImageUrlSchema.parse(parsed.imageUrl);
+    const imageId = parseOptionalString(formData.get("imageId"));
+    const imageUrl = parseOptionalString(formData.get("imageUrl"));
+
+    const old = await prisma.brand.findUniqueOrThrow({
+      where: { id: parsed.brandId },
+      select: { imageId: true },
+    });
 
     const slug = await allocateUniqueSlug(makeSlug(parsed.name), parsed.brandId);
 
     await prisma.brand.update({
       where: { id: parsed.brandId },
-      data: {
-        name: parsed.name.trim(),
-        slug,
-        imageUrl,
-      },
+      data: { name: parsed.name.trim(), slug, imageId, imageUrl },
     });
+
+    if (old.imageId && old.imageId !== imageId) {
+      destroyAsset(old.imageId).catch((err) =>
+        console.error("[Cloudinary] cleanup failed after brand update:", err)
+      );
+    }
 
     revalidatePath("/admin/brands");
     return toActionState("SUCCESS", "Brand updated successfully");
@@ -157,8 +154,16 @@ export async function deleteBrandAction(
       brandId: formData.get("brandId"),
     });
 
-    // When Cloudinary is integrated, call cloudinary.uploader.destroy(imageId) if imageId is set.
+    const brand = await prisma.brand.findUniqueOrThrow({
+      where: { id: brandId },
+      select: { imageId: true },
+    });
+
     await prisma.brand.delete({ where: { id: brandId } });
+
+    destroyAsset(brand.imageId).catch((err) =>
+      console.error("[Cloudinary] cleanup failed after brand delete:", err)
+    );
 
     revalidatePath("/admin/brands");
     return toActionState("SUCCESS", "Brand deleted successfully");

@@ -1,7 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { LucideImagePlus, LucideLoader2, LucideUpload, LucideX } from "lucide-react";
+import {
+  LucideImagePlus,
+  LucideLoader2,
+  LucideUpload,
+  LucideX,
+} from "lucide-react";
 import { CldUploadWidget } from "next-cloudinary";
 import { useCallback } from "react";
 
@@ -25,7 +30,10 @@ type CloudinaryUploaderProps = {
   disabled?: boolean;
 };
 
-const ASPECT_CLASS: Record<NonNullable<CloudinaryUploaderProps["aspectRatio"]>, string> = {
+const ASPECT_CLASS: Record<
+  NonNullable<CloudinaryUploaderProps["aspectRatio"]>,
+  string
+> = {
   square: "aspect-square",
   portrait: "aspect-[3/4]",
   landscape: "aspect-video",
@@ -91,7 +99,12 @@ export function CloudinaryUploader({
           onSuccess={(result, { widget }) => {
             if (result?.event !== "success") return;
             const info = result.info;
-            if (typeof info === "object" && info && "secure_url" in info && "public_id" in info) {
+            if (
+              typeof info === "object" &&
+              info &&
+              "secure_url" in info &&
+              "public_id" in info
+            ) {
               onChange({
                 imageId: String(info.public_id),
                 imageUrl: String(info.secure_url),
@@ -158,10 +171,15 @@ export function CloudinaryMultiUploader({
       onQueuesEnd={(_result, { widget }) => {
         widget.close();
       }}
-      onSuccess={(result) => {
+      onSuccess={result => {
         if (result?.event !== "success") return;
         const info = result.info;
-        if (typeof info === "object" && info && "secure_url" in info && "public_id" in info) {
+        if (
+          typeof info === "object" &&
+          info &&
+          "secure_url" in info &&
+          "public_id" in info
+        ) {
           onUploaded([
             {
               imageId: String(info.public_id),

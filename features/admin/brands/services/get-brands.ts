@@ -8,7 +8,7 @@ type GetBrandsParams = {
 };
 
 type GetBrandsResult = {
-  brands: Pick<Brand, "id" | "name" | "slug" | "imageUrl" | "createdAt">[];
+  brands: Pick<Brand, "id" | "name" | "slug" | "imageId" | "imageUrl" | "createdAt">[];
   total: number;
   pageCount: number;
 };
@@ -34,6 +34,7 @@ export async function getBrands({
         id: true,
         name: true,
         slug: true,
+        imageId: true,
         imageUrl: true,
         createdAt: true,
       },

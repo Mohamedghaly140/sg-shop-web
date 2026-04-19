@@ -12,6 +12,7 @@ import {
   toActionState,
 } from "@/components/shared/form/utils/to-action-state";
 import { requireManagerOrAdmin } from "@/lib/require-role";
+import { destroyAsset } from "@/lib/cloudinary";
 
 function makeSlug(name: string): string {
   return slugify(name, { lower: true, strict: true }) || "category";
@@ -34,21 +35,18 @@ async function allocateUniqueSlug(base: string, excludeCategoryId?: string): Pro
   }
 }
 
-const optionalImageUrlSchema = z
-  .string()
-  .trim()
-  .transform((s) => (s === "" ? null : s))
-  .pipe(z.union([z.null(), z.url("Invalid image URL")]));
+function parseOptionalString(val: FormDataEntryValue | null): string | null {
+  const s = typeof val === "string" ? val.trim() : "";
+  return s || null;
+}
 
 const createCategorySchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters"),
-  imageUrl: z.string().trim(),
 });
 
 const updateCategorySchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
   name: z.string().trim().min(2, "Name must be at least 2 characters"),
-  imageUrl: z.string().trim(),
 });
 
 const deleteCategorySchema = z.object({
@@ -62,16 +60,14 @@ export async function createCategoryAction(
   try {
     await requireManagerOrAdmin();
 
-    const parsed = createCategorySchema.parse({
-      name: formData.get("name"),
-      imageUrl: formData.get("imageUrl") ?? "",
-    });
+    const parsed = createCategorySchema.parse({ name: formData.get("name") });
+    const imageId = parseOptionalString(formData.get("imageId"));
+    const imageUrl = parseOptionalString(formData.get("imageUrl"));
 
-    const imageUrl = optionalImageUrlSchema.parse(parsed.imageUrl);
     const slug = await allocateUniqueSlug(makeSlug(parsed.name));
 
     await prisma.category.create({
-      data: { name: parsed.name.trim(), slug, imageUrl, imageId: null },
+      data: { name: parsed.name.trim(), slug, imageId, imageUrl },
     });
 
     revalidatePath("/admin/categories");
@@ -106,16 +102,28 @@ export async function updateCategoryAction(
     const parsed = updateCategorySchema.parse({
       categoryId: formData.get("categoryId"),
       name: formData.get("name"),
-      imageUrl: formData.get("imageUrl") ?? "",
     });
 
-    const imageUrl = optionalImageUrlSchema.parse(parsed.imageUrl);
+    const imageId = parseOptionalString(formData.get("imageId"));
+    const imageUrl = parseOptionalString(formData.get("imageUrl"));
+
+    const old = await prisma.category.findUniqueOrThrow({
+      where: { id: parsed.categoryId },
+      select: { imageId: true },
+    });
+
     const slug = await allocateUniqueSlug(makeSlug(parsed.name), parsed.categoryId);
 
     await prisma.category.update({
       where: { id: parsed.categoryId },
-      data: { name: parsed.name.trim(), slug, imageUrl },
+      data: { name: parsed.name.trim(), slug, imageId, imageUrl },
     });
+
+    if (old.imageId && old.imageId !== imageId) {
+      destroyAsset(old.imageId).catch((err) =>
+        console.error("[Cloudinary] cleanup failed after category update:", err)
+      );
+    }
 
     revalidatePath("/admin/categories");
     return toActionState("SUCCESS", "Category updated successfully");
@@ -144,8 +152,16 @@ export async function deleteCategoryAction(
       categoryId: formData.get("categoryId"),
     });
 
-    // When Cloudinary is integrated, call cloudinary.uploader.destroy(imageId) if imageId is set.
+    const category = await prisma.category.findUniqueOrThrow({
+      where: { id: categoryId },
+      select: { imageId: true },
+    });
+
     await prisma.category.delete({ where: { id: categoryId } });
+
+    destroyAsset(category.imageId).catch((err) =>
+      console.error("[Cloudinary] cleanup failed after category delete:", err)
+    );
 
     revalidatePath("/admin/categories");
     return toActionState("SUCCESS", "Category deleted successfully");
