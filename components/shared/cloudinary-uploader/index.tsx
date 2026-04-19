@@ -12,6 +12,7 @@ import { useCallback } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { deleteCloudinaryAsset } from "./actions";
 
 export type UploadedImage = {
   imageId: string;
@@ -54,6 +55,8 @@ export function CloudinaryUploader({
     if (!value) return;
     if (onRequestRemove) {
       await onRequestRemove(value);
+    } else {
+      await deleteCloudinaryAsset(value.imageId);
     }
     onChange(null);
   }, [value, onChange, onRequestRemove]);
