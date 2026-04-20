@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useActionState, useState } from "react";
-import { LucideSave, LucideTrash2 } from "lucide-react";
+import { LucideLoader2, LucideSave, LucideTrash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -85,6 +85,7 @@ export function ProductForm({ mode, formData, product }: ProductFormProps) {
   const [featured, setFeatured] = useState(product?.featured ?? false);
   const [price, setPrice] = useState<string>(product?.price ?? "");
   const [discount, setDiscount] = useState<string>(product?.discount ?? "0");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const priceAfter =
     price && /^\d+(\.\d+)?$/.test(price)
@@ -97,9 +98,11 @@ export function ProductForm({ mode, formData, product }: ProductFormProps) {
       `Delete "${product.name}"? All images will be removed. This cannot be undone.`,
     );
     if (!ok) return;
+    setIsDeleting(true);
     const fd = new FormData();
     fd.append("productId", product.id);
     const res = await deleteProductAction(EMPTY_ACTION_STATE, fd);
+    setIsDeleting(false);
     if (res.status === "SUCCESS") {
       toast.success(res.message);
       router.push("/admin/products");
@@ -384,9 +387,15 @@ export function ProductForm({ mode, formData, product }: ProductFormProps) {
               type="button"
               variant="outline"
               onClick={handleDelete}
+              disabled={isDeleting}
               className="text-destructive hover:text-destructive"
             >
-              <LucideTrash2 className="size-4" /> Delete
+              {isDeleting ? (
+                <LucideLoader2 className="size-4 animate-spin" />
+              ) : (
+                <LucideTrash2 className="size-4" />
+              )}
+              Delete
             </Button>
           )}
         </div>

@@ -60,7 +60,8 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     prisma.$queryRaw<[{ count: number }]>`
       SELECT CAST(COUNT(*) AS INTEGER) AS count
       FROM coupons
-      WHERE expire > NOW()
+      WHERE "isActive" = true
+        AND expire > NOW()
         AND ("maxUsage" = 0 OR "usedCount" < "maxUsage")
     `,
     prisma.$queryRaw<{ status: string; count: number }[]>`

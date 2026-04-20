@@ -32,7 +32,7 @@ export function CouponsToolbar({ total }: CouponsToolbarProps) {
         status:
           value === "ALL"
             ? null
-            : (value as "active" | "expired" | "exhausted"),
+            : (value as "active" | "expired" | "exhausted" | "deactivated"),
         page: 1,
       });
     },
@@ -57,6 +57,7 @@ export function CouponsToolbar({ total }: CouponsToolbarProps) {
             <SelectItem value="active">Active</SelectItem>
             <SelectItem value="expired">Expired</SelectItem>
             <SelectItem value="exhausted">Exhausted</SelectItem>
+            <SelectItem value="deactivated">Deactivated</SelectItem>
           </SelectContent>
         </Select>
       </div>

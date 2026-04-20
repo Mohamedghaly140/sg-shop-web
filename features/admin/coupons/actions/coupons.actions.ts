@@ -44,7 +44,7 @@ const updateCouponSchema = baseCouponSchema.extend({
   couponId: z.string().min(1, "Coupon ID is required"),
 });
 
-const deleteCouponSchema = z.object({
+const couponIdSchema = z.object({
   couponId: z.string().min(1, "Coupon ID is required"),
 });
 
@@ -135,7 +135,7 @@ export async function deleteCouponAction(
   try {
     await requireManagerOrAdmin();
 
-    const { couponId } = deleteCouponSchema.parse({
+    const { couponId } = couponIdSchema.parse({
       couponId: formData.get("couponId"),
     });
 
@@ -155,14 +155,13 @@ export async function deactivateCouponAction(
   try {
     await requireManagerOrAdmin();
 
-    const { couponId } = deleteCouponSchema.parse({
+    const { couponId } = couponIdSchema.parse({
       couponId: formData.get("couponId"),
     });
 
-    // Set expire to epoch to mark as deactivated without schema changes
     await prisma.coupon.update({
       where: { id: couponId },
-      data: { expire: new Date(0) },
+      data: { isActive: false },
     });
 
     revalidatePath("/admin/coupons");

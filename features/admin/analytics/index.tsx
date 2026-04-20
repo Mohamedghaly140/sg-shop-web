@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { TabsContent } from "@/components/ui/tabs";
 
 import { AnalyticsHeader } from "./components/analytics-header";
+import { AnalyticsTabSkeleton } from "./components/analytics-tab-skeleton";
 import { AnalyticsTabs } from "./components/analytics-tabs";
 import { CustomersTab } from "./components/customers/customers-tab";
 import { CouponsTab } from "./components/coupons/coupons-tab";
@@ -13,45 +15,71 @@ import { getCustomersAnalytics } from "./services/get-customers-analytics";
 import { getGeographyAnalytics } from "./services/get-geography-analytics";
 import { getProductsAnalytics } from "./services/get-products-analytics";
 import { getSalesAnalytics } from "./services/get-sales-analytics";
+import type { DateRangeParams } from "./types";
 
 type AdminAnalyticsFeatureProps = {
   searchParams: Promise<Record<string, string | string[]>>;
 };
 
+async function SalesTabLoader({ from, to }: DateRangeParams) {
+  const data = await getSalesAnalytics({ from, to });
+  return <SalesTab data={data} />;
+}
+
+async function ProductsTabLoader({ from, to }: DateRangeParams) {
+  const data = await getProductsAnalytics({ from, to });
+  return <ProductsTab data={data} />;
+}
+
+async function CustomersTabLoader({ from, to }: DateRangeParams) {
+  const data = await getCustomersAnalytics({ from, to });
+  return <CustomersTab data={data} />;
+}
+
+async function CouponsTabLoader({ from, to }: DateRangeParams) {
+  const data = await getCouponsAnalytics({ from, to });
+  return <CouponsTab data={data} />;
+}
+
+async function GeographyTabLoader({ from, to }: DateRangeParams) {
+  const data = await getGeographyAnalytics({ from, to });
+  return <GeographyTab data={data} />;
+}
+
 export default async function AdminAnalyticsFeature({
   searchParams,
 }: AdminAnalyticsFeatureProps) {
   const { tab, from, to } = await analyticsParamsCache.parse(searchParams);
-
-  const salesData =
-    tab === "sales" ? await getSalesAnalytics({ from, to }) : null;
-  const productsData =
-    tab === "products" ? await getProductsAnalytics({ from, to }) : null;
-  const customersData =
-    tab === "customers" ? await getCustomersAnalytics({ from, to }) : null;
-  const couponsData =
-    tab === "coupons" ? await getCouponsAnalytics({ from, to }) : null;
-  const geographyData =
-    tab === "geography" ? await getGeographyAnalytics({ from, to }) : null;
+  const range: DateRangeParams = { from, to };
 
   return (
     <div className="space-y-6 p-6">
       <AnalyticsHeader />
       <AnalyticsTabs>
         <TabsContent value="sales">
-          {salesData && <SalesTab data={salesData} />}
+          <Suspense fallback={<AnalyticsTabSkeleton />}>
+            {tab === "sales" && <SalesTabLoader {...range} />}
+          </Suspense>
         </TabsContent>
         <TabsContent value="products">
-          {productsData && <ProductsTab data={productsData} />}
+          <Suspense fallback={<AnalyticsTabSkeleton />}>
+            {tab === "products" && <ProductsTabLoader {...range} />}
+          </Suspense>
         </TabsContent>
         <TabsContent value="customers">
-          {customersData && <CustomersTab data={customersData} />}
+          <Suspense fallback={<AnalyticsTabSkeleton />}>
+            {tab === "customers" && <CustomersTabLoader {...range} />}
+          </Suspense>
         </TabsContent>
         <TabsContent value="coupons">
-          {couponsData && <CouponsTab data={couponsData} />}
+          <Suspense fallback={<AnalyticsTabSkeleton />}>
+            {tab === "coupons" && <CouponsTabLoader {...range} />}
+          </Suspense>
         </TabsContent>
         <TabsContent value="geography">
-          {geographyData && <GeographyTab data={geographyData} />}
+          <Suspense fallback={<AnalyticsTabSkeleton />}>
+            {tab === "geography" && <GeographyTabLoader {...range} />}
+          </Suspense>
         </TabsContent>
       </AnalyticsTabs>
     </div>

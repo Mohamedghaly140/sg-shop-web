@@ -43,22 +43,25 @@ type CouponsTableProps = {
   pageCount: number;
 };
 
-type CouponStatus = "active" | "expired" | "exhausted";
+type CouponStatus = "active" | "expired" | "exhausted" | "deactivated";
 
 function getCouponStatus(coupon: {
   expire: Date;
   usedCount: number;
   maxUsage: number;
+  isActive: boolean;
 }): CouponStatus {
+  if (!coupon.isActive) return "deactivated";
   if (coupon.expire <= new Date()) return "expired";
   if (coupon.maxUsage > 0 && coupon.usedCount >= coupon.maxUsage) return "exhausted";
   return "active";
 }
 
 const COUPON_STATUS: Record<CouponStatus, { label: string; className: string }> = {
-  active:    { label: "Active",    className: "border-green-500/30 bg-green-500/10 text-green-500" },
-  expired:   { label: "Expired",   className: "border-red-500/30 bg-red-500/10 text-red-500" },
-  exhausted: { label: "Exhausted", className: "border-orange-500/30 bg-orange-500/10 text-orange-400" },
+  active:      { label: "Active",      className: "border-green-500/30 bg-green-500/10 text-green-500" },
+  expired:     { label: "Expired",     className: "border-red-500/30 bg-red-500/10 text-red-500" },
+  exhausted:   { label: "Exhausted",   className: "border-orange-500/30 bg-orange-500/10 text-orange-400" },
+  deactivated: { label: "Deactivated", className: "border-gray-500/30 bg-gray-500/10 text-gray-400" },
 };
 
 export function CouponsTable({ coupons, pageCount }: CouponsTableProps) {
