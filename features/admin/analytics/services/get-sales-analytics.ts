@@ -7,7 +7,7 @@ import {
   subDays,
 } from "date-fns";
 
-import { OrderStatus } from "@/generated/prisma/client";
+import { OrderStatus, Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 import type { DateRangeParams, SalesAnalytics } from "../types";
@@ -71,18 +71,16 @@ export async function getSalesAnalytics({
         WHERE "createdAt" >= ${start} AND "createdAt" <= ${end}
         GROUP BY "paymentMethod"
       `,
-      prisma.$queryRawUnsafe<{ bucket: Date; revenue: number }[]>(
-        `SELECT
-          DATE_TRUNC('${interval}', "createdAt") AS bucket,
+      prisma.$queryRaw<{ bucket: Date; revenue: number }[]>`
+        SELECT
+          DATE_TRUNC(${Prisma.raw(`'${interval}'`)}, "createdAt") AS bucket,
           COALESCE(SUM("totalOrderPrice"), 0)::float8 AS revenue
         FROM orders
-        WHERE "createdAt" >= $1 AND "createdAt" <= $2
+        WHERE "createdAt" >= ${start} AND "createdAt" <= ${end}
           AND status NOT IN ('CANCELLED','REFUNDED')
         GROUP BY bucket
-        ORDER BY bucket ASC`,
-        start,
-        end,
-      ),
+        ORDER BY bucket ASC
+      `,
     ]);
 
   const totalRevenue = Number(revenueAgg._sum.totalOrderPrice ?? 0);

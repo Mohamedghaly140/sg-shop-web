@@ -6,12 +6,12 @@ type GetCouponsParams = {
   page: number;
   limit: number;
   search: string;
-  status: "active" | "expired" | "exhausted" | null;
+  status: "active" | "expired" | "exhausted" | "deactivated" | null;
 };
 
 export type CouponRow = Pick<
   Coupon,
-  "id" | "name" | "discount" | "usedCount" | "maxUsage" | "expire" | "createdAt"
+  "id" | "name" | "discount" | "usedCount" | "maxUsage" | "expire" | "isActive" | "createdAt"
 >;
 
 type GetCouponsResult = {
@@ -27,6 +27,7 @@ type RawCouponRow = {
   usedCount: number;
   maxUsage: number;
   expire: Date;
+  isActive: boolean;
   createdAt: Date;
 };
 
@@ -38,6 +39,7 @@ function mapRawRow(row: RawCouponRow): CouponRow {
     usedCount: row.usedCount,
     maxUsage: row.maxUsage,
     expire: row.expire,
+    isActive: row.isActive,
     createdAt: row.createdAt,
   };
 }
@@ -51,15 +53,16 @@ export async function getCoupons({
   const offset = (page - 1) * limit;
   const searchPattern = search ? `%${search}%` : null;
 
-  // active/exhausted need field-to-field comparison — must use raw SQL
+  // active/exhausted/deactivated need field-to-field comparison — must use raw SQL
   if (status === "active") {
     const [rows, countRows] = await Promise.all([
       prisma.$queryRaw<RawCouponRow[]>`
         SELECT id, name, discount::text,
                "usedCount", "maxUsage",
-               expire, "createdAt"
+               expire, "isActive", "createdAt"
         FROM coupons
-        WHERE expire > NOW()
+        WHERE "isActive" = true
+          AND expire > NOW()
           AND ("maxUsage" = 0 OR "usedCount" < "maxUsage")
           ${searchPattern ? Prisma.sql`AND name ILIKE ${searchPattern}` : Prisma.empty}
         ORDER BY "createdAt" DESC
@@ -68,8 +71,32 @@ export async function getCoupons({
       prisma.$queryRaw<[{ count: number }]>`
         SELECT CAST(COUNT(*) AS INTEGER) AS count
         FROM coupons
-        WHERE expire > NOW()
+        WHERE "isActive" = true
+          AND expire > NOW()
           AND ("maxUsage" = 0 OR "usedCount" < "maxUsage")
+          ${searchPattern ? Prisma.sql`AND name ILIKE ${searchPattern}` : Prisma.empty}
+      `,
+    ]);
+    const total = Number(countRows[0].count);
+    return { coupons: rows.map(mapRawRow), total, pageCount: Math.ceil(total / limit) };
+  }
+
+  if (status === "deactivated") {
+    const [rows, countRows] = await Promise.all([
+      prisma.$queryRaw<RawCouponRow[]>`
+        SELECT id, name, discount::text,
+               "usedCount", "maxUsage",
+               expire, "isActive", "createdAt"
+        FROM coupons
+        WHERE "isActive" = false
+          ${searchPattern ? Prisma.sql`AND name ILIKE ${searchPattern}` : Prisma.empty}
+        ORDER BY "createdAt" DESC
+        LIMIT ${limit} OFFSET ${offset}
+      `,
+      prisma.$queryRaw<[{ count: number }]>`
+        SELECT CAST(COUNT(*) AS INTEGER) AS count
+        FROM coupons
+        WHERE "isActive" = false
           ${searchPattern ? Prisma.sql`AND name ILIKE ${searchPattern}` : Prisma.empty}
       `,
     ]);
@@ -82,7 +109,7 @@ export async function getCoupons({
       prisma.$queryRaw<RawCouponRow[]>`
         SELECT id, name, discount::text,
                "usedCount", "maxUsage",
-               expire, "createdAt"
+               expire, "isActive", "createdAt"
         FROM coupons
         WHERE "maxUsage" > 0 AND "usedCount" >= "maxUsage"
           ${searchPattern ? Prisma.sql`AND name ILIKE ${searchPattern}` : Prisma.empty}
@@ -116,6 +143,7 @@ export async function getCoupons({
         usedCount: true,
         maxUsage: true,
         expire: true,
+        isActive: true,
         createdAt: true,
       },
       orderBy: { createdAt: "desc" },

@@ -58,6 +58,6 @@ export async function getUsers({
   return {
     users,
     total,
-    pageCount: Math.ceil(total / limit),
+    pageCount: Math.max(1, Math.ceil(total / limit)),
   };
 }

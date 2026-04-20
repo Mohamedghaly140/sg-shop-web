@@ -81,5 +81,5 @@ export async function getOrders({
     itemsCount: o._count.items,
   }));
 
-  return { orders, total, pageCount: Math.ceil(total / limit) };
+  return { orders, total, pageCount: Math.max(1, Math.ceil(total / limit)) };
 }

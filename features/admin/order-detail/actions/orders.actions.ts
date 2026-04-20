@@ -12,9 +12,18 @@ import {
 } from "@/components/shared/form/utils/to-action-state";
 import { requireManagerOrAdmin } from "@/lib/require-role";
 
+const VALID_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
+  [OrderStatus.PENDING]:    [OrderStatus.PROCESSING, OrderStatus.CANCELLED],
+  [OrderStatus.PROCESSING]: [OrderStatus.SHIPPED,    OrderStatus.CANCELLED],
+  [OrderStatus.SHIPPED]:    [OrderStatus.DELIVERED,  OrderStatus.CANCELLED, OrderStatus.REFUNDED],
+  [OrderStatus.DELIVERED]:  [OrderStatus.REFUNDED],
+  [OrderStatus.CANCELLED]:  [],
+  [OrderStatus.REFUNDED]:   [],
+};
+
 const updateStatusSchema = z.object({
   orderId: z.string().min(1),
-  status: z.nativeEnum(OrderStatus),
+  status: z.enum(OrderStatus),
   notes: z.string().optional(),
 });
 
@@ -34,6 +43,27 @@ export async function updateOrderStatusAction(
       status: formData.get("status"),
       notes: formData.get("notes") ?? undefined,
     });
+
+    const current = await prisma.order.findUnique({
+      where: { id: parsed.orderId },
+      select: { status: true },
+    });
+
+    if (!current) throw new Error("Order not found");
+
+    if (current.status === parsed.status) {
+      return toActionState("SUCCESS", "Order status unchanged");
+    }
+
+    const allowed = VALID_TRANSITIONS[current.status];
+    if (!allowed.includes(parsed.status)) {
+      return fromErrorToActionState(
+        new Error(
+          `Cannot move order from ${current.status} to ${parsed.status}`,
+        ),
+        formData,
+      );
+    }
 
     const isDelivered = parsed.status === OrderStatus.DELIVERED;
 

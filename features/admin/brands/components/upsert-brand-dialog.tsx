@@ -48,7 +48,7 @@ export function UpsertBrandDialog(props: UpsertBrandDialogProps) {
           : null,
       );
     }
-  }, [open]);
+  }, [open, brand]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen} modal={false}>

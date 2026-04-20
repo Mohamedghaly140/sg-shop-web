@@ -42,7 +42,7 @@ export function DeactivateCouponButton({ couponId }: DeactivateCouponButtonProps
         </Button>
       }
       title="Deactivate Coupon"
-      description="Deactivate this coupon? It will no longer be redeemable. You can re-activate it by editing and setting a new expiry date."
+      description="Deactivate this coupon? It will no longer be redeemable."
       confirmLabel="Deactivate"
       onConfirm={handleDeactivate}
     />

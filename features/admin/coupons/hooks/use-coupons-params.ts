@@ -12,7 +12,7 @@ export const couponsParserSchema = {
   page: parseAsInteger.withDefault(1),
   limit: parseAsInteger.withDefault(10),
   search: parseAsString.withDefault("").withOptions({ throttleMs: 300 }),
-  status: parseAsStringEnum(["active", "expired", "exhausted"]),
+  status: parseAsStringEnum(["active", "expired", "exhausted", "deactivated"]),
 };
 
 export const couponsSearchParamsCache = createSearchParamsCache(couponsParserSchema);

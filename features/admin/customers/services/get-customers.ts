@@ -66,6 +66,6 @@ export async function getCustomers({
   return {
     customers,
     total,
-    pageCount: Math.ceil(total / limit),
+    pageCount: Math.max(1, Math.ceil(total / limit)),
   };
 }

@@ -7,7 +7,7 @@ import {
   subDays,
 } from "date-fns";
 
-import { OrderStatus, Role } from "@/generated/prisma/client";
+import { OrderStatus, Prisma, Role } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 import type { CustomersAnalytics, DateRangeParams, TopSpender } from "../types";
@@ -55,19 +55,17 @@ export async function getCustomersAnalytics({
           orders: { some: { createdAt: { gte: start, lte: end } } },
         },
       }),
-      prisma.$queryRawUnsafe<{ bucket: Date; count: number }[]>(
-        `SELECT
-          DATE_TRUNC('${interval}', "createdAt") AS bucket,
+      prisma.$queryRaw<{ bucket: Date; count: number }[]>`
+        SELECT
+          DATE_TRUNC(${Prisma.raw(`'${interval}'`)}, "createdAt") AS bucket,
           CAST(COUNT(*) AS INTEGER) AS count
         FROM users
         WHERE role = 'USER'
-          AND "createdAt" >= $1
-          AND "createdAt" <= $2
+          AND "createdAt" >= ${start}
+          AND "createdAt" <= ${end}
         GROUP BY bucket
-        ORDER BY bucket ASC`,
-        start,
-        end,
-      ),
+        ORDER BY bucket ASC
+      `,
       prisma.$queryRaw<TopSpender[]>`
         SELECT
           u.id,
