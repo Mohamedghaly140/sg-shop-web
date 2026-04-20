@@ -1,22 +1,10 @@
-import {
-  differenceInDays,
-  endOfDay,
-  format,
-  parseISO,
-  startOfDay,
-  subDays,
-} from "date-fns";
+import { differenceInDays, format } from "date-fns";
 
 import { OrderStatus, Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 import type { DateRangeParams, SalesAnalytics } from "../types";
-
-function resolveDateRange(from: string | null, to: string | null) {
-  const end = to ? parseISO(to) : new Date();
-  const start = from ? parseISO(from) : subDays(end, 30);
-  return { start: startOfDay(start), end: endOfDay(end) };
-}
+import { resolveDateRange } from "../utils/resolve-date-range";
 
 function getGroupingInterval(
   start: Date,

@@ -9,7 +9,7 @@ import { useQueryStates } from "nuqs";
 
 import { ProductStatus } from "@/generated/prisma/enums";
 
-export const PAGE_SIZE_OPTIONS = [10, 15, 20, 25, 30, 35, 40, 45, 50] as const;
+export { PAGE_SIZE_OPTIONS } from "@/features/admin/shared/utils";
 
 export const productsParserSchema = {
   page: parseAsInteger.withDefault(1),

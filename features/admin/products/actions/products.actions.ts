@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import slugify from "slugify";
 
 import { Prisma, ProductStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -16,7 +15,8 @@ import {
   productFormSchema,
   productImageInputSchema,
 } from "@/features/admin/product-form/schemas/product-schema";
-import { requireAdmin } from "@/lib/require-role";
+import { requireManagerOrAdmin } from "@/lib/require-role";
+import { makeSlug, allocateUniqueSlug } from "@/lib/slug";
 
 // ─── Cache invalidation ───────────────────────────────────────────────────────
 
@@ -29,36 +29,6 @@ function revalidateProductCaches() {
   revalidatePath("/products/[slug]", "page");
   revalidatePath("/search");
   revalidatePath("/categories/[slug]", "page");
-}
-
-// ─── Slug helpers ─────────────────────────────────────────────────────────────
-
-function makeSlug(name: string): string {
-  return slugify(name, { lower: true, strict: true }) || "product";
-}
-
-// Runs inside a transaction so the slug check and the INSERT/UPDATE are atomic.
-async function allocateUniqueSlug(
-  base: string,
-  excludeId?: string,
-  tx?: Prisma.TransactionClient,
-): Promise<string> {
-  const client = tx ?? prisma;
-  let candidate = base;
-  let n = 2;
-  for (;;) {
-    const existing = await client.product.findFirst({
-      where: {
-        slug: candidate,
-        ...(excludeId ? { NOT: { id: excludeId } } : {}),
-      },
-      select: { id: true },
-    });
-    if (!existing) return candidate;
-    candidate = `${base}-${n}`;
-    n += 1;
-    if (n > 10_000) throw new Error("Could not generate a unique slug");
-  }
 }
 
 // ─── Form parsing ─────────────────────────────────────────────────────────────
@@ -123,7 +93,7 @@ export async function createProductAction(
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    await requireAdmin();
+    await requireManagerOrAdmin();
     const data = parseProductFormData(formData);
 
     const price = new Prisma.Decimal(data.price);
@@ -132,7 +102,10 @@ export async function createProductAction(
 
     // Slug allocation runs inside the transaction — check and INSERT are atomic.
     const created = await prisma.$transaction(async (tx) => {
-      const slug = await allocateUniqueSlug(makeSlug(data.name), undefined, tx);
+      const slug = await allocateUniqueSlug(
+        makeSlug(data.name, "product"),
+        (s) => tx.product.findFirst({ where: { slug: s }, select: { id: true } }).then(Boolean),
+      );
       return tx.product.create({
         data: {
           name: data.name.trim(),
@@ -187,7 +160,7 @@ export async function updateProductAction(
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    await requireAdmin();
+    await requireManagerOrAdmin();
     const productId = updateIdSchema.parse(formData.get("productId"));
     const data = parseProductFormData(formData);
 
@@ -218,7 +191,10 @@ export async function updateProductAction(
 
     // Slug allocation runs inside the transaction — check and UPDATE are atomic.
     await prisma.$transaction(async (tx) => {
-      const slug = await allocateUniqueSlug(makeSlug(data.name), productId, tx);
+      const slug = await allocateUniqueSlug(
+        makeSlug(data.name, "product"),
+        (s) => tx.product.findFirst({ where: { slug: s, NOT: { id: productId } }, select: { id: true } }).then(Boolean),
+      );
 
       if (removed.length > 0) {
         await tx.productImage.deleteMany({
@@ -304,7 +280,7 @@ export async function deleteProductAction(
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    await requireAdmin();
+    await requireManagerOrAdmin();
     const productId = updateIdSchema.parse(formData.get("productId"));
 
     const product = await prisma.product.findUniqueOrThrow({
@@ -347,7 +323,7 @@ export async function updateProductStatusAction(
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    await requireAdmin();
+    await requireManagerOrAdmin();
     const { productId, status } = statusSchema.parse({
       productId: formData.get("productId"),
       status: formData.get("status"),
@@ -376,7 +352,7 @@ export async function toggleFeaturedAction(
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    await requireAdmin();
+    await requireManagerOrAdmin();
     const { productId, featured } = featuredSchema.parse({
       productId: formData.get("productId"),
       featured: formData.get("featured"),
@@ -408,7 +384,7 @@ export async function deleteProductImageAction(
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    await requireAdmin();
+    await requireManagerOrAdmin();
     const { productId, productImageId } = deleteImageSchema.parse({
       productId: formData.get("productId"),
       productImageId: formData.get("productImageId"),
@@ -438,7 +414,7 @@ export async function duplicateProductAction(
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    await requireAdmin();
+    await requireManagerOrAdmin();
     const productId = updateIdSchema.parse(formData.get("productId"));
 
     const src = await prisma.product.findUniqueOrThrow({
@@ -458,12 +434,15 @@ export async function duplicateProductAction(
       },
     });
 
-    const baseSlug = makeSlug(`${src.name}-copy`);
+    const baseSlug = makeSlug(`${src.name}-copy`, "product");
 
     // Images are intentionally not copied — both products would share the same
     // Cloudinary public IDs, so deleting the original would break the duplicate.
     const created = await prisma.$transaction(async (tx) => {
-      const slug = await allocateUniqueSlug(baseSlug, undefined, tx);
+      const slug = await allocateUniqueSlug(
+        baseSlug,
+        (s) => tx.product.findFirst({ where: { slug: s }, select: { id: true } }).then(Boolean),
+      );
       return tx.product.create({
         data: {
           name: `${src.name} (copy)`,

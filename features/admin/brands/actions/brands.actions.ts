@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import slugify from "slugify";
 
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -11,36 +10,10 @@ import {
   fromErrorToActionState,
   toActionState,
 } from "@/components/shared/form/utils/to-action-state";
-import { requireAdmin } from "@/lib/require-role";
+import { requireManagerOrAdmin } from "@/lib/require-role";
 import { destroyAsset } from "@/lib/cloudinary";
-
-function makeSlug(name: string): string {
-  return slugify(name, { lower: true, strict: true }) || "brand";
-}
-
-async function allocateUniqueSlug(base: string, excludeBrandId?: string): Promise<string> {
-  let candidate = base;
-  let n = 2;
-  for (;;) {
-    const existing = await prisma.brand.findFirst({
-      where: {
-        slug: candidate,
-        ...(excludeBrandId ? { NOT: { id: excludeBrandId } } : {}),
-      },
-    });
-    if (!existing) return candidate;
-    candidate = `${base}-${n}`;
-    n += 1;
-    if (n > 10_000) {
-      throw new Error("Could not generate a unique slug");
-    }
-  }
-}
-
-function parseOptionalString(val: FormDataEntryValue | null): string | null {
-  const s = typeof val === "string" ? val.trim() : "";
-  return s || null;
-}
+import { makeSlug, allocateUniqueSlug } from "@/lib/slug";
+import { parseOptionalString } from "@/features/admin/shared/utils";
 
 const createBrandSchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters"),
@@ -60,13 +33,16 @@ export async function createBrandAction(
   formData: FormData
 ): Promise<ActionState> {
   try {
-    await requireAdmin();
+    await requireManagerOrAdmin();
 
     const parsed = createBrandSchema.parse({ name: formData.get("name") });
     const imageId = parseOptionalString(formData.get("imageId"));
     const imageUrl = parseOptionalString(formData.get("imageUrl"));
 
-    const slug = await allocateUniqueSlug(makeSlug(parsed.name));
+    const slug = await allocateUniqueSlug(
+      makeSlug(parsed.name, "brand"),
+      (s) => prisma.brand.findFirst({ where: { slug: s } }).then(Boolean),
+    );
 
     await prisma.brand.create({
       data: { name: parsed.name.trim(), slug, imageId, imageUrl },
@@ -99,7 +75,7 @@ export async function updateBrandAction(
   formData: FormData
 ): Promise<ActionState> {
   try {
-    await requireAdmin();
+    await requireManagerOrAdmin();
 
     const parsed = updateBrandSchema.parse({
       brandId: formData.get("brandId"),
@@ -114,7 +90,10 @@ export async function updateBrandAction(
       select: { imageId: true },
     });
 
-    const slug = await allocateUniqueSlug(makeSlug(parsed.name), parsed.brandId);
+    const slug = await allocateUniqueSlug(
+      makeSlug(parsed.name, "brand"),
+      (s) => prisma.brand.findFirst({ where: { slug: s, NOT: { id: parsed.brandId } } }).then(Boolean),
+    );
 
     await prisma.brand.update({
       where: { id: parsed.brandId },
@@ -148,7 +127,7 @@ export async function deleteBrandAction(
   formData: FormData
 ): Promise<ActionState> {
   try {
-    await requireAdmin();
+    await requireManagerOrAdmin();
 
     const { brandId } = deleteBrandSchema.parse({
       brandId: formData.get("brandId"),

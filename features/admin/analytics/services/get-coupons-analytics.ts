@@ -1,14 +1,7 @@
-import { endOfDay, parseISO, startOfDay, subDays } from "date-fns";
-
 import { prisma } from "@/lib/prisma";
 
 import type { CouponRow, CouponsAnalytics, DateRangeParams } from "../types";
-
-function resolveDateRange(from: string | null, to: string | null) {
-  const end = to ? parseISO(to) : new Date();
-  const start = from ? parseISO(from) : subDays(end, 30);
-  return { start: startOfDay(start), end: endOfDay(end) };
-}
+import { resolveDateRange } from "../utils/resolve-date-range";
 
 export async function getCouponsAnalytics({
   from,

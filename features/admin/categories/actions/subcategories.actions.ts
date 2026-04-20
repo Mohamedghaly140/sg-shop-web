@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import slugify from "slugify";
 
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -12,27 +11,7 @@ import {
   toActionState,
 } from "@/components/shared/form/utils/to-action-state";
 import { requireManagerOrAdmin } from "@/lib/require-role";
-
-function makeSlug(name: string): string {
-  return slugify(name, { lower: true, strict: true }) || "subcategory";
-}
-
-async function allocateUniqueSlug(base: string, excludeSubcategoryId?: string): Promise<string> {
-  let candidate = base;
-  let n = 2;
-  for (;;) {
-    const existing = await prisma.subCategory.findFirst({
-      where: {
-        slug: candidate,
-        ...(excludeSubcategoryId ? { NOT: { id: excludeSubcategoryId } } : {}),
-      },
-    });
-    if (!existing) return candidate;
-    candidate = `${base}-${n}`;
-    n += 1;
-    if (n > 10_000) throw new Error("Could not generate a unique slug");
-  }
-}
+import { makeSlug, allocateUniqueSlug } from "@/lib/slug";
 
 const createSubcategorySchema = z.object({
   categoryId: z.string().min(1, "Category is required"),
@@ -60,7 +39,10 @@ export async function createSubcategoryAction(
       name: formData.get("name"),
     });
 
-    const slug = await allocateUniqueSlug(makeSlug(parsed.name));
+    const slug = await allocateUniqueSlug(
+      makeSlug(parsed.name, "subcategory"),
+      (s) => prisma.subCategory.findFirst({ where: { slug: s } }).then(Boolean),
+    );
 
     await prisma.subCategory.create({
       data: { name: parsed.name.trim(), slug, categoryId: parsed.categoryId },
@@ -100,7 +82,10 @@ export async function updateSubcategoryAction(
       name: formData.get("name"),
     });
 
-    const slug = await allocateUniqueSlug(makeSlug(parsed.name), parsed.subcategoryId);
+    const slug = await allocateUniqueSlug(
+      makeSlug(parsed.name, "subcategory"),
+      (s) => prisma.subCategory.findFirst({ where: { slug: s, NOT: { id: parsed.subcategoryId } } }).then(Boolean),
+    );
 
     await prisma.subCategory.update({
       where: { id: parsed.subcategoryId },
