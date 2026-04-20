@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
 import { useActionFeedback } from "@/components/shared/form/hooks/use-action-feedback";
-import { deleteUserAction } from "../actions/users.actions";
+import { deleteUserAction } from "@/features/admin/users/actions/deleteUser";
 
 type DeleteUserButtonProps = {
   userId: string;

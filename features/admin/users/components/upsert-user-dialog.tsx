@@ -27,7 +27,8 @@ import { PhoneInput } from "@/components/shared/phone-input";
 import FieldError from "@/components/shared/form/field-error";
 import SubmitButton from "@/components/shared/submit-button";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
-import { createUserAction, updateUserAction } from "../actions/users.actions";
+import { createUserAction } from "@/features/admin/users/actions/createUser";
+import { updateUserAction } from "@/features/admin/users/actions/updateUser";
 import type { User } from "@/generated/prisma/client";
 
 const ROLES = ["USER", "MANAGER", "ADMIN"] as const;
