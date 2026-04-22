@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
-import { deleteCategoryAction } from "../actions/categories.actions";
+import { deleteCategoryAction } from "@/features/admin/categories/actions/deleteCategory";
 
 type DeleteCategoryButtonProps = {
   categoryId: string;

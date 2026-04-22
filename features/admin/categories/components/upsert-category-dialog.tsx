@@ -20,7 +20,8 @@ import {
   type UploadedImage,
 } from "@/components/shared/cloudinary-uploader";
 import { CLOUDINARY_CATEGORIES_FOLDER } from "@/lib/cloudinary-public";
-import { createCategoryAction, updateCategoryAction } from "../actions/categories.actions";
+import { createCategoryAction } from "@/features/admin/categories/actions/createCategory";
+import { updateCategoryAction } from "@/features/admin/categories/actions/updateCategory";
 import type { Category } from "@/generated/prisma/client";
 
 type UpsertCategoryDialogProps =

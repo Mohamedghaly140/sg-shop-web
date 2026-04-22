@@ -15,7 +15,8 @@ import Form from "@/components/shared/form/form";
 import FormControl from "@/components/shared/form-control";
 import SubmitButton from "@/components/shared/submit-button";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
-import { createSubcategoryAction, updateSubcategoryAction } from "../actions/subcategories.actions";
+import { createSubcategoryAction } from "@/features/admin/categories/actions/createSubcategory";
+import { updateSubcategoryAction } from "@/features/admin/categories/actions/updateSubcategory";
 import type { SubCategory } from "@/generated/prisma/client";
 
 type UpsertSubcategoryDialogProps =
