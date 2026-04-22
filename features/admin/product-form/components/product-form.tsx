@@ -29,11 +29,9 @@ import FieldError from "@/components/shared/form/field-error";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
 import { CLOUDINARY_PRODUCTS_FOLDER } from "@/lib/cloudinary-public";
 import { ProductStatus } from "@/generated/prisma/enums";
-import {
-  createProductAction,
-  deleteProductAction,
-  updateProductAction,
-} from "@/features/admin/products/actions/products.actions";
+import { createProductAction } from "@/features/admin/products/actions/createProduct";
+import { deleteProductAction } from "@/features/admin/products/actions/deleteProduct";
+import { updateProductAction } from "@/features/admin/products/actions/updateProduct";
 import type { ProductFormData } from "../services/get-product-form-data";
 import type { ProductForForm } from "../services/get-product-by-id";
 import { SectionCard } from "./section-card";

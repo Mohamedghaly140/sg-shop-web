@@ -17,7 +17,7 @@ import {
 } from "@/components/shared/cloudinary-uploader";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
 import { CLOUDINARY_PRODUCTS_FOLDER } from "@/lib/cloudinary-public";
-import { deleteProductImageAction } from "@/features/admin/products/actions/products.actions";
+import { deleteProductImageAction } from "@/features/admin/products/actions/deleteProductImage";
 import { cn } from "@/lib/utils";
 
 export type GalleryImage = UploadedImage & {

@@ -16,11 +16,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ProductStatus } from "@/generated/prisma/enums";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
-import {
-  duplicateProductAction,
-  toggleFeaturedAction,
-  updateProductStatusAction,
-} from "@/features/admin/products/actions/products.actions";
+import { duplicateProductAction } from "@/features/admin/products/actions/duplicateProduct";
+import { toggleFeaturedAction } from "@/features/admin/products/actions/toggleFeatured";
+import { updateProductStatusAction } from "@/features/admin/products/actions/updateProductStatus";
 import { DeleteProductButton } from "@/features/admin/products/components/delete-product-button";
 import { ProductStatusBadge } from "@/features/admin/products/components/status-badge";
 

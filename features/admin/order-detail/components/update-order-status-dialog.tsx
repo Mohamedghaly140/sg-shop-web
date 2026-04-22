@@ -25,7 +25,7 @@ import {
   EMPTY_ACTION_STATE,
 } from "@/components/shared/form/utils/to-action-state";
 import { OrderStatus } from "@/generated/prisma/enums";
-import { updateOrderStatusAction } from "../actions/orders.actions";
+import { updateOrderStatusAction } from "../actions/updateOrderStatus";
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   PENDING: "Pending",

@@ -19,7 +19,7 @@ const toggleActiveSchema = z.object({
 
 export async function toggleCustomerActiveAction(
   _prevState: ActionState,
-  formData: FormData
+  formData: FormData,
 ): Promise<ActionState> {
   try {
     await requireManagerOrAdmin();
@@ -46,9 +46,9 @@ export async function toggleCustomerActiveAction(
 
     return toActionState(
       "SUCCESS",
-      active ? "Customer activated" : "Customer deactivated"
+      active ? "Customer activated" : "Customer deactivated",
     );
   } catch (error) {
-    return fromErrorToActionState(error);
+    return fromErrorToActionState(error, formData);
   }
 }

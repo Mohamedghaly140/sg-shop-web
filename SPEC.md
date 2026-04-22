@@ -1492,10 +1492,21 @@ No `src/` folder. All source lives at the project root.
 │       │   │   └── OrderDetailPanel.tsx
 │       │   ├── hooks/
 │       │   │   └── useOrderParams.ts
-│       │   ├── actions/
-│       │   │   └── orders.actions.ts
 │       │   ├── services/
-│       │   │   └── orders.service.ts
+│       │   │   └── get-orders.ts
+│       │   └── index.tsx
+│       │
+│       ├── order-detail/
+│       │   ├── components/
+│       │   │   ├── OrderInfoCard.tsx
+│       │   │   ├── OrderStatusStepper.tsx
+│       │   │   ├── UpdateOrderStatusDialog.tsx
+│       │   │   └── …
+│       │   ├── actions/              # one file per action (SRP)
+│       │   │   ├── updateOrderStatus.ts
+│       │   │   └── togglePaid.ts
+│       │   ├── services/
+│       │   │   └── get-order.ts
 │       │   └── index.tsx
 │       │
 │       ├── products/
@@ -1507,14 +1518,29 @@ No `src/` folder. All source lives at the project root.
 │       │   ├── hooks/
 │       │   │   └── useProductParams.ts
 │       │   ├── actions/
-│       │   │   └── products.actions.ts
+│       │   │   ├── productActionHelpers.ts
+│       │   │   ├── createProduct.ts
+│       │   │   ├── updateProduct.ts
+│       │   │   ├── deleteProduct.ts
+│       │   │   ├── updateProductStatus.ts
+│       │   │   ├── toggleFeatured.ts
+│       │   │   ├── deleteProductImage.ts
+│       │   │   └── duplicateProduct.ts
 │       │   ├── services/
-│       │   │   └── products.service.ts
+│       │   │   └── get-products.ts
 │       │   └── index.tsx
 │       │
 │       ├── categories/
 │       ├── brands/
+│       │   ├── actions/              # one file per action
+│       │   │   ├── createBrand.ts
+│       │   │   ├── updateBrand.ts
+│       │   │   └── deleteBrand.ts
+│       │   └── …
 │       ├── customers/
+│       │   ├── actions/
+│       │   │   └── toggleCustomerActive.ts
+│       │   └── …
 │       ├── coupons/
 │       ├── analytics/
 │       ├── settings/
@@ -1695,12 +1721,19 @@ bunx prisma <command>    # run any Prisma CLI command
 | Non-component files    | `kebab-case`            | `cart.service.ts`     |
 | Component files        | `PascalCase`            | `ProductCard.tsx`     |
 | Feature default export | `<Name>Feature`         | `ProductsFeature`     |
-| Server Action files    | `<name>.actions.ts`     | `cart.actions.ts`     |
+| Server Action files    | `camelCase.ts`, **one file per action** | `createBrand.ts`, `updateOrderStatus.ts` |
 | Service files          | `<name>.service.ts`     | `cart.service.ts`     |
 | nuqs hook files        | `use<Name>Params.ts`    | `useProductParams.ts` |
 | DB columns             | `snake_case` via `@map` | `created_at`          |
 | TypeScript fields      | `camelCase`             | `createdAt`           |
 | API routes             | Plural nouns            | `/api/products`       |
+
+### Server Actions
+
+- **One file per action.** Each file exports a single `*Action` (or one mutation entry point for that use case). Name the file after what it does (e.g. `updateOrderStatus.ts` → `updateOrderStatusAction`).
+- **Single Responsibility (SOLID).** A file should change for only one kind of business rule: unrelated mutations are not combined in the same module.
+- **Separation of concerns.** Keep each action’s validation, authorization, data updates, and `revalidatePath` boundaries together for that action only, instead of mixing several flows in a shared `*.actions.ts` barrel.
+- **Migration.** Features that still use a bundled `<feature>.actions.ts` should be split into one file per action over time, consistent with the naming row above.
 
 ### Feature Rules
 

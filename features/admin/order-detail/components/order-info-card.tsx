@@ -11,7 +11,7 @@ import SubmitButton from "@/components/shared/submit-button";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
 import { PaymentMethod } from "@/generated/prisma/enums";
 import { cn } from "@/lib/utils";
-import { togglePaidAction } from "../actions/orders.actions";
+import { togglePaidAction } from "../actions/togglePaid";
 import type { OrderDetail } from "../services/get-order";
 
 type OrderInfoCardProps = {

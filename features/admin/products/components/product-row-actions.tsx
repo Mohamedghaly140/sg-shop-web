@@ -25,11 +25,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ProductStatus } from "@/generated/prisma/enums";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
-import {
-  duplicateProductAction,
-  toggleFeaturedAction,
-  updateProductStatusAction,
-} from "../actions/products.actions";
+import { duplicateProductAction } from "../actions/duplicateProduct";
+import { toggleFeaturedAction } from "../actions/toggleFeatured";
+import { updateProductStatusAction } from "../actions/updateProductStatus";
 import { DeleteProductButton } from "./delete-product-button";
 
 type ProductRowActionsProps = {

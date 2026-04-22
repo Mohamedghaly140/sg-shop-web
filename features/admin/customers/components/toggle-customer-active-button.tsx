@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
-import { toggleCustomerActiveAction } from "../actions/customers.actions";
+import { toggleCustomerActiveAction } from "../actions/toggleCustomerActive";
 
 type ToggleCustomerActiveButtonProps = {
   customerId: string;
