@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
-import { deleteCouponAction } from "../actions/coupons.actions";
+import { deleteCouponAction } from "@/features/admin/coupons/actions/deleteCoupon";
 
 type DeleteCouponButtonProps = {
   couponId: string;

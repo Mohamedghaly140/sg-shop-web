@@ -16,7 +16,8 @@ import Form from "@/components/shared/form/form";
 import FormControl from "@/components/shared/form-control";
 import SubmitButton from "@/components/shared/submit-button";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
-import { createCouponAction, updateCouponAction } from "../actions/coupons.actions";
+import { createCouponAction } from "@/features/admin/coupons/actions/createCoupon";
+import { updateCouponAction } from "@/features/admin/coupons/actions/updateCoupon";
 import type { CouponRow } from "../services/get-coupons";
 
 type UpsertCouponDialogProps =
