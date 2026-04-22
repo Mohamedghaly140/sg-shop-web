@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
-import { deleteBrandAction } from "../actions/brands.actions";
+import { deleteBrandAction } from "@/features/admin/brands/actions/deleteBrand";
 
 type DeleteBrandButtonProps = {
   brandId: string;

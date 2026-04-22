@@ -20,7 +20,8 @@ import {
   type UploadedImage,
 } from "@/components/shared/cloudinary-uploader";
 import { CLOUDINARY_BRANDS_FOLDER } from "@/lib/cloudinary-public";
-import { createBrandAction, updateBrandAction } from "../actions/brands.actions";
+import { createBrandAction } from "@/features/admin/brands/actions/createBrand";
+import { updateBrandAction } from "@/features/admin/brands/actions/updateBrand";
 import type { Brand } from "@/generated/prisma/client";
 
 type UpsertBrandDialogProps =
