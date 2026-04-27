@@ -39,7 +39,7 @@ Make the store **buyable**. Cart (registered + anonymous), checkout (CASH + CARD
   - `addToCart(userId, sessionToken, input)` — upsert cart, merge same productId+color+size.
   - `updateCartItemQuantity(userId, sessionToken, itemId, quantity)` — clamp to stock; remove on 0.
   - `removeCartItem(userId, sessionToken, itemId)`.
-  - `applyCoupon(userId, sessionToken, code)` — validate active, not expired, within usage limit.
+  - `applyCoupon(cartId, code)` — validate active, not expired, within usage limit; return the cart payload with computed `discountApplied` and `totalPriceAfterDiscount` for the UI without updating the `Cart` row.
   - `recomputeCartTotals(cartId)` — call after every mutation.
 - [ ] Server Actions in `features/cart/actions/` (one file per action). Each calls the matching service function.
 - [ ] Cart cookie helpers in `lib/cart-session.ts` — get/set/clear `sessionToken` cookie (httpOnly, 7-day expiry).
@@ -56,7 +56,7 @@ Make the store **buyable**. Cart (registered + anonymous), checkout (CASH + CARD
 ### 3. Checkout
 
 - [ ] `features/checkout/services/checkout.service.ts`:
-  - `createOrderFromCart(userId | null, sessionToken | null, input)` — generates `humanOrderId`, snapshots prices, validates stock, creates Order + OrderItems.
+  - `createOrderFromCart(userId | null, sessionToken | null, input)` — generates `humanOrderId`, snapshots prices, validates stock, creates Order + OrderItems. If checkout input includes a coupon code, re-validate it and store `Order.couponId` / `Order.discountApplied`.
   - `incrementCouponUsage(couponId)` after successful order creation.
 - [ ] Server Action: `features/checkout/actions/createOrder.ts` — for both CASH and CARD. CARD path also creates the PaymentIntent and returns `clientSecret`.
 - [ ] `features/checkout/index.tsx` — multi-step form: contact (anon only) → shipping → payment → review.

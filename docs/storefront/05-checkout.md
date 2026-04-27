@@ -38,7 +38,7 @@ features/checkout/
 
 - Read the cart (userId or sessionToken). If empty → redirect `/cart`.
 - If registered: fetch saved addresses (default first) for shipping selection.
-- Compute current totals (subtotal, shipping fees, coupon discount, grand total).
+- If the checkout form carries a coupon code from the cart UI, re-validate it and compute current totals (subtotal, shipping fees, coupon discount, grand total). Coupon state is not read from the `Cart` row.
 
 ## UI
 
@@ -114,7 +114,7 @@ Both flows snapshot prices into `OrderItem.price`.
 ## Edge cases
 
 - Empty cart → redirect `/cart`.
-- Coupon expired between cart and checkout → drop and recompute, show notice.
+- Coupon expired between cart and checkout → drop the discount, recompute, show notice.
 - Stock dropped below cart quantity → block checkout, send user back to cart with a notice.
 - CARD: PaymentIntent succeeds but webhook is delayed → success page can show "Processing" state until webhook flips `isPaid = true`. Use a brief client poll, or render based on Stripe's client-side confirmation result.
 - CARD: payment fails → keep order in PENDING with `isPaid = false`, surface error, allow retry.

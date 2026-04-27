@@ -46,7 +46,11 @@ The `sessionToken` cookie is set on the **first** cart interaction by an anonymo
 - If anonymous (cookie present): cart by `sessionToken`, same shape.
 - If neither: render empty cart state.
 
-Totals are computed server-side and stored on the `Cart` row (`totalCartPrice`, `totalPriceAfterDiscount`) when the cart is mutated.
+Base totals are computed server-side and stored on the `Cart` row when the cart is mutated.
+
+Coupon application is a separate Server Action and does **not** update the `Cart` row. `applyCouponAction` receives `cartId` and `code`, validates the coupon, and returns the same cart payload shape with computed `discountApplied` and `totalPriceAfterDiscount` values for the UI.
+
+Checkout must receive the coupon code again if the user proceeds with the discount. It re-validates the coupon before order creation, then stores `couponId` and `discountApplied` on the `Order`.
 
 ## UI
 
@@ -62,10 +66,10 @@ Totals are computed server-side and stored on the `Cart` row (`totalCartPrice`, 
 | `addToCartAction`   | Insert or merge a `CartItem` (same productId+color+size → sum quantity); capture price snapshot |
 | `updateQuantityAction` | Update `CartItem.quantity`; remove the item if quantity reaches 0     |
 | `removeCartItemAction` | Delete the `CartItem`                                                |
-| `applyCouponAction` | Validate coupon (active, not expired, within usage limit); apply discount |
+| `applyCouponAction` | Validate coupon for `cartId`; return computed discount totals without writing to `Cart` |
 | `clearCartAction`   | Delete all items                                                       |
 
-After each mutation, recompute and persist `totalCartPrice` and `totalPriceAfterDiscount`.
+After cart mutations, recompute and persist base cart totals. Coupon discounts are computed in the action response only.
 
 ## Cart merge on sign-in
 
