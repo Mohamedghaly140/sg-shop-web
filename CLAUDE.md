@@ -1,12 +1,12 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 We're building the app described in @docs/SPEC.MD. Read that file for general architectural tasks or to double-check the exact database structure, tech stack or application architecture.
 
 Keep your replies extremely concise and focus on conveying the key information. No unnecessary fluff, no long code snippets.
 
 Whenever working with any third-party library or something similar, you MUST look up the official documentation to ensure that you're working with up-to-date information. Use the DocsExplorer subagent for efficient documentation lookup.
-
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 @AGENTS.md
 
@@ -15,9 +15,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Always use **Bun** — never `npm`, `npx`, or `yarn`.
 
 ```bash
-bun dev        # start dev server
-bun build      # production build
-bun lint       # ESLint
+bun dev                 # start dev server
+bun build               # production build
+bun lint                # ESLint
+bun prisma:migrate      # run migrations (uses DIRECT_URL)
+bun prisma:generate     # regenerate Prisma client after schema changes
+bun prisma:studio       # Prisma Studio GUI
+bun prisma:seed         # seed the database
 ```
 
 ## Architecture
@@ -69,6 +73,7 @@ features/<name>/
 - `User.id` stores the Clerk user ID string directly (e.g. `user_2abc…`). Use `auth()` → `userId` as a FK in Prisma queries — no mapping step.
 - Roles (`USER` / `MANAGER` / `ADMIN`) live in Clerk `publicMetadata.role` and are mirrored to the DB via the `POST /api/webhooks/clerk` webhook.
 - Prisma is **server-only**. `DATABASE_URL` must never reach the client bundle.
+- `lib/require-role.ts` exports `requireAdmin()` and `requireManagerOrAdmin()` — call these at the top of admin Server Actions / API handlers as a second guard layer beyond the middleware.
 
 ## URL state
 
@@ -130,4 +135,25 @@ Two URLs required — the pooler URL for runtime, the direct URL for migrations 
 ```env
 DATABASE_URL   # pooler (port 6543) — runtime queries
 DIRECT_URL     # direct (port 5432) — prisma migrate only
+```
+
+The Prisma client is generated to `generated/prisma` (not the default `@prisma/client`):
+
+```ts
+import { prisma } from "@/lib/prisma";           // singleton client
+import type { User } from "@/generated/prisma/client"; // generated types
+import { ProductStatus } from "@/generated/prisma/enums"; // generated enums
+```
+
+## Environment variables
+
+`lib/env.ts` is a validated env singleton that throws on startup if required vars are missing. Import from it instead of accessing `process.env` directly in server code.
+
+## Decimal serialization
+
+Prisma `Decimal` fields cannot be passed as-is to Client Components. Use the `DecimalToString<T, K>` utility type from `types/utils.ts` to type-narrow serialized props:
+
+```ts
+import type { DecimalToString } from "@/types/utils";
+type ProductCardProps = DecimalToString<Product, "price" | "discount">;
 ```
