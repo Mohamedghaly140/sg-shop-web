@@ -16,6 +16,7 @@ Build the authenticated user's account experience: profile, order history, addre
 - `/account/addresses` full CRUD with default address.
 - `/account/wishlist` add/remove/quick-add-to-cart.
 - In-app notifications for order events.
+- Device token registration API for the future Expo mobile app.
 - API route handlers for every web feature shipped here.
 
 ## Linked docs
@@ -74,10 +75,15 @@ Build the authenticated user's account experience: profile, order history, addre
 ### 7. In-app notifications
 
 - [ ] Render a notifications dropdown in the storefront top nav (registered users only).
+- [ ] Add migration for notification device storage:
+  - `UserDevice` table: `id`, `userId`, `platform` (`IOS` / `ANDROID`), `expoPushToken`, `lastSeenAt`, `createdAt`, `updatedAt`.
+  - Unique constraint on `expoPushToken`.
 - [ ] `features/notifications/services/notifications.service.ts`:
   - `getNotifications(userId, params)` — paginated.
   - `markAsRead(notificationId, userId)`.
   - `markAllAsRead(userId)`.
+  - `registerDevice(userId, input)` — upsert Expo push token for the signed-in user.
+  - `deleteDevice(userId, expoPushToken)` — remove a token on sign-out or permission revoke.
 - [ ] Emit notifications from the order lifecycle:
   - On `payment_intent.succeeded` → `ORDER_CONFIRMED`.
   - On status → SHIPPED → `ORDER_SHIPPED`.
@@ -92,6 +98,7 @@ Build the authenticated user's account experience: profile, order history, addre
 - [ ] `/api/account/addresses/[id]` — PATCH update, DELETE remove.
 - [ ] `/api/account/wishlist` — GET list, POST add.
 - [ ] `/api/account/wishlist/[productId]` — DELETE remove.
+- [ ] `/api/account/devices` — POST register Expo push token, DELETE remove Expo push token.
 - [ ] `/api/orders` — GET user's order list (auth required).
 - [ ] `/api/orders/[id]` — GET single order.
 
@@ -129,6 +136,7 @@ All routes call the same service functions used by Server Actions.
 - [ ] Notifications appear in the dropdown for the right user.
 - [ ] Mark as read / mark all as read work.
 - [ ] Notifications are emitted from order lifecycle events.
+- [ ] `/api/account/devices` stores and removes Expo push tokens for the signed-in user.
 
 ### Code quality
 

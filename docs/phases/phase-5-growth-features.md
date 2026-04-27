@@ -17,6 +17,7 @@ Layer in features that drive retention and decision-making: product reviews, the
 - Admin analytics dashboard with date-range driven charts.
 - Promotional banners (admin-managed content).
 - Proactive low-stock alerts (notifications/email when products cross threshold).
+- Expo push delivery for registered mobile devices.
 
 ## Linked docs
 
@@ -87,7 +88,15 @@ Layer in features that drive retention and decision-making: product reviews, the
   - Create an in-app notification for all ADMIN users.
 - [ ] Threshold is configurable in admin settings (default 5).
 
-### 5. Wire ratings into the storefront
+### 5. Expo push notification delivery
+
+- [ ] Add Expo Push API integration for tokens registered through `/api/account/devices` from Phase 3.
+- [ ] When an in-app notification is created, also enqueue/send a push notification to the user's active devices.
+- [ ] Handle invalid push tickets/receipts by deleting stale `UserDevice` rows.
+- [ ] Push payload includes a stable deep-link target in `data` (order detail, account notifications, etc.).
+- [ ] Push send failures are logged but never block the primary order/review/admin mutation.
+
+### 6. Wire ratings into the storefront
 
 - [ ] Product cards already render `ratingsAverage` and `ratingsQuantity` from Phase 1; verify the recompute on review changes is reflected after page revalidate.
 
@@ -117,8 +126,14 @@ Layer in features that drive retention and decision-making: product reviews, the
 ### Low-stock alerts
 
 - [ ] Scheduled job fires once a day.
-- [ ] Email sends to support address; in-app notifications appear for ADMIN users.
+- [ ] Email sends to support address; in-app notifications and push notifications appear for ADMIN users.
 - [ ] Threshold respects admin settings.
+
+### Push notifications
+
+- [ ] Push notifications are sent for order lifecycle notifications to registered user devices.
+- [ ] Invalid Expo push tokens are cleaned up after failed delivery receipts.
+- [ ] Push failures do not block the primary mutation.
 
 ## What is **not** in this phase
 

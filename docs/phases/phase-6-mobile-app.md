@@ -89,8 +89,8 @@ This is a **separate Expo project**. It does not live in the Next.js repo.
 ### 8. Push notifications
 
 - [ ] Register the device with Expo Notifications; get the push token.
-- [ ] Add API route `/api/account/devices` (POST) on the Next.js app to store the push token against the user.
-- [ ] Server-side: when an in-app notification is created (Phase 3 wiring), also send a push notification via Expo Push API to the user's registered devices.
+- [ ] POST the token to the existing `/api/account/devices` route built in Phase 3.
+- [ ] Confirm server-side push delivery is already wired from Phase 5 notification creation paths.
 - [ ] Tap action: deep-link into the relevant screen (order detail, etc.).
 
 ### 9. Build & ship
@@ -130,7 +130,5 @@ This is a **separate Expo project**. It does not live in the Next.js repo.
 
 ### Definition of "no backend changes required"
 
-- [ ] The mobile app is delivered without merging any change to the Next.js repo other than:
-  - Adding `/api/account/devices` (push token registration).
-  - Wiring server-side push send from the existing notification creation paths.
+- [ ] The mobile app is delivered without merging any change to the Next.js repo.
 - [ ] Anything more than that = a missed API in an earlier phase. Add it in the appropriate phase doc as a follow-up note.

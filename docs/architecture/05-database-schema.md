@@ -98,6 +98,11 @@ enum ProductStatus {
   ARCHIVED
 }
 
+enum DevicePlatform {
+  IOS
+  ANDROID
+}
+
 // ─────────────────────────────────────────
 // USER
 // id = Clerk user ID string — NOT a generated cuid.
@@ -120,6 +125,7 @@ model User {
   cart          Cart?
   wishlist      UserWishlist[]
   notifications Notification[]
+  devices       UserDevice[]
 
   @@map("users")
 }
@@ -476,6 +482,28 @@ model Notification {
   @@index([userId, read])
   @@map("notifications")
 }
+
+// ─────────────────────────────────────────
+// USER DEVICE
+// Stores Expo push tokens for the future mobile app.
+// Registered in Phase 3; push delivery is wired in Phase 5.
+// ─────────────────────────────────────────
+
+model UserDevice {
+  id            String         @id @default(cuid())
+  platform      DevicePlatform
+  expoPushToken String         @unique
+  lastSeenAt    DateTime      @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("userDevices")
+}
 ```
 
 ## Entity relationships
@@ -486,6 +514,7 @@ users ──1:1────► carts ──1:many──► cartItems ──many:
 users ──1:many──► orders
 users ──1:many──► reviews ──many:1──► products
 users ──many:many──► (UserWishlist) ──► products
+users ──1:many──► userDevices
 
 categories ──1:many──► subCategories
 categories ──1:many──► products
@@ -507,3 +536,4 @@ orders ──1:many──► orderItems ──many:1──► products
 | `OrderStatus`   | `PENDING` · `PROCESSING` · `SHIPPED` · `DELIVERED` · `CANCELLED` · `REFUNDED` |
 | `PaymentMethod` | `CASH` · `CARD`                                                               |
 | `ProductStatus` | `DRAFT` · `ACTIVE` · `ARCHIVED`                                               |
+| `DevicePlatform` | `IOS` · `ANDROID`                                                             |

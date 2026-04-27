@@ -36,6 +36,7 @@ app/api/
 │   ├── addresses/
 │   │   ├── route.ts                GET   — list | POST — create
 │   │   └── [id]/route.ts           PATCH — update | DELETE — remove
+│   ├── devices/route.ts            POST  — register Expo push token | DELETE — remove token
 │   └── wishlist/
 │       ├── route.ts                GET   — list | POST — add product
 │       └── [productId]/route.ts    DELETE — remove product
