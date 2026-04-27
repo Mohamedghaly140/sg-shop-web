@@ -79,8 +79,8 @@ Make the store **buyable**. Cart (registered + anonymous), checkout (CASH + CARD
 
 ### 5. Refund flow
 
-- [ ] Service: `refundOrder(orderId, reason)` — calls `stripe.refunds.create`, transitions status to REFUNDED, clears `isPaid`.
-- [ ] Server Action: `features/admin/order-detail/actions/refundOrder.ts` (Admin only — full admin UI lands in Phase 4 but the action and service can land here so the order management story is complete).
+- [ ] Service function: `refundOrder(orderId, reason)` — calls `stripe.refunds.create`, transitions status to REFUNDED, clears `isPaid`. The service function lands in Phase 2 in `features/checkout/services/checkout.service.ts` or a dedicated `features/checkout/services/refund.service.ts`.
+- [ ] Admin Server Action: `features/admin/order-detail/actions/refundOrder.ts` lands in Phase 4 with the admin UI; it should call the Phase 2 service function.
 - [ ] Send `RefundProcessed` email.
 
 ### 6. Resend transactional email
@@ -159,6 +159,6 @@ Make the store **buyable**. Cart (registered + anonymous), checkout (CASH + CARD
 ## What is **not** in this phase
 
 - Account area UI (profile, addresses, wishlist) → Phase 3.
-- Admin dashboard UI → Phase 4 (although `refundOrder` service lives here for completeness).
+- Admin dashboard UI and admin refund Server Action → Phase 4 (the `refundOrder` service function lands here in Phase 2 for completeness).
 - Reviews → Phase 5.
 - Mobile app → Phase 6.

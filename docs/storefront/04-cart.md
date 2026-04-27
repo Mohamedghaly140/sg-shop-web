@@ -23,7 +23,11 @@ features/cart/
 ├── hooks/
 │   └── useCart.ts
 ├── actions/
-│   └── cart.actions.ts            # add / update / remove / merge
+│   ├── addToCart.ts
+│   ├── updateQuantity.ts
+│   ├── removeCartItem.ts
+│   ├── applyCoupon.ts
+│   └── clearCart.ts
 ├── services/
 │   └── cart.service.ts
 └── index.tsx
@@ -60,6 +64,8 @@ Checkout must receive the coupon code again if the user proceeds with the discou
 - **`CartSummary`** — subtotal, shipping estimate placeholder, coupon code input, grand total, "Checkout" CTA.
 
 ## Mutations (Server Actions)
+
+Each Server Action lives in its own file under `features/cart/actions/`; do not bundle cart actions into a barrel action file.
 
 | Action              | Effect                                                                 |
 | ------------------- | ---------------------------------------------------------------------- |
