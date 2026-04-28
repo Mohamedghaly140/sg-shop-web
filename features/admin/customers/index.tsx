@@ -1,3 +1,5 @@
+import { auth } from "@clerk/nextjs/server";
+
 import { customersSearchParamsCache } from "./hooks/use-customers-params";
 import { getCustomers } from "./services/get-customers";
 import { CustomersToolbar } from "./components/customers-toolbar";
@@ -9,7 +11,10 @@ type AdminCustomersFeatureProps = {
 
 export default async function AdminCustomersFeature({ searchParams }: AdminCustomersFeatureProps) {
   const params = await customersSearchParamsCache.parse(searchParams);
-  const { customers, total, pageCount } = await getCustomers(params);
+  const [{ customers, total, pageCount }, { userId: currentUserId }] = await Promise.all([
+    getCustomers(params),
+    auth(),
+  ]);
 
   return (
     <div className="space-y-4 p-6">
@@ -20,7 +25,11 @@ export default async function AdminCustomersFeature({ searchParams }: AdminCusto
         </p>
       </div>
       <CustomersToolbar total={total} />
-      <CustomersTable customers={customers} pageCount={pageCount} />
+      <CustomersTable
+        customers={customers}
+        pageCount={pageCount}
+        currentUserId={currentUserId}
+      />
     </div>
   );
 }

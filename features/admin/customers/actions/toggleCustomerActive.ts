@@ -4,6 +4,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import { Role } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import {
   type ActionState,
@@ -22,12 +23,29 @@ export async function toggleCustomerActiveAction(
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    await requireManagerOrAdmin();
+    const currentUserId = await requireManagerOrAdmin();
 
     const { customerId, active } = toggleActiveSchema.parse({
       customerId: formData.get("customerId"),
       active: formData.get("active"),
     });
+
+    if (customerId === currentUserId) {
+      throw new Error("You cannot change your own active state");
+    }
+
+    const customer = await prisma.user.findUnique({
+      where: { id: customerId },
+      select: { role: true },
+    });
+
+    if (!customer) {
+      throw new Error("Customer not found");
+    }
+
+    if (customer.role !== Role.USER) {
+      throw new Error("Only customer accounts can be activated or deactivated here");
+    }
 
     const clerk = await clerkClient();
     if (active) {

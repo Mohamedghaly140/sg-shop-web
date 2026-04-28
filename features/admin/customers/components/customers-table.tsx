@@ -40,9 +40,14 @@ import { ToggleCustomerActiveButton } from "./toggle-customer-active-button";
 type CustomersTableProps = {
   customers: CustomerListItem[];
   pageCount: number;
+  currentUserId: string | null;
 };
 
-export function CustomersTable({ customers, pageCount }: CustomersTableProps) {
+export function CustomersTable({
+  customers,
+  pageCount,
+  currentUserId,
+}: CustomersTableProps) {
   const [params, setParams] = useCustomersParams();
   const page = params.page ?? 1;
   const limit = params.limit ?? 10;
@@ -118,10 +123,12 @@ export function CustomersTable({ customers, pageCount }: CustomersTableProps) {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <ToggleCustomerActiveButton
-                        customerId={customer.id}
-                        active={customer.active}
-                      />
+                      {customer.id !== currentUserId && (
+                        <ToggleCustomerActiveButton
+                          customerId={customer.id}
+                          active={customer.active}
+                        />
+                      )}
                       <Button variant="ghost" size="icon" asChild>
                         <Link href={`/admin/customers/${customer.id}`}>
                           <LucideEye className="w-4 h-4" />

@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { LucideArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +16,10 @@ type AdminCustomerDetailFeatureProps = {
 };
 
 export default async function AdminCustomerDetailFeature({ id }: AdminCustomerDetailFeatureProps) {
-  const customer = await getCustomer(id);
+  const [customer, { userId: currentUserId }] = await Promise.all([
+    getCustomer(id),
+    auth(),
+  ]);
 
   return (
     <div className="space-y-6 p-6">
@@ -43,7 +47,12 @@ export default async function AdminCustomerDetailFeature({ id }: AdminCustomerDe
           </div>
           <p className="text-sm text-muted-foreground">{customer.email}</p>
         </div>
-        <ToggleCustomerActiveButton customerId={customer.id} active={customer.active} />
+        {customer.id !== currentUserId && (
+          <ToggleCustomerActiveButton
+            customerId={customer.id}
+            active={customer.active}
+          />
+        )}
       </div>
 
       {/* Stats */}

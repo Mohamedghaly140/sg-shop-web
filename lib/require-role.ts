@@ -8,10 +8,11 @@ export async function requireAdmin(): Promise<string> {
   return userId!;
 }
 
-export async function requireManagerOrAdmin(): Promise<void> {
-  const { sessionClaims } = await auth();
+export async function requireManagerOrAdmin(): Promise<string> {
+  const { sessionClaims, userId } = await auth();
   const role = sessionClaims?.metadata?.role;
-  if (role !== "MANAGER" && role !== "ADMIN") {
+  if (!userId || (role !== "MANAGER" && role !== "ADMIN")) {
     throw new Error("Unauthorized");
   }
+  return userId;
 }
