@@ -2,6 +2,10 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
+const isAdminOnlyRoute = createRouteMatcher([
+  "/admin/settings(.*)",
+  "/admin/users(.*)",
+]);
 const isAccountRoute = createRouteMatcher(["/account(.*)"]);
 const isApiRoute = createRouteMatcher(["/api(.*)"]);
 const isWebhookRoute = createRouteMatcher(["/api/webhooks/(.*)"]);
@@ -13,6 +17,11 @@ export default clerkMiddleware(async (auth, req) => {
     await auth.protect();
     const { sessionClaims } = await auth();
     const role = sessionClaims?.metadata?.role;
+
+    if (isAdminOnlyRoute(req) && role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/admin", req.url));
+    }
+
     if (role !== "ADMIN" && role !== "MANAGER") {
       return NextResponse.redirect(new URL("/", req.url));
     }
