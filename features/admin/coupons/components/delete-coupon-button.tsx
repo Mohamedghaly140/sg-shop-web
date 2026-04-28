@@ -43,7 +43,7 @@ export function DeleteCouponButton({ couponId, couponName }: DeleteCouponButtonP
         </Button>
       }
       title="Delete Coupon"
-      description={`Delete coupon "${couponName}"? Orders that used this code will retain their applied discount but will no longer reference this coupon.`}
+      description={`Delete coupon "${couponName}"? Only coupons that have never been used can be deleted.`}
       confirmLabel="Delete"
       onConfirm={handleDelete}
     />

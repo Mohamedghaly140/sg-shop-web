@@ -26,6 +26,19 @@ export async function deleteCouponAction(
       couponId: formData.get("couponId"),
     });
 
+    const coupon = await prisma.coupon.findUnique({
+      where: { id: couponId },
+      select: { usedCount: true },
+    });
+
+    if (!coupon) {
+      throw new Error("Coupon not found");
+    }
+
+    if (coupon.usedCount > 0) {
+      throw new Error("Used coupons cannot be deleted. Deactivate this coupon instead.");
+    }
+
     await prisma.coupon.delete({ where: { id: couponId } });
 
     revalidatePath("/admin/coupons");
@@ -34,4 +47,3 @@ export async function deleteCouponAction(
     return fromErrorToActionState(error, formData);
   }
 }
-
