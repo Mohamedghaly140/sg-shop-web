@@ -25,5 +25,21 @@ export async function getOrder(id: string) {
   });
 
   if (!order) notFound();
-  return order;
+
+  return {
+    ...order,
+    shippingFees: order.shippingFees.toString(),
+    totalOrderPrice: order.totalOrderPrice?.toString() ?? null,
+    discountApplied: order.discountApplied?.toString() ?? null,
+    items: order.items.map((item) => ({
+      ...item,
+      price: item.price?.toString() ?? null,
+    })),
+    coupon: order.coupon
+      ? {
+          ...order.coupon,
+          discount: order.coupon.discount.toString(),
+        }
+      : null,
+  };
 }
