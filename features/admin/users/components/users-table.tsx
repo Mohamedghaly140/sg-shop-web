@@ -127,15 +127,17 @@ export function UsersTable({ users, pageCount, currentUserId }: UsersTableProps)
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <UpsertUserDialog
-                        mode="edit"
-                        user={user}
-                        trigger={
-                          <Button variant="ghost" size="icon">
-                            <LucidePencil className="w-4 h-4" />
-                          </Button>
-                        }
-                      />
+                      {user.id !== currentUserId && (
+                        <UpsertUserDialog
+                          mode="edit"
+                          user={user}
+                          trigger={
+                            <Button variant="ghost" size="icon">
+                              <LucidePencil className="w-4 h-4" />
+                            </Button>
+                          }
+                        />
+                      )}
                       {user.id !== currentUserId && (
                         <DeleteUserButton userId={user.id} userName={user.name} />
                       )}
