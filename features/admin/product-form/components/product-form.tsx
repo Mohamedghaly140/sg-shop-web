@@ -138,7 +138,7 @@ export function ProductForm({ mode, formData, product }: ProductFormProps) {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <SectionCard title="Basics" description="Name, slug, and description">
+          <SectionCard title="Basics" description="Name and description">
             <div className="flex flex-col gap-2">
               <Label htmlFor="name">Name</Label>
               <Input
