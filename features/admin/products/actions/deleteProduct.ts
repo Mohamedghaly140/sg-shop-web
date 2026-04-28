@@ -1,6 +1,8 @@
 "use server";
 
-import { Prisma } from "@/generated/prisma/client";
+import { revalidatePath } from "next/cache";
+
+import { Prisma, ProductStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { destroyAssets } from "@/lib/cloudinary";
 import {
@@ -11,13 +13,25 @@ import {
 import { requireManagerOrAdmin } from "@/lib/require-role";
 import { productIdFormSchema, revalidateProductCaches } from "./productActionHelpers";
 
+async function archiveReferencedProduct(productId: string): Promise<void> {
+  await prisma.product.update({
+    where: { id: productId },
+    data: {
+      status: ProductStatus.ARCHIVED,
+      featured: false,
+    },
+  });
+}
+
 export async function deleteProductAction(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  let productId: string | null = null;
+
   try {
     await requireManagerOrAdmin();
-    const productId = productIdFormSchema.parse(formData.get("productId"));
+    productId = productIdFormSchema.parse(formData.get("productId"));
 
     const product = await prisma.product.findUniqueOrThrow({
       where: { id: productId },
@@ -25,8 +39,25 @@ export async function deleteProductAction(
         id: true,
         imageId: true,
         images: { select: { imageId: true } },
+        _count: {
+          select: {
+            cartItems: true,
+            orderItems: true,
+          },
+        },
       },
     });
+
+    if (product._count.orderItems > 0 || product._count.cartItems > 0) {
+      await archiveReferencedProduct(product.id);
+
+      revalidateProductCaches();
+      revalidatePath(`/admin/products/${product.id}`);
+      return toActionState(
+        "SUCCESS",
+        "Product is referenced by orders or carts, so it was archived instead",
+      );
+    }
 
     await prisma.product.delete({ where: { id: productId } });
 
@@ -39,10 +70,15 @@ export async function deleteProductAction(
     return toActionState("SUCCESS", "Product deleted successfully");
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2003") {
-      return fromErrorToActionState(
-        new Error("Cannot delete: this product is referenced by orders or carts"),
-        formData,
-      );
+      if (productId) {
+        await archiveReferencedProduct(productId);
+        revalidateProductCaches();
+        revalidatePath(`/admin/products/${productId}`);
+        return toActionState(
+          "SUCCESS",
+          "Product is referenced by orders or carts, so it was archived instead",
+        );
+      }
     }
     return fromErrorToActionState(error, formData);
   }
