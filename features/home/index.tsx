@@ -18,7 +18,7 @@ export default async function HomeFeature() {
       <section className="py-24 px-8 border-y border-border text-center">
         <p className="font-heading text-[clamp(1.8rem,4vw,3.5rem)] text-foreground max-w-4xl mx-auto leading-tight">
           Minimal luxury.{" "}
-          <em className="text-accent not-italic">Thoughtfully</em> made.
+          <em className="text-gold not-italic">Thoughtfully</em> made.
         </p>
       </section>
 
@@ -31,9 +31,9 @@ export default async function HomeFeature() {
         <span className="absolute inset-0 flex items-center justify-center font-heading text-[22rem] text-white/[0.03] leading-none select-none pointer-events-none">
           SG
         </span>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-16 bg-accent" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-16 bg-gold" />
         <div className="relative z-10 max-w-2xl mx-auto text-center space-y-8">
-          <p className="font-sans text-xs tracking-[0.3em] uppercase text-accent">
+          <p className="font-sans text-xs tracking-[0.3em] uppercase text-gold">
             Exclusive Access
           </p>
           <h2 className="font-heading text-[clamp(2.5rem,6vw,5rem)] leading-tight">
@@ -45,7 +45,7 @@ export default async function HomeFeature() {
           </p>
           <Link
             href="/products"
-            className="inline-block font-sans text-xs tracking-[0.2em] uppercase border border-white/40 text-background px-10 py-4 hover:border-accent hover:text-accent transition-colors duration-300"
+            className="inline-block font-sans text-xs tracking-[0.2em] uppercase border border-white/40 text-background px-10 py-4 hover:border-gold hover:text-gold transition-colors duration-300"
           >
             Shop the Collection
           </Link>
