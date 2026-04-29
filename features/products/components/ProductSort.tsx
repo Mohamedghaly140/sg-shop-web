@@ -39,7 +39,7 @@ export function ProductSort() {
   return (
     <div className="flex items-center gap-3">
       <Select value={params.sort} onValueChange={handleSortChange}>
-        <SelectTrigger className="h-8 w-[180px] text-xs rounded-none focus:ring-0">
+        <SelectTrigger className="h-8 w-auto min-w-[110px] text-xs rounded-none focus:ring-0">
           <SelectValue />
         </SelectTrigger>
         <SelectContent className="rounded-none">

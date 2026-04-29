@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { LucideSlidersHorizontal, LucideX } from "lucide-react";
 
 import {
@@ -26,8 +27,7 @@ type MobileFiltersSheetProps = {
   activeCount: number;
 };
 
-const ACTIVE_CHIP =
-  "border-foreground text-foreground bg-[oklch(0.96_0.008_85)]";
+const ACTIVE_CHIP = "border-foreground bg-foreground text-background";
 const INACTIVE_CHIP =
   "border-border text-muted-foreground hover:border-foreground hover:text-foreground";
 
@@ -37,7 +37,43 @@ export function MobileFiltersSheet({
 }: MobileFiltersSheetProps) {
   const [params, setParams] = useProductParams();
 
+  const [localMin, setLocalMin] = useState(() =>
+    params.minPrice > 0 ? String(params.minPrice) : ""
+  );
+  const [localMax, setLocalMax] = useState(() =>
+    params.maxPrice > 0 ? String(params.maxPrice) : ""
+  );
+  const priceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function schedulePriceUpdate(min: string, max: string) {
+    if (priceTimerRef.current) clearTimeout(priceTimerRef.current);
+    priceTimerRef.current = setTimeout(() => {
+      const minVal = parseFloat(min);
+      const maxVal = parseFloat(max);
+      setParams({
+        minPrice: isNaN(minVal) || min === "" ? 0 : minVal,
+        maxPrice: isNaN(maxVal) || max === "" ? 0 : maxVal,
+        page: 1,
+      });
+    }, 600);
+  }
+
+  function handleMinChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value;
+    setLocalMin(val);
+    schedulePriceUpdate(val, localMax);
+  }
+
+  function handleMaxChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value;
+    setLocalMax(val);
+    schedulePriceUpdate(localMin, val);
+  }
+
   function handleClearAll() {
+    if (priceTimerRef.current) clearTimeout(priceTimerRef.current);
+    setLocalMin("");
+    setLocalMax("");
     setParams({
       category: "",
       brand: "",
@@ -57,20 +93,10 @@ export function MobileFiltersSheet({
     setParams({ color: params.color === color ? "" : color, page: 1 });
   }
 
-  function handleMinPriceBlur(e: React.FocusEvent<HTMLInputElement>) {
-    const val = parseFloat(e.target.value);
-    setParams({ minPrice: isNaN(val) ? 0 : val, page: 1 });
-  }
-
-  function handleMaxPriceBlur(e: React.FocusEvent<HTMLInputElement>) {
-    const val = parseFloat(e.target.value);
-    setParams({ maxPrice: isNaN(val) ? 0 : val, page: 1 });
-  }
-
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2 lg:hidden rounded-none">
+        <Button variant="outline" size="default" className="gap-2 lg:hidden rounded-none">
           <LucideSlidersHorizontal className="size-4" />
           Filters
           {activeCount > 0 && (
@@ -80,8 +106,8 @@ export function MobileFiltersSheet({
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="max-h-[85dvh] overflow-y-auto rounded-none px-0">
-        <SheetHeader className="flex flex-row items-center justify-between border-b border-border px-4 pb-4 pt-0">
+      <SheetContent side="bottom" showCloseButton={false} className="max-h-[85dvh] flex flex-col rounded-none px-0 gap-0 overflow-hidden">
+        <SheetHeader className="shrink-0 flex flex-row items-center justify-between border-b border-border px-4 py-3">
           <SheetTitle className="font-sans text-xs tracking-[0.2em] uppercase font-normal">
             Filters {activeCount > 0 && `(${activeCount})`}
           </SheetTitle>
@@ -98,6 +124,7 @@ export function MobileFiltersSheet({
           )}
         </SheetHeader>
 
+        <div className="overflow-y-auto flex-1">
         <Accordion
           type="multiple"
           defaultValue={["category", "brand", "price", "size", "color"]}
@@ -177,8 +204,8 @@ export function MobileFiltersSheet({
                   type="number"
                   placeholder="Min"
                   min={0}
-                  defaultValue={params.minPrice > 0 ? params.minPrice : ""}
-                  onBlur={handleMinPriceBlur}
+                  value={localMin}
+                  onChange={handleMinChange}
                   className="h-9 text-sm rounded-none"
                 />
                 <span className="font-sans text-xs text-muted-foreground shrink-0">
@@ -188,8 +215,8 @@ export function MobileFiltersSheet({
                   type="number"
                   placeholder="Max"
                   min={0}
-                  defaultValue={params.maxPrice > 0 ? params.maxPrice : ""}
-                  onBlur={handleMaxPriceBlur}
+                  value={localMax}
+                  onChange={handleMaxChange}
                   className="h-9 text-sm rounded-none"
                 />
               </div>
@@ -244,6 +271,7 @@ export function MobileFiltersSheet({
             </AccordionItem>
           )}
         </Accordion>
+        </div>
       </SheetContent>
     </Sheet>
   );

@@ -61,7 +61,7 @@ export default async function ProductsFeature({
       <ProductFilterBar options={filterOptions} />
 
       {/* Sort / mobile filters bar */}
-      <div className="px-4 md:px-8 py-4 flex items-center justify-between border-b border-border lg:border-none">
+      <div className="px-4 md:px-8 h-12 flex items-center justify-between border-b border-border lg:border-none">
         <MobileFiltersSheet
           options={filterOptions}
           activeCount={activeFilterCount}
