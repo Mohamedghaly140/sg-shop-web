@@ -1,5 +1,9 @@
 import ProductsFeature from "@/features/products";
 
-export default function ProductsPage() {
-  return <ProductsFeature />;
+type ProductsPageProps = {
+  searchParams: Promise<Record<string, string | string[]>>;
+};
+
+export default function ProductsPage({ searchParams }: ProductsPageProps) {
+  return <ProductsFeature searchParams={searchParams} />;
 }
