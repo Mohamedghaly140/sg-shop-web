@@ -77,7 +77,7 @@ export function StorefrontFooter() {
               New arrivals, early access, and nothing else.
             </p>
             {/* TODO: wire up newsletter Server Action */}
-            <form className="flex gap-0 border-b border-foreground">
+            <form className="flex gap-0 border-b border-border">
               <input
                 type="email"
                 placeholder="Your email"
