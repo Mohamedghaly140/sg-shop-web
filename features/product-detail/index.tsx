@@ -1,5 +1,5 @@
-import { ImageGallery } from "./components/ImageGallery";
-import { ProductInfo } from "./components/ProductInfo";
+import { ImageGallery } from "./components/image-gallery";
+import { ProductInfo } from "./components/product-info";
 import type { ProductDetailData } from "./services/get-product-detail";
 import type { DecimalToString } from "@/types/utils";
 

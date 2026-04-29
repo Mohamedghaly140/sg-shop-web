@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import type { FilterOptions } from "../types";
-import { useProductParams } from "../hooks/useProductParams";
+import { useProductParams } from "../hooks/use-product-params";
 
 type ProductFilterBarProps = {
   options: FilterOptions;

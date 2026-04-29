@@ -1,4 +1,4 @@
-import { ProductCard } from "./ProductCard";
+import { ProductCard } from "./product-card";
 import type { StorefrontProductItem } from "../types";
 
 type ProductListProps = {

@@ -4,7 +4,7 @@ import { LucideChevronLeft, LucideChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useProductParams } from "../hooks/useProductParams";
+import { useProductParams } from "../hooks/use-product-params";
 
 type ProductPaginationProps = {
   page: number;

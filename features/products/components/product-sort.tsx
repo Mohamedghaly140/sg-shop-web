@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { useProductParams } from "../hooks/useProductParams";
+import { useProductParams } from "../hooks/use-product-params";
 
 const SORT_OPTIONS = [
   { value: "newest", label: "Newest" },

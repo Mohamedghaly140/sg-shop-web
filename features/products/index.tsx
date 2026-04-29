@@ -1,15 +1,15 @@
 import Link from "next/link";
 
-import { loadProductParams } from "./hooks/useProductParams";
+import { loadProductParams } from "./hooks/use-product-params";
 import { getProducts } from "./services/get-products";
 import { getFilterOptions } from "./services/get-filter-options";
-import { ProductGrid } from "./components/ProductGrid";
-import { ProductList } from "./components/ProductList";
-import { ProductFilterBar } from "./components/ProductFilterBar";
-import { MobileFiltersSheet } from "./components/MobileFiltersSheet";
-import { ProductSort } from "./components/ProductSort";
-import { ProductPagination } from "./components/ProductPagination";
-import { ProductEmptyState } from "./components/ProductEmptyState";
+import { ProductGrid } from "./components/product-grid";
+import { ProductList } from "./components/product-list";
+import { ProductFilterBar } from "./components/product-filter-bar";
+import { MobileFiltersSheet } from "./components/mobile-filters-sheet";
+import { ProductSort } from "./components/product-sort";
+import { ProductPagination } from "./components/product-pagination";
+import { ProductEmptyState } from "./components/product-empty-state";
 
 type ProductsFeatureProps = {
   searchParams: Promise<Record<string, string | string[]>>;

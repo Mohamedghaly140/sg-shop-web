@@ -3,7 +3,7 @@
 import { LucidePackageSearch } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { useProductParams } from "../hooks/useProductParams";
+import { useProductParams } from "../hooks/use-product-params";
 
 export function ProductEmptyState() {
   const [, setParams] = useProductParams();
