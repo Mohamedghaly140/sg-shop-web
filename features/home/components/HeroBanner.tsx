@@ -2,12 +2,13 @@ import Link from "next/link";
 
 export function HeroBanner() {
   return (
-    <section className="relative h-[calc(100vh-5rem)] flex overflow-hidden">
+    // pt-28 is consumed by the fixed header; hero fills remaining viewport height
+    <section className="relative h-[calc(100vh-7rem)] flex overflow-hidden">
       {/* Editorial text panel */}
       <div className="flex-[3] flex flex-col justify-end pb-20 px-12 lg:px-24 z-10 bg-background">
         <div className="max-w-xl">
           <p
-            className="font-sans text-xs tracking-[0.3em] uppercase text-accent mb-8"
+            className="font-sans text-xs tracking-[0.3em] uppercase text-gold mb-8"
             style={{ animation: "fadeUp 0.7s ease 0.1s both" }}
           >
             SS 2025 Collection
@@ -18,7 +19,7 @@ export function HeroBanner() {
           >
             Refined.<br />
             Rare.<br />
-            <em className="text-accent not-italic">Remarkable.</em>
+            <em className="text-gold not-italic">Remarkable.</em>
           </h1>
           <div
             className="flex items-center gap-8"
@@ -26,13 +27,13 @@ export function HeroBanner() {
           >
             <Link
               href="/products"
-              className="font-sans text-xs tracking-[0.2em] uppercase bg-foreground text-background px-8 py-4 hover:bg-accent transition-colors duration-300"
+              className="font-sans text-xs tracking-[0.2em] uppercase bg-foreground text-background px-8 py-4 hover:bg-gold transition-colors duration-300"
             >
               Shop Now
             </Link>
             <Link
-              href="/products"
-              className="font-sans text-xs tracking-[0.2em] uppercase text-foreground border-b border-foreground pb-px hover:text-accent hover:border-accent transition-colors duration-300"
+              href="/categories"
+              className="font-sans text-xs tracking-[0.2em] uppercase text-foreground border-b border-foreground pb-px hover:text-gold hover:border-gold transition-colors duration-300"
             >
               View Collections
             </Link>
@@ -41,11 +42,11 @@ export function HeroBanner() {
       </div>
 
       {/* Right accent panel */}
-      <div className="flex-[2] relative overflow-hidden bg-[oklch(0.944_0.006_85)]">
-        <span className="absolute -left-12 top-1/2 -translate-y-1/2 font-heading text-[22rem] leading-none select-none text-[oklch(0.908_0.006_80)] pointer-events-none">
+      <div className="flex-[2] relative overflow-hidden bg-muted">
+        <span className="absolute -left-12 top-1/2 -translate-y-1/2 font-heading text-[22rem] leading-none select-none text-muted-foreground/20 pointer-events-none">
           S
         </span>
-        <div className="absolute bottom-0 inset-x-0 h-[3px] bg-accent" />
+        <div className="absolute bottom-0 inset-x-0 h-[3px] bg-gold" />
         <p
           className="absolute top-10 right-10 font-sans text-xs tracking-[0.25em] uppercase text-muted-foreground"
           style={{ writingMode: "vertical-rl" }}
