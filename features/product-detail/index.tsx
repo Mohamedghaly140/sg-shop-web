@@ -3,10 +3,12 @@ import { ProductInfo } from "./components/ProductInfo";
 import type { ProductDetailData } from "./services/get-product-detail";
 import type { DecimalToString } from "@/types/utils";
 
-type SerializedProduct = DecimalToString<
-  ProductDetailData,
-  "price" | "discount" | "priceAfterDiscount"
->;
+type SerializedProduct = Omit<
+  DecimalToString<ProductDetailData, "price" | "discount" | "priceAfterDiscount">,
+  "ratingsAverage"
+> & {
+  ratingsAverage: string | null;
+};
 
 type ProductDetailFeatureProps = {
   product: SerializedProduct;
@@ -41,6 +43,8 @@ export default function ProductDetailFeature({
           quantity={product.quantity}
           categoryName={product.category.name}
           inWishlist={product.inWishlist}
+          ratingsAverage={product.ratingsAverage}
+          ratingsQuantity={product.ratingsQuantity}
         />
       </div>
     </div>

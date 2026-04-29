@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { LucideHeart } from "lucide-react";
+import { LucideHeart, LucideStar, LucideStarHalf } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -20,7 +20,72 @@ type ProductInfoProps = {
   quantity: number;
   categoryName: string;
   inWishlist: boolean;
+  ratingsAverage: string | null;
+  ratingsQuantity: number;
 };
+
+function starKind(average: number, starIndex: number): "full" | "half" | "empty" {
+  const i = starIndex + 1;
+  if (average >= i) return "full";
+  if (average >= i - 0.5) return "half";
+  return "empty";
+}
+
+function ProductRatingRow(props: {
+  ratingsAverage: string;
+  ratingsQuantity: number;
+}) {
+  const { ratingsAverage, ratingsQuantity } = props;
+  const avg = Number(ratingsAverage);
+  const formatted =
+    Number.isFinite(avg) ? avg.toFixed(1).replace(/\.0$/, "") : ratingsAverage;
+  const reviewWord = ratingsQuantity === 1 ? "review" : "reviews";
+  const ariaLabel = `Rated ${formatted} out of 5 stars, ${ratingsQuantity} ${reviewWord}`;
+
+  return (
+    <div
+      role="img"
+      aria-label={ariaLabel}
+      className="flex flex-wrap items-center gap-x-2 gap-y-1"
+    >
+      <span aria-hidden className="flex gap-0.5">
+        {[0, 1, 2, 3, 4].map(i => {
+          const kind = starKind(avg, i);
+          if (kind === "full") {
+            return (
+              <LucideStar
+                key={i}
+                className="size-3.5 shrink-0 fill-gold text-gold"
+                strokeWidth={1.25}
+              />
+            );
+          }
+          if (kind === "half") {
+            return (
+              <LucideStarHalf
+                key={i}
+                className="size-3.5 shrink-0 fill-gold text-gold"
+                strokeWidth={1.25}
+              />
+            );
+          }
+          return (
+            <LucideStar
+              key={i}
+              className="size-3.5 shrink-0 text-muted-foreground fill-none"
+              strokeWidth={1.25}
+            />
+          );
+        })}
+      </span>
+      <span className="font-sans text-sm text-muted-foreground">
+        <span className="text-foreground tabular-nums">{formatted}</span>
+        {" · "}
+        {ratingsQuantity} {reviewWord}
+      </span>
+    </div>
+  );
+}
 
 export function ProductInfo({
   name,
@@ -33,6 +98,8 @@ export function ProductInfo({
   quantity,
   categoryName,
   inWishlist,
+  ratingsAverage,
+  ratingsQuantity,
 }: ProductInfoProps) {
   const [selectedColor, setSelectedColor] = useState<string | null>(
     colors[0] ?? null,
@@ -68,6 +135,18 @@ export function ProductInfo({
         <h1 className="font-heading text-3xl leading-tight text-foreground">
           {name}
         </h1>
+
+        {/* Rating */}
+        {ratingsQuantity > 0 && ratingsAverage != null ? (
+          <ProductRatingRow
+            ratingsAverage={ratingsAverage}
+            ratingsQuantity={ratingsQuantity}
+          />
+        ) : (
+          <p className="font-sans text-sm text-muted-foreground">
+            No reviews yet
+          </p>
+        )}
 
         {/* Price row */}
         <div className="flex items-center gap-3">

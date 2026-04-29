@@ -27,6 +27,7 @@ export default async function ProductDetailPage({
     price: product.price.toString(),
     discount: product.discount.toString(),
     priceAfterDiscount: product.priceAfterDiscount.toString(),
+    ratingsAverage: product.ratingsAverage?.toString() ?? null,
   };
   return <ProductDetailFeature product={serialized} />;
 }
