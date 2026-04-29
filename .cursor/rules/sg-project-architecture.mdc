@@ -1,0 +1,43 @@
+---
+description: SG Couture — Bun, layout, Next.js architecture, feature folders, middleware
+alwaysApply: true
+---
+
+# Project architecture (from CLAUDE.md)
+
+- Consult `docs/SPEC.MD` for database shape, stack, and architecture details.
+- Prefer concise answers; avoid unnecessary fluff and huge code dumps.
+- For third-party APIs, verify against **current official docs** before implementing.
+
+## Commands
+
+Use **Bun only** — never `npm`, `npx`, or `yarn`.
+
+- `bun dev` — dev server
+- `bun build` — production build
+- `bun lint` — ESLint
+- `bun prisma:migrate` — migrations (uses `DIRECT_URL`)
+- `bun prisma:generate` — regenerate client after schema changes
+- `bun prisma:studio` — Prisma Studio
+- `bun prisma:seed` — seed DB
+
+## Architecture
+
+- Next.js is the **entire backend** — no separate API service.
+- **Server Components** load data via Prisma (avoid client waterfalls on first paint).
+- **Server Actions** own web mutations.
+- **`app/api/`** handlers wrap shared **services** for a future mobile app — **the web app must not call these routes**.
+- **`proxy.ts`** (middleware): Clerk + role guard. Enforce routes here, not inside pages.
+
+## Layout (no `src/`)
+
+- `app/(storefront)/`, `(auth)/`, `admin/`, `api/`
+- `features/<feature>/` — storefront; `features/admin/<feature>/` — admin
+- `lib/` — singleton clients; `components/ui/` — shadcn primitives only (no business logic)
+- `emails/`, `types/`, `prisma/`
+
+## Feature contract
+
+Each feature: `features/<name>/` with default export from `index.tsx`. Thin pages render the feature only.
+
+Subfolders: `components/`, `hooks/` (nuqs + server cache), `actions/`, `services/`, `types/`, `index.tsx`.

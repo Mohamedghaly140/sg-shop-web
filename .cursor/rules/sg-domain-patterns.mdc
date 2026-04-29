@@ -1,0 +1,43 @@
+---
+description: Auth, nuqs URL state, checkout, payments, order IDs, Cloudinary
+globs:
+  - "features/**/*.{ts,tsx}"
+  - "lib/**/*.{ts,tsx}"
+  - "app/api/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Domain patterns (storefront / e-commerce)
+
+## Auth and roles
+
+- `User.id` is the Clerk user id string (e.g. `user_…`). Use `auth().userId` as the FK — no mapping table.
+- Roles `USER` / `MANAGER` / `ADMIN` in Clerk `publicMetadata.role`, mirrored via `POST /api/webhooks/clerk`.
+- In admin Server Actions and API handlers, also call `requireAdmin()` or `requireManagerOrAdmin()` from `lib/require-role.ts` after middleware.
+
+## URL state (nuqs)
+
+- Filters, pagination, sort, search: **URL state via nuqs**.
+- One schema per feature in `hooks/use<Feature>Params.ts`; shared between `createSearchParamsCache` (server) and `useQueryStates` (client).
+
+## Anonymous checkout
+
+- Guest carts: `sessionToken` cookie → DB row (7-day expiry). `Cart.userId` / `Order.userId` nullable.
+- Merge session cart into user cart on sign-in.
+- Anonymous orders: flat `anon_*` columns (no FKs to user/address).
+
+## Payments
+
+- **CARD**: Stripe Payment Intents — create order `PENDING`, webhook `payment_intent.succeeded` sets paid → `PROCESSING`.
+- **CASH**: order created immediately; admin marks paid on delivery.
+
+## Human-readable order IDs
+
+One-time DB setup: `CREATE SEQUENCE order_human_id_seq START 1;`
+
+Generate in Server Action with `$queryRaw`, e.g. `'ORD-' || LPAD(nextval('order_human_id_seq')::text, 6, '0')`.
+
+## Cloudinary
+
+- Upload **from the browser** (Upload Widget); store `imageId` + `imageUrl` in DB.
+- On delete product/category/brand: `cloudinary.uploader.destroy(imageId)` in the service layer.

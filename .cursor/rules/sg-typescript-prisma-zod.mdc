@@ -1,0 +1,33 @@
+---
+description: Prisma imports, env, Zod v4, Decimal serialization, props naming, Lucide icons
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Types, Prisma, Zod, UI naming
+
+## Environment
+
+- Import validated env from `lib/env.ts`, not raw `process.env` in server code.
+
+## Prisma (Supabase)
+
+- Runtime: `DATABASE_URL` (pooler, port **6543**). Migrations only: `DIRECT_URL` (**5432**).
+- Client: `import { prisma } from "@/lib/prisma"`.
+- Types: `@/generated/prisma/client`; enums: `@/generated/prisma/enums`.
+- Prisma is **server-only** — never expose `DATABASE_URL` to the client bundle.
+
+## Decimal → Client Components
+
+Prisma `Decimal` fields cannot cross to Client Components as-is. Use `DecimalToString<T, K>` from `types/utils.ts` on serialized props.
+
+## Zod v4
+
+- `z.enum(ProductStatus)` with Prisma enums — **do not** use deprecated `z.nativeEnum()`.
+- Use `.enum` (singular); `.Enum` / `.Values` are removed.
+
+## Naming
+
+- Component props types: `<ComponentName>Props`, not `Props`.
+- Prefer generated Prisma types; narrow with `Pick<>` when needed.
+- Lucide: prefix imports with `Lucide` (e.g. `LucideSearch`, `LucidePlus`). Do not import bare `Search`, `Plus`, etc.
