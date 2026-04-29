@@ -79,7 +79,7 @@ export function ProductInfo({
               <span className="font-sans text-sm text-muted-foreground line-through">
                 LE {Number(price).toLocaleString()}
               </span>
-              <span className="font-sans text-[0.6875rem] tracking-[0.1em] uppercase bg-gold text-gold-foreground px-2 py-0.5">
+              <span className="font-sans text-[0.6875rem] tracking-widest uppercase bg-gold text-gold-foreground px-2 py-0.5">
                 {discountPercent}% Off
               </span>
             </>
@@ -98,7 +98,8 @@ export function ProductInfo({
                 <button
                   key={color}
                   onClick={() => setSelectedColor(color)}
-                  title={color}
+                  aria-label={color}
+                  aria-pressed={selectedColor === color}
                   style={{ backgroundColor: color }}
                   className={`w-7 h-7 rounded-full border border-border transition-all duration-200 ${
                     selectedColor === color
@@ -125,7 +126,8 @@ export function ProductInfo({
                 <button
                   key={size}
                   onClick={() => setSelectedSize(size)}
-                  className={`min-w-[3rem] px-3 py-2 font-sans text-xs border transition-colors duration-200 ${
+                  aria-pressed={selectedSize === size}
+                  className={`min-w-12 px-3 py-2 font-sans text-xs border transition-colors duration-200 ${
                     selectedSize === size
                       ? "border-foreground bg-foreground text-background"
                       : "border-border text-foreground hover:border-foreground"

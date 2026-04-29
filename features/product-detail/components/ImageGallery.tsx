@@ -33,7 +33,7 @@ export function ImageGallery({
         <div className="hidden lg:flex flex-col gap-2 w-[72px] shrink-0">
           {images.map((img, idx) => (
             <button
-              key={idx}
+              key={img.imageUrl}
               onClick={() => setActiveIndex(idx)}
               className={`relative aspect-[3/4] overflow-hidden border transition-colors duration-200 ${
                 activeIndex === idx ? "border-foreground" : "border-transparent"
@@ -82,9 +82,9 @@ export function ImageGallery({
 
             {/* Mobile dots indicator */}
             <div className="lg:hidden absolute bottom-3 inset-x-0 flex justify-center gap-1.5">
-              {images.map((_, idx) => (
+              {images.map((img, idx) => (
                 <button
-                  key={idx}
+                  key={img.imageUrl}
                   onClick={() => setActiveIndex(idx)}
                   aria-label={`Go to image ${idx + 1}`}
                   className={`w-1.5 h-1.5 rounded-full transition-colors duration-200 ${
