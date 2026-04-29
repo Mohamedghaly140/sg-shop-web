@@ -51,9 +51,7 @@ export function StorefrontNav({ cartCount }: StorefrontNavProps) {
       {/* Main nav — fixed top-8 (sits below announcement bar) */}
       <header
         className={`fixed top-8 inset-x-0 z-50 transition-colors duration-300 ${
-          scrolled
-            ? "bg-background border-b border-border"
-            : "bg-transparent"
+          scrolled ? "bg-background border-b border-border" : "bg-transparent"
         }`}
       >
         {/* ── Desktop (md+) ── */}
@@ -62,7 +60,7 @@ export function StorefrontNav({ cartCount }: StorefrontNavProps) {
           className="hidden md:grid max-w-7xl mx-auto px-8 py-5 grid-cols-3 items-center"
         >
           <div className="flex items-center gap-8">
-            {leftLinks.map((link) => (
+            {leftLinks.map(link => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -78,7 +76,7 @@ export function StorefrontNav({ cartCount }: StorefrontNavProps) {
               href="/"
               className="font-heading text-xl tracking-[0.2em] uppercase text-gold hover:opacity-80 transition-opacity"
             >
-              SG Couture
+              SG
             </Link>
           </div>
 
@@ -167,7 +165,7 @@ export function StorefrontNav({ cartCount }: StorefrontNavProps) {
 
       {/* ── Mobile full-screen overlay ── */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-[60] bg-background flex flex-col">
+        <div className="fixed inset-0 z-60 bg-background flex flex-col">
           <div className="flex items-center justify-between px-4 py-4 border-b border-border">
             <Link
               href="/"
@@ -187,7 +185,7 @@ export function StorefrontNav({ cartCount }: StorefrontNavProps) {
           </div>
 
           <nav className="flex-1 px-6 py-8 flex flex-col">
-            {leftLinks.map((link) => (
+            {leftLinks.map(link => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -203,7 +201,7 @@ export function StorefrontNav({ cartCount }: StorefrontNavProps) {
                 { label: "Search", href: "/search" },
                 { label: "Wishlist", href: "/account/wishlist" },
                 { label: "Account", href: "/account" },
-              ].map((link) => (
+              ].map(link => (
                 <Link
                   key={link.href}
                   href={link.href}
