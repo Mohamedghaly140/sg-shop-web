@@ -42,7 +42,7 @@ export function StorefrontNav({ cartCount }: StorefrontNavProps) {
   return (
     <>
       {/* Announcement bar — always visible, fixed top-0 */}
-      <div className="fixed top-0 inset-x-0 z-50 bg-secondary border-b border-border py-1.5 text-center">
+      <div className="fixed top-0 inset-x-0 z-40 bg-secondary border-b border-border py-1.5 text-center">
         <p className="font-sans text-[0.6875rem] tracking-[0.15em] uppercase text-gold">
           Free shipping on orders over LE 1,500
         </p>
@@ -135,6 +135,7 @@ export function StorefrontNav({ cartCount }: StorefrontNavProps) {
         {/* ── Mobile bar (< md) ── */}
         <div className="md:hidden flex items-center justify-between px-4 py-4">
           <button
+            type="button"
             aria-label="Open menu"
             onClick={() => setMobileOpen(true)}
             className="text-foreground"
@@ -176,6 +177,7 @@ export function StorefrontNav({ cartCount }: StorefrontNavProps) {
               SG Couture
             </Link>
             <button
+              type="button"
               aria-label="Close menu"
               onClick={() => setMobileOpen(false)}
               className="text-foreground"
