@@ -85,7 +85,7 @@ export function StorefrontFooter() {
               />
               <button
                 type="submit"
-                className="font-sans text-xs tracking-widest uppercase py-2 px-4 hover:text-accent transition-colors"
+                className="font-sans text-xs tracking-widest uppercase py-2 px-4 hover:text-gold transition-colors"
               >
                 Join
               </button>
