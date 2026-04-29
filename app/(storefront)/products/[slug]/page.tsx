@@ -22,5 +22,11 @@ export default async function ProductDetailPage({
   const { slug } = await params;
   const product = await getProductDetail(slug);
   if (!product) notFound();
-  return <ProductDetailFeature product={product} />;
+  const serialized = {
+    ...product,
+    price: product.price.toString(),
+    discount: product.discount.toString(),
+    priceAfterDiscount: product.priceAfterDiscount.toString(),
+  };
+  return <ProductDetailFeature product={serialized} />;
 }

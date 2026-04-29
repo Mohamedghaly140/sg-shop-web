@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/accordion";
 
 type ProductInfoProps = {
-  id: string;
   name: string;
   description: string;
   price: string;
@@ -20,7 +19,6 @@ type ProductInfoProps = {
   colors: string[];
   quantity: number;
   categoryName: string;
-  categorySlug: string;
   inWishlist: boolean;
 };
 

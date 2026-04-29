@@ -1,9 +1,15 @@
 import { ImageGallery } from "./components/ImageGallery";
 import { ProductInfo } from "./components/ProductInfo";
 import type { ProductDetailData } from "./services/get-product-detail";
+import type { DecimalToString } from "@/types/utils";
+
+type SerializedProduct = DecimalToString<
+  ProductDetailData,
+  "price" | "discount" | "priceAfterDiscount"
+>;
 
 type ProductDetailFeatureProps = {
-  product: ProductDetailData;
+  product: SerializedProduct;
 };
 
 export default function ProductDetailFeature({
@@ -25,17 +31,15 @@ export default function ProductDetailFeature({
 
         {/* Right — Product info */}
         <ProductInfo
-          id={product.id}
           name={product.name}
           description={product.description}
-          price={product.price.toString()}
-          discount={product.discount.toString()}
-          priceAfterDiscount={product.priceAfterDiscount.toString()}
+          price={product.price}
+          discount={product.discount}
+          priceAfterDiscount={product.priceAfterDiscount}
           sizes={product.sizes}
           colors={product.colors}
           quantity={product.quantity}
           categoryName={product.category.name}
-          categorySlug={product.category.slug}
           inWishlist={product.inWishlist}
         />
       </div>
