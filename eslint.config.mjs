@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Editor/tool directories with template files
+    ".cursor/**",
+    ".superpowers/**",
   ]),
 ]);
 
