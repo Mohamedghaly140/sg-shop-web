@@ -30,6 +30,8 @@
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -119,24 +121,26 @@
 }
 
 [data-theme="storefront"] {
-  --background: oklch(0.98 0.003 95);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.145 0 0);
-  --primary-foreground: oklch(0.98 0.003 95);
-  --secondary: oklch(0.944 0.006 85);
+  --background:           oklch(0.98 0.003 95);
+  --foreground:           oklch(0.145 0 0);
+  --card:                 oklch(1 0 0);
+  --card-foreground:      oklch(0.145 0 0);
+  --popover:              oklch(1 0 0);
+  --popover-foreground:   oklch(0.145 0 0);
+  --primary:              oklch(0.145 0 0);
+  --primary-foreground:   oklch(0.98 0.003 95);
+  --secondary:            oklch(0.944 0.006 85);
   --secondary-foreground: oklch(0.145 0 0);
-  --muted: oklch(0.944 0.006 85);
-  --muted-foreground: oklch(0.563 0.006 56);
-  --accent: oklch(0.723 0.098 70);
-  --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.908 0.006 80);
-  --input: oklch(0.908 0.006 80);
-  --ring: oklch(0.723 0.098 70);
+  --muted:                oklch(0.944 0.006 85);
+  --muted-foreground:     oklch(0.563 0.006 56);
+  --accent:               oklch(0.944 0.006 85);
+  --accent-foreground:    oklch(0.145 0 0);
+  --gold:                 oklch(0.723 0.098 70);
+  --gold-foreground:      oklch(1 0 0);
+  --destructive:          oklch(0.577 0.245 27.325);
+  --border:               oklch(0.908 0.006 80);
+  --input:                oklch(0.908 0.006 80);
+  --ring:                 oklch(0.723 0.098 70);
   --radius: 0px;
   --font-sans: var(--font-dm-sans);
 }
