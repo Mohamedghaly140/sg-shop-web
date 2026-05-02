@@ -1,5 +1,4 @@
 import type { Prisma } from "@/generated/prisma/client";
-import type { ProductStatus } from "@/generated/prisma/enums";
 
 export const storefrontProductSelect = {
   id: true,
@@ -12,7 +11,6 @@ export const storefrontProductSelect = {
   ratingsAverage: true,
   ratingsQuantity: true,
   quantity: true,
-  status: true,
   createdAt: true,
 } as const;
 
@@ -28,8 +26,6 @@ export type StorefrontProductItem = Omit<
   discount: string;
   priceAfterDiscount: string;
   ratingsAverage: string | null;
-  status: ProductStatus;
-  createdAt: Date;
 };
 
 export type FilterOptions = {

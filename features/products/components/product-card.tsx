@@ -122,7 +122,7 @@ export function ProductCard({ product, layout, inWishlist }: ProductCardProps) {
         )}
 
         {isSoldOut && (
-          <span className="absolute top-3 left-3 bg-foreground/80 text-background font-sans text-[0.625rem] px-2 py-1 tracking-widest uppercase z-10">
+          <span className="absolute bottom-3 left-3 bg-foreground/80 text-background font-sans text-[0.625rem] px-2 py-1 tracking-widest uppercase z-10">
             Sold Out
           </span>
         )}
