@@ -47,11 +47,11 @@ Additionally, `status` is unused in `ProductCard` (sold-out uses `quantity === 0
 
 ### Important
 
-#### 3. `actions/` directory is entirely absent
+#### ~~3. `actions/` directory is entirely absent~~ ✅ Fixed
 
 **Spec requirement:** `features/products/actions/products.actions.ts`
 
-Every "Add to Cart" button in both grid and list layouts of `ProductCard` is currently `disabled` with no `onClick` or Server Action wired. The feature structure contract in CLAUDE.md requires an `actions/` directory to exist in every feature. The directory should be created with a Server Action stub at minimum.
+~~Every "Add to Cart" button in both grid and list layouts of `ProductCard` is currently `disabled` with no `onClick` or Server Action wired. The feature structure contract in CLAUDE.md requires an `actions/` directory to exist in every feature. The directory should be created with a Server Action stub at minimum.~~
 
 ---
 
@@ -150,5 +150,5 @@ The price button label shows `"LE 0"` as a hard-coded string when `minPrice` is 
 ## Immediate Blockers Before Shipping
 
 1. ~~**Fix badge overlap** (#1) — sold-out sale items stack two labels at `top-3 left-3`~~ ✅ Fixed
-2. **Create `actions/` directory** (#3) — feature structure contract requires it; wire or stub the cart action
+2. ~~**Create `actions/` directory** (#3) — feature structure contract requires it; wire or stub the cart action~~ ✅ Fixed
 3. **Fix `getFilterOptions` scalability** (#5) — replace full-table in-memory deduplication with raw SQL `UNNEST + DISTINCT`
