@@ -2,9 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { LucideHeart, LucideStar } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { StorefrontProductItem } from "../types";
+import { AddToCartForm } from "./add-to-cart-form";
 
 const NEW_PRODUCT_DAYS = 14;
 
@@ -82,14 +82,12 @@ export function ProductCard({ product, layout, inWishlist }: ProductCardProps) {
               </div>
             )}
           </div>
-          <Button
-            variant="default"
-            size="sm"
-            className="w-fit mt-3 text-[0.6875rem] tracking-[0.15em] uppercase hover:bg-gold transition-colors duration-300"
-            disabled={isSoldOut}
-          >
-            {isSoldOut ? "Sold Out" : "Add to Cart"}
-          </Button>
+          <AddToCartForm
+            productId={product.id}
+            isSoldOut={isSoldOut}
+            layout="list"
+            hasRatings={!!product.ratingsAverage}
+          />
         </div>
       </div>
     );
@@ -173,16 +171,12 @@ export function ProductCard({ product, layout, inWishlist }: ProductCardProps) {
         </div>
       )}
 
-      <Button
-        variant="default"
-        className={cn(
-          "w-full text-[0.6875rem] tracking-[0.15em] uppercase py-2.5 hover:bg-gold transition-colors duration-300",
-          !product.ratingsAverage && "mt-3"
-        )}
-        disabled={isSoldOut}
-      >
-        {isSoldOut ? "Sold Out" : "Add to Cart"}
-      </Button>
+      <AddToCartForm
+        productId={product.id}
+        isSoldOut={isSoldOut}
+        layout="grid"
+        hasRatings={!!product.ratingsAverage}
+      />
     </div>
   );
 }
