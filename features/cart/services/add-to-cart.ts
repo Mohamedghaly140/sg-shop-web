@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { ProductStatus } from "@/generated/prisma/enums";
-
-const SESSION_COOKIE_MAXAGE_DAYS = 7;
+import { CART_SESSION_MAX_AGE } from "../constants";
 
 export async function addToCart({
   productId,
@@ -37,9 +36,7 @@ export async function addToCart({
         ? { userId }
         : {
             sessionToken: token,
-            expiresAt: new Date(
-              Date.now() + SESSION_COOKIE_MAXAGE_DAYS * 24 * 60 * 60 * 1000
-            ),
+            expiresAt: new Date(Date.now() + CART_SESSION_MAX_AGE * 1000),
           },
       select: { id: true },
     });

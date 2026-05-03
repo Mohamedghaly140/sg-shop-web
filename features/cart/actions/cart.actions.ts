@@ -50,9 +50,9 @@ export async function updateCartItemAction(
       quantity: formData.get("quantity"),
     });
 
-    await updateCartItemQuantity({ cartItemId, cartId, quantity });
+    const { deleted } = await updateCartItemQuantity({ cartItemId, cartId, quantity });
     revalidatePath("/cart");
-    return toActionState("SUCCESS", "Cart updated");
+    return toActionState("SUCCESS", deleted ? "Item removed" : "Cart updated");
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }

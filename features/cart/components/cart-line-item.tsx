@@ -19,11 +19,11 @@ type CartLineItemProps = {
 export function CartLineItem({ item, cartId }: CartLineItemProps) {
   const [updateState, updateFormAction, isUpdating] = useActionState(
     updateCartItemAction,
-    EMPTY_ACTION_STATE
+    EMPTY_ACTION_STATE,
   );
   const [removeState, removeFormAction, isRemoving] = useActionState(
     removeCartItemAction,
-    EMPTY_ACTION_STATE
+    EMPTY_ACTION_STATE,
   );
 
   const isPending = isUpdating || isRemoving;
@@ -100,28 +100,27 @@ export function CartLineItem({ item, cartId }: CartLineItemProps) {
               +
             </button>
           </Form>
-
-          <Form
-            action={removeFormAction}
-            actionState={removeState}
-            className="w-auto gap-0"
-          >
-            <input type="hidden" name="cartItemId" value={item.id} />
-            <input type="hidden" name="cartId" value={cartId} />
-            <button
-              type="submit"
-              disabled={isPending}
-              className="font-sans text-[0.6875rem] tracking-[0.1em] uppercase text-muted-foreground hover:text-destructive transition-colors disabled:opacity-40"
-            >
-              Remove
-            </button>
-          </Form>
         </div>
       </div>
 
       {/* Line total */}
-      <div className="hidden sm:flex shrink-0 items-start">
+      <div className="flex flex-col shrink-0 items-start justify-between">
         <p className="font-sans text-sm text-foreground">LE {lineTotal}</p>
+        <Form
+          action={removeFormAction}
+          actionState={removeState}
+          className="flex-row items-center w-auto gap-0"
+        >
+          <input type="hidden" name="cartItemId" value={item.id} />
+          <input type="hidden" name="cartId" value={cartId} />
+          <button
+            type="submit"
+            disabled={isPending}
+            className="font-sans text-[0.6875rem] tracking-[0.1em] uppercase text-muted-foreground hover:text-destructive transition-colors disabled:opacity-40"
+          >
+            Remove
+          </button>
+        </Form>
       </div>
     </div>
   );

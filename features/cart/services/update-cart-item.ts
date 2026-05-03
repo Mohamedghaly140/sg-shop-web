@@ -8,14 +8,15 @@ export async function updateCartItemQuantity({
   cartItemId: string;
   cartId: string;
   quantity: number;
-}): Promise<void> {
+}): Promise<{ deleted: boolean }> {
   if (quantity <= 0) {
     await prisma.cartItem.deleteMany({ where: { id: cartItemId, cartId } });
-    return;
+    return { deleted: true };
   }
 
   await prisma.cartItem.updateMany({
     where: { id: cartItemId, cartId },
     data: { quantity },
   });
+  return { deleted: false };
 }
