@@ -35,6 +35,7 @@ export async function getCart({
     select: {
       id: true,
       items: {
+        orderBy: { id: "asc" },
         select: {
           id: true,
           quantity: true,
@@ -99,8 +100,15 @@ export async function getCartCount({
 
   const cart = await prisma.cart.findFirst({
     where: userId ? { userId } : { sessionToken },
-    select: { items: { select: { quantity: true } } },
+    select: { id: true },
   });
 
-  return cart?.items.reduce((acc, item) => acc + item.quantity, 0) ?? 0;
+  if (!cart) return 0;
+
+  const aggregate = await prisma.cartItem.aggregate({
+    where: { cartId: cart.id },
+    _sum: { quantity: true },
+  });
+
+  return aggregate._sum.quantity ?? 0;
 }

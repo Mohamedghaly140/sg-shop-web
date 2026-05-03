@@ -116,7 +116,7 @@ export function CartLineItem({ item, cartId }: CartLineItemProps) {
           <button
             type="submit"
             disabled={isPending}
-            className="font-sans text-[0.6875rem] tracking-[0.1em] uppercase text-muted-foreground hover:text-destructive transition-colors disabled:opacity-40"
+            className="font-sans text-[0.6875rem] tracking-widest uppercase text-muted-foreground hover:text-destructive transition-colors disabled:opacity-40"
           >
             Remove
           </button>
