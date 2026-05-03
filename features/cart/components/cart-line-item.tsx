@@ -3,13 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useActionState } from "react";
+import Form from "@/components/shared/form/form";
+import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
 import {
   updateCartItemAction,
   removeCartItemAction,
 } from "@/features/cart/actions/cart.actions";
-import {
-  EMPTY_ACTION_STATE,
-} from "@/components/shared/form/utils/to-action-state";
 import type { CartItemData } from "@/features/cart/services/get-cart";
 
 type CartLineItemProps = {
@@ -18,11 +17,11 @@ type CartLineItemProps = {
 };
 
 export function CartLineItem({ item, cartId }: CartLineItemProps) {
-  const [, updateFormAction, isUpdating] = useActionState(
+  const [updateState, updateFormAction, isUpdating] = useActionState(
     updateCartItemAction,
     EMPTY_ACTION_STATE
   );
-  const [, removeFormAction, isRemoving] = useActionState(
+  const [removeState, removeFormAction, isRemoving] = useActionState(
     removeCartItemAction,
     EMPTY_ACTION_STATE
   );
@@ -69,8 +68,12 @@ export function CartLineItem({ item, cartId }: CartLineItemProps) {
 
         {/* Quantity stepper + remove */}
         <div className="flex items-center justify-between mt-auto pt-2 flex-wrap gap-3">
-          {/* Single form — two submit buttons send different quantity values */}
-          <form action={updateFormAction} className="flex items-center border border-border">
+          {/* stepper: two submit buttons with different name="quantity" values */}
+          <Form
+            action={updateFormAction}
+            actionState={updateState}
+            className="flex-row items-center gap-0 w-auto border border-border"
+          >
             <input type="hidden" name="cartItemId" value={item.id} />
             <input type="hidden" name="cartId" value={cartId} />
             <button
@@ -96,9 +99,13 @@ export function CartLineItem({ item, cartId }: CartLineItemProps) {
             >
               +
             </button>
-          </form>
+          </Form>
 
-          <form action={removeFormAction}>
+          <Form
+            action={removeFormAction}
+            actionState={removeState}
+            className="w-auto gap-0"
+          >
             <input type="hidden" name="cartItemId" value={item.id} />
             <input type="hidden" name="cartId" value={cartId} />
             <button
@@ -108,7 +115,7 @@ export function CartLineItem({ item, cartId }: CartLineItemProps) {
             >
               Remove
             </button>
-          </form>
+          </Form>
         </div>
       </div>
 
