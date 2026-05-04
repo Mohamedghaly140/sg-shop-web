@@ -6,7 +6,6 @@ import type {
   ProductsAnalytics,
   TopProduct,
   CategoryRevenue,
-  BrandRevenue,
 } from "../types";
 import { resolveDateRange } from "../utils/resolve-date-range";
 
@@ -16,7 +15,7 @@ export async function getProductsAnalytics({
 }: DateRangeParams): Promise<ProductsAnalytics> {
   const { start, end } = resolveDateRange(from, to);
 
-  const [unitsSoldAgg, activeCount, outOfStockCount, topProducts, revenueByCategory, revenueByBrand] =
+  const [unitsSoldAgg, activeCount, outOfStockCount, topProducts, revenueByCategory] =
     await Promise.all([
       prisma.orderItem.aggregate({
         _sum: { quantity: true },
@@ -31,17 +30,15 @@ export async function getProductsAnalytics({
           p.id,
           p.name,
           c.name AS "categoryName",
-          b.name AS "brandName",
           CAST(COALESCE(SUM(oi.quantity), 0) AS INTEGER) AS sold,
           COALESCE(SUM(oi.quantity * oi.price), 0)::float8 AS revenue
         FROM products p
         JOIN categories c ON p."categoryId" = c.id
-        LEFT JOIN brands b ON p."brandId" = b.id
         LEFT JOIN "orderItems" oi ON oi."productId" = p.id
         LEFT JOIN orders o ON oi."orderId" = o.id
           AND o."createdAt" >= ${start}
           AND o."createdAt" <= ${end}
-        GROUP BY p.id, p.name, "categoryName", "brandName"
+        GROUP BY p.id, p.name, "categoryName"
         ORDER BY sold DESC
         LIMIT 10
       `,
@@ -58,19 +55,6 @@ export async function getProductsAnalytics({
         GROUP BY c.name
         ORDER BY revenue DESC
       `,
-      prisma.$queryRaw<BrandRevenue[]>`
-        SELECT
-          b.name,
-          COALESCE(SUM(oi.quantity * oi.price), 0)::float8 AS revenue
-        FROM brands b
-        LEFT JOIN products p ON p."brandId" = b.id
-        LEFT JOIN "orderItems" oi ON oi."productId" = p.id
-        LEFT JOIN orders o ON oi."orderId" = o.id
-          AND o."createdAt" >= ${start}
-          AND o."createdAt" <= ${end}
-        GROUP BY b.name
-        ORDER BY revenue DESC
-      `,
     ]);
 
   return {
@@ -79,6 +63,5 @@ export async function getProductsAnalytics({
     outOfStockCount,
     topProducts,
     revenueByCategory,
-    revenueByBrand,
   };
 }

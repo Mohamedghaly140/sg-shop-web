@@ -110,7 +110,6 @@ export async function updateProductAction(
           status: data.status,
           featured: data.featured,
           categoryId: data.categoryId,
-          brandId: data.brandId,
         },
       });
     });

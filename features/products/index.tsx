@@ -27,7 +27,6 @@ export default async function ProductsFeature({
 
   const activeFilterCount = [
     params.category,
-    params.brand,
     params.size,
     params.color,
     params.minPrice > 0 ? "x" : null,

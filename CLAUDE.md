@@ -107,7 +107,7 @@ const humanOrderId = result[0].id; // "ORD-000001"
 
 ## Cloudinary uploads
 
-Images upload **directly from the browser** to Cloudinary via the Upload Widget — no binary data passes through the Next.js server. The DB stores only `imageId` (public ID) and `imageUrl` (delivery URL). When deleting a product/category/brand, call `cloudinary.uploader.destroy(imageId)` in the service function.
+Images upload **directly from the browser** to Cloudinary via the Upload Widget — no binary data passes through the Next.js server. The DB stores only `imageId` (public ID) and `imageUrl` (delivery URL). When deleting a product/category, call `cloudinary.uploader.destroy(imageId)` in the service function.
 
 ## Naming conventions
 

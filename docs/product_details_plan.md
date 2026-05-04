@@ -15,7 +15,7 @@
 | Action  | File                                                     | Responsibility                                                                     |
 | ------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | Install | `components/ui/accordion.tsx`                            | shadcn accordion primitive                                                         |
-| Create  | `features/product-detail/services/get-product-detail.ts` | Prisma query — product + images + category + brand + wishlist flag                 |
+| Create  | `features/product-detail/services/get-product-detail.ts` | Prisma query — product + images + category + wishlist flag                 |
 | Modify  | `app/(storefront)/products/[slug]/page.tsx`              | Receive `params`, call service, `notFound()`, `generateMetadata`                   |
 | Create  | `features/product-detail/components/ImageGallery.tsx`    | Client: thumbnail strip + main image swap; mobile dots carousel                    |
 | Create  | `features/product-detail/components/ProductInfo.tsx`     | Client: color/size selectors, price row, CTA buttons, accordion, mobile sticky bar |
@@ -91,7 +91,6 @@ export const getProductDetail = cache(async (slug: string) => {
       ratingsQuantity: true,
       createdAt: true,
       category: { select: { name: true, slug: true } },
-      brand: { select: { name: true } },
       images: {
         select: { imageUrl: true, sortOrder: true },
         orderBy: { sortOrder: "asc" },

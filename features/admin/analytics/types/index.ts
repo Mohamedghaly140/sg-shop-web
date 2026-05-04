@@ -22,19 +22,16 @@ export type TopProduct = {
   id: string;
   name: string;
   categoryName: string;
-  brandName: string | null;
   sold: number;
   revenue: number;
 };
 export type CategoryRevenue = { name: string; revenue: number };
-export type BrandRevenue = { name: string; revenue: number };
 export type ProductsAnalytics = {
   totalUnitsSold: number;
   activeProductsCount: number;
   outOfStockCount: number;
   topProducts: TopProduct[];
   revenueByCategory: CategoryRevenue[];
-  revenueByBrand: BrandRevenue[];
 };
 
 // Customers

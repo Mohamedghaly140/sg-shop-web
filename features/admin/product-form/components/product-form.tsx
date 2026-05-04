@@ -71,9 +71,6 @@ export function ProductForm({ mode, formData, product }: ProductFormProps) {
   const [categoryId, setCategoryId] = useState<string>(
     product?.categoryId ?? "",
   );
-  const [brandId, setBrandId] = useState<string>(
-    product?.brandId ?? "__NONE__",
-  );
   const [subCategoryIds, setSubCategoryIds] = useState<string[]>(
     product?.subCategoryIds ?? [],
   );
@@ -129,11 +126,6 @@ export function ProductForm({ mode, formData, product }: ProductFormProps) {
       )}
       <input type="hidden" name="status" value={status} />
       {featured && <input type="hidden" name="featured" value="on" />}
-      <input
-        type="hidden"
-        name="brandId"
-        value={brandId === "__NONE__" ? "" : brandId}
-      />
       <input type="hidden" name="categoryId" value={categoryId} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -324,7 +316,7 @@ export function ProductForm({ mode, formData, product }: ProductFormProps) {
 
           <SectionCard
             title="Organization"
-            description="Category, brand, and sub-categories"
+            description="Category and sub-categories"
           >
             <div className="flex flex-col gap-2">
               <Label>Category</Label>
@@ -347,22 +339,6 @@ export function ProductForm({ mode, formData, product }: ProductFormProps) {
                 </SelectContent>
               </Select>
               <FieldError name="categoryId" actionState={actionState} />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label>Brand</Label>
-              <Select value={brandId} onValueChange={setBrandId}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="No brand" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="__NONE__">No brand</SelectItem>
-                  {formData.brands.map(b => (
-                    <SelectItem key={b.id} value={b.id}>
-                      {b.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
             <div className="flex flex-col gap-2">
               <Label>Sub-categories</Label>

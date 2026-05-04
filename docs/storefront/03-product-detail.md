@@ -32,7 +32,7 @@ features/product-detail/
 
 `ProductDetailFeature` (Server Component) fetches:
 
-- The product by slug, with: `category`, `brand`, `images` (sorted by `sortOrder`), `subCategories`, `reviews` (with reviewer name, paginated).
+- The product by slug, with: `category`, `images` (sorted by `sortOrder`), `subCategories`, `reviews` (with reviewer name, paginated).
 - Aggregate ratings breakdown: count per star (1–5).
 - Related products: same category, `status = ACTIVE`, exclude current product, limit 8.
 
@@ -41,7 +41,7 @@ If the product is not found or has `status !== 'ACTIVE'` → 404.
 ## UI
 
 - **`ImageGallery`** — main image plus scrollable thumbnails. Click a thumbnail to swap the main image.
-- **Title block** — name, brand link, star rating + review count.
+- **Title block** — name, star rating + review count.
 - **Price block** — when `discount > 0`: original price strikethrough beside `priceAfterDiscount`. Otherwise just the price.
 - **`VariantSelector`** — size and color pickers. Each option shows whether stock is available for that combination (disable / strike out unavailable combos).
 - **Quantity stepper** — min 1, max stock quantity.

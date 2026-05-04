@@ -16,7 +16,6 @@ const productListSelect = {
   featured: true,
   createdAt: true,
   category: { select: { id: true, name: true } },
-  brand: { select: { id: true, name: true } },
 } as const;
 
 type ProductListRow = Prisma.ProductGetPayload<{ select: typeof productListSelect }>;
@@ -29,7 +28,6 @@ type GetProductsParams = {
   search: string;
   status: ProductStatus | null;
   categoryId: string | null;
-  brandId: string | null;
   featured: boolean | null;
 };
 
@@ -45,7 +43,6 @@ export async function getProducts({
   search,
   status,
   categoryId,
-  brandId,
   featured,
 }: GetProductsParams): Promise<GetProductsResult> {
   const where: Prisma.ProductWhereInput = {
@@ -59,7 +56,6 @@ export async function getProducts({
       : {}),
     ...(status ? { status } : {}),
     ...(categoryId ? { categoryId } : {}),
-    ...(brandId ? { brandId } : {}),
     ...(featured !== null ? { featured } : {}),
   };
 

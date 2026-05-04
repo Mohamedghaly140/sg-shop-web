@@ -161,23 +161,6 @@ model Address {
 }
 
 // ─────────────────────────────────────────
-// BRAND
-// ─────────────────────────────────────────
-
-model Brand {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  slug      String    @unique
-  imageId   String?
-  imageUrl  String?
-  products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  @@map("brands")
-}
-
-// ─────────────────────────────────────────
 // CATEGORY & SUB-CATEGORY
 // ─────────────────────────────────────────
 
@@ -233,9 +216,6 @@ model Product {
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-
-  brandId String?
-  brand   Brand?  @relation(fields: [brandId], references: [id], onDelete: SetNull)
 
   images        ProductImage[]
   subCategories ProductSubCategory[]
@@ -518,7 +498,6 @@ users ──1:many──► userDevices
 
 categories ──1:many──► subCategories
 categories ──1:many──► products
-brands     ──1:many──► products
 products   ──1:many──► productImages
 products   ──many:many──► (productSubCategories) ──► subCategories
 

@@ -76,7 +76,6 @@ export function MobileFiltersSheet({
     setLocalMax("");
     setParams({
       category: "",
-      brand: "",
       minPrice: 0,
       maxPrice: 0,
       size: "",
@@ -127,7 +126,7 @@ export function MobileFiltersSheet({
         <div className="overflow-y-auto flex-1">
         <Accordion
           type="multiple"
-          defaultValue={["category", "brand", "price", "size", "color"]}
+          defaultValue={["category", "price", "size", "color"]}
           className="px-4"
         >
           {options.categories.length > 0 && (
@@ -155,38 +154,6 @@ export function MobileFiltersSheet({
                       )}
                     >
                       {cat.name}
-                    </button>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          )}
-
-          {options.brands.length > 0 && (
-            <AccordionItem value="brand">
-              <AccordionTrigger className="font-sans text-xs tracking-[0.15em] uppercase py-4 hover:no-underline">
-                Brand
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-1 pb-2">
-                  {options.brands.map((brand) => (
-                    <button
-                      key={brand.id}
-                      onClick={() =>
-                        setParams({
-                          brand:
-                            params.brand === brand.slug ? "" : brand.slug,
-                          page: 1,
-                        })
-                      }
-                      className={cn(
-                        "w-full text-left px-3 py-2 font-sans text-sm transition-colors",
-                        params.brand === brand.slug
-                          ? "bg-foreground text-background"
-                          : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      {brand.name}
                     </button>
                   ))}
                 </div>

@@ -49,8 +49,8 @@ features/admin/products/
 
 - Searchable, filterable table.
 - Filters: status (DRAFT / ACTIVE / ARCHIVED), category.
-- Search: name, slug, brand name (ILIKE).
-- Per row: image thumbnail, name, category, brand, price, discount, stock, status, featured toggle, actions (edit, duplicate, delete, archive).
+- Search: name, slug (ILIKE).
+- Per row: image thumbnail, name, category, price, discount, stock, status, featured toggle, actions (edit, duplicate, delete, archive).
 - Bulk selection with bulk actions: publish (set ACTIVE), archive (set ARCHIVED), delete.
 - "+ New product" CTA → `/admin/products/new`.
 
@@ -65,7 +65,6 @@ Fields:
 - **Description** — markdown or rich text (start with plain `<textarea>` for v1).
 - **Category** (required, single-select from `Category`).
 - **Subcategories** (multi-select from subcategories of selected category).
-- **Brand** (optional, single-select from `Brand`).
 - **Main image** + **gallery** — Cloudinary Upload Widget. See `integrations/03-cloudinary-media.md`.
 - **Sizes** — chip array.
 - **Colors** — chip array.

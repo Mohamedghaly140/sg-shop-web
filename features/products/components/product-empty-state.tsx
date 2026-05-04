@@ -11,7 +11,6 @@ export function ProductEmptyState() {
   function handleClearFilters() {
     setParams({
       category: "",
-      brand: "",
       minPrice: 0,
       maxPrice: 0,
       size: "",

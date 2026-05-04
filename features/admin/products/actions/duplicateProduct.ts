@@ -31,7 +31,6 @@ export async function duplicateProductAction(
         sizes: true,
         colors: true,
         categoryId: true,
-        brandId: true,
         subCategories: { select: { subCategoryId: true } },
       },
     });
@@ -59,7 +58,6 @@ export async function duplicateProductAction(
           status: ProductStatus.DRAFT,
           featured: false,
           categoryId: src.categoryId,
-          brandId: src.brandId,
           subCategories: {
             create: src.subCategories.map((s) => ({ subCategoryId: s.subCategoryId })),
           },

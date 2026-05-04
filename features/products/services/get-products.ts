@@ -7,7 +7,6 @@ const PAGE_SIZE = 24;
 
 export type GetProductsParams = {
   category: string;
-  brand: string;
   minPrice: number;
   maxPrice: number;
   size: string;
@@ -40,7 +39,6 @@ function getOrderBy(sort: string): Prisma.ProductOrderByWithRelationInput {
 
 export async function getProducts({
   category,
-  brand,
   minPrice,
   maxPrice,
   size,
@@ -56,7 +54,6 @@ export async function getProducts({
   };
 
   if (category) where.category = { slug: category };
-  if (brand) where.brand = { slug: brand };
   if (minPrice > 0 || maxPrice > 0) {
     where.priceAfterDiscount = {
       ...(minPrice > 0 ? { gte: minPrice } : {}),

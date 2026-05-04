@@ -17,9 +17,6 @@ app/api/
 ├── categories/
 │   └── route.ts                    GET   — all categories with subcategories
 │
-├── brands/
-│   └── route.ts                    GET   — all brands
-│
 ├── cart/
 │   ├── route.ts                    GET   — current cart
 │   │                               POST  — add item to cart

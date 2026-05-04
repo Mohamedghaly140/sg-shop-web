@@ -48,7 +48,6 @@ export async function createProductAction(
           status: data.status,
           featured: data.featured,
           categoryId: data.categoryId,
-          brandId: data.brandId,
           images: {
             create: data.images.map((img, i) => ({
               imageId: img.imageId,

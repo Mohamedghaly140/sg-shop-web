@@ -17,7 +17,6 @@ export const productsParserSchema = {
   search: parseAsString.withDefault("").withOptions({ throttleMs: 300 }),
   status: parseAsStringEnum<ProductStatus>(Object.values(ProductStatus)),
   categoryId: parseAsString,
-  brandId: parseAsString,
   featured: parseAsBoolean,
 };
 

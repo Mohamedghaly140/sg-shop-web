@@ -9,7 +9,6 @@ import { TabsContent } from "@/components/ui/tabs";
 
 import type { ProductsAnalytics } from "../../types";
 import { AnalyticsKpiCard } from "../analytics-kpi-card";
-import { BrandChart } from "./brand-chart";
 import { CategoryChart } from "./category-chart";
 import { TopProductsTable } from "./top-products-table";
 
@@ -49,7 +48,6 @@ export function ProductsTab({ data }: ProductsTabProps) {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <CategoryChart data={data.revenueByCategory} />
-        <BrandChart data={data.revenueByBrand} />
       </div>
     </TabsContent>
   );

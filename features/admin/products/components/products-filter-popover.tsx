@@ -26,14 +26,12 @@ export function ProductsFilterPopover({ options }: ProductsFilterPopoverProps) {
   const [params, setParams] = useProductsParams();
   const activeCount = [
     params.categoryId,
-    params.brandId,
     params.featured !== null ? "x" : null,
   ].filter(Boolean).length;
 
   const clear = () =>
     setParams({
       categoryId: null,
-      brandId: null,
       featured: null,
       page: 1,
     });
@@ -82,28 +80,6 @@ export function ProductsFilterPopover({ options }: ProductsFilterPopoverProps) {
               {options.categories.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   {c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-1.5">
-          <Label className="text-xs">Brand</Label>
-          <Select
-            value={params.brandId ?? ALL}
-            onValueChange={(v) =>
-              setParams({ brandId: v === ALL ? null : v, page: 1 })
-            }
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="All brands" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL}>All brands</SelectItem>
-              {options.brands.map((b) => (
-                <SelectItem key={b.id} value={b.id}>
-                  {b.name}
                 </SelectItem>
               ))}
             </SelectContent>

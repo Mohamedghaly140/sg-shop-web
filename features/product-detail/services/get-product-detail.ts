@@ -24,7 +24,6 @@ export const getProductDetail = cache(async (slug: string) => {
       ratingsQuantity: true,
       createdAt: true,
       category: { select: { name: true, slug: true } },
-      brand: { select: { name: true } },
       images: {
         select: { imageUrl: true, sortOrder: true },
         orderBy: { sortOrder: "asc" },

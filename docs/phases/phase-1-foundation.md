@@ -6,7 +6,7 @@ Stand up the project shell, the database schema, authentication, and a read-only
 
 - Run locally and deploy to Vercel.
 - Authenticate users via Clerk.
-- Show products, categories, and brands on the storefront.
+- Show products and categories on the storefront.
 - Have one matching API route handler for every web feature shipped.
 
 ## Dependencies
@@ -21,7 +21,7 @@ None — this is the starting phase.
 - Clerk wired up: sign-in, sign-up, proxy guard.
 - Clerk webhook → user sync.
 - Storefront pages: `/`, `/products`, `/products/[slug]`, `/categories/[slug]`.
-- API route handlers: `/api/products`, `/api/products/[slug]`, `/api/categories`, `/api/brands`, `/api/webhooks/clerk`.
+- API route handlers: `/api/products`, `/api/products/[slug]`, `/api/categories`, `/api/webhooks/clerk`.
 
 ## Linked docs
 
@@ -59,7 +59,7 @@ None — this is the starting phase.
 - [ ] Run `bunx prisma generate`.
 - [ ] In Supabase SQL editor, run: `CREATE SEQUENCE order_human_id_seq START 1;`.
 - [ ] Add `lib/prisma.ts` Prisma singleton.
-- [ ] Seed minimal data: a few categories, subcategories, brands, and ~20 products. Provide a `prisma/seed.ts`.
+- [ ] Seed minimal data: a few categories, subcategories, and ~20 products. Provide a `prisma/seed.ts`.
 
 ### 3. Clerk authentication
 
@@ -96,7 +96,6 @@ None — this is the starting phase.
 - [ ] `app/api/products/route.ts` — GET paginated list with filters (calls the same `getProducts` service).
 - [ ] `app/api/products/[slug]/route.ts` — GET single product.
 - [ ] `app/api/categories/route.ts` — GET all categories with subcategories.
-- [ ] `app/api/brands/route.ts` — GET all brands.
 - [ ] All routes use the response envelope from `architecture/06-api-design.md`.
 
 ### 7. Vercel deployment

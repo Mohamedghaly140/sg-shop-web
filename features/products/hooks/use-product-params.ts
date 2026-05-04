@@ -10,7 +10,6 @@ import { useQueryStates } from "nuqs";
 
 export const productParamsSchema = {
   category: parseAsString.withDefault(""),
-  brand: parseAsString.withDefault(""),
   minPrice: parseAsFloat.withDefault(0),
   maxPrice: parseAsFloat.withDefault(0),
   size: parseAsString.withDefault(""),

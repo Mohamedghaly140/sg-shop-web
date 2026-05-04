@@ -1,6 +1,6 @@
 # Integration — Cloudinary (Media Storage)
 
-All product images, category covers, and brand logos are stored in Cloudinary. The database stores only `imageId` (Cloudinary public ID) and `imageUrl` (delivery URL). **No image binary data passes through the Next.js server.**
+All product images and category covers are stored in Cloudinary. The database stores only `imageId` (Cloudinary public ID) and `imageUrl` (delivery URL). **No image binary data passes through the Next.js server.**
 
 ## Upload flow
 
@@ -34,7 +34,6 @@ Set up **unsigned** upload presets in the Cloudinary dashboard:
 | --------------------- | ----------------------- | -------------------- |
 | `ecommerce_products`  | `ecommerce/products/`   | Product images       |
 | `ecommerce_categories`| `ecommerce/categories/` | Category cover images|
-| `ecommerce_brands`    | `ecommerce/brands/`     | Brand logos          |
 
 Unsigned presets are safe for browser upload because they're scoped to a folder and have transformation/format constraints baked in.
 
@@ -43,8 +42,7 @@ Unsigned presets are safe for browser upload because they're scoped to a folder 
 ```
 ecommerce/
 ├── products/      # Main images + gallery images
-├── categories/    # Category cover images
-└── brands/        # Brand logos
+└── categories/    # Category cover images
 ```
 
 ## Image delivery transforms
@@ -78,7 +76,7 @@ export const transforms = {
 
 ## Asset deletion
 
-When a product, category, or brand is deleted (or its image is replaced), call:
+When a product or category is deleted (or its image is replaced), call:
 
 ```typescript
 import { v2 as cloudinary } from "cloudinary";
@@ -107,7 +105,7 @@ If the order is reversed and the DB update fails, the old asset would be lost wh
 ## Acceptance criteria
 
 - [ ] Images upload directly from browser to Cloudinary; binary never passes through Next.js.
-- [ ] Unsigned presets configured for products, categories, brands.
+- [ ] Unsigned presets configured for products, categories.
 - [ ] DB stores only `imageId` and `imageUrl`.
 - [ ] Render-time URLs use `f_webp,q_auto` and appropriate dimensions.
 - [ ] Asset deletion runs after the DB update succeeds.

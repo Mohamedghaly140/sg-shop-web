@@ -45,7 +45,6 @@ All filter/sort/pagination state lives in the URL.
 // features/products/hooks/useProductParams.ts
 const productParams = {
   category: parseAsString.withDefault(""),
-  brand: parseAsString.withDefault(""),
   minPrice: parseAsFloat.withDefault(0),
   maxPrice: parseAsFloat.withDefault(100000),
   size: parseAsString.withDefault(""),
@@ -74,7 +73,7 @@ See `integrations/05-nuqs-url-state.md` for the full pattern.
 The service applies:
 
 - `WHERE status = 'ACTIVE'`.
-- Filter clauses for category, brand, size (array contains), color (array contains), price range.
+- Filter clauses for category, size (array contains), color (array contains), price range.
 - Sort: `newest` → `createdAt DESC`; `price_asc` / `price_desc` → `priceAfterDiscount`; `best_rated` → `ratingsAverage DESC NULLS LAST`; `most_sold` → `sold DESC`.
 - Cursor-based pagination (page size: 24).
 - For search: full-text search on PostgreSQL `tsvector` over `name + description`.
@@ -85,7 +84,6 @@ The service applies:
 - **Filter sidebar** — collapsible on mobile (sheet/drawer):
   - Category (single-select)
   - Subcategory (multi-select, depends on selected category)
-  - Brand (multi-select)
   - Price range (slider)
   - Size (chip multi-select)
   - Color (swatch multi-select)

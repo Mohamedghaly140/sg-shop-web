@@ -52,7 +52,6 @@ export const productFormSchema = z.object({
   status: z.enum(ProductStatus).default(ProductStatus.DRAFT),
   featured: z.boolean().default(false),
   categoryId: nonEmpty("Category"),
-  brandId: optionalString.nullable(),
   subCategoryIds: z.array(z.string().trim().min(1)).default([]),
 });
 

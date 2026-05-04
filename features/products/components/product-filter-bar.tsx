@@ -34,7 +34,6 @@ export function ProductFilterBar({ options }: ProductFilterBarProps) {
 
   const activeCount = [
     params.category,
-    params.brand,
     params.size,
     params.color,
     params.minPrice > 0 ? "x" : null,
@@ -46,7 +45,6 @@ export function ProductFilterBar({ options }: ProductFilterBarProps) {
   function handleClearAll() {
     setParams({
       category: "",
-      brand: "",
       minPrice: 0,
       maxPrice: 0,
       size: "",
@@ -57,10 +55,6 @@ export function ProductFilterBar({ options }: ProductFilterBarProps) {
 
   function handleCategoryChange(value: string) {
     setParams({ category: value === "all" ? "" : value, page: 1 });
-  }
-
-  function handleBrandChange(value: string) {
-    setParams({ brand: value === "all" ? "" : value, page: 1 });
   }
 
   function handleSizeToggle(size: string) {
@@ -106,32 +100,6 @@ export function ProductFilterBar({ options }: ProductFilterBarProps) {
                   {options.categories.map((cat) => (
                     <SelectItem key={cat.id} value={cat.slug} className="text-xs">
                       {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-
-            {options.brands.length > 0 && (
-              <Select
-                value={params.brand || "all"}
-                onValueChange={handleBrandChange}
-              >
-                <SelectTrigger
-                  className={cn(
-                    "h-7 shrink-0 gap-1 border font-sans text-xs tracking-wide px-3 rounded-none focus:ring-0 focus:ring-offset-0",
-                    params.brand ? ACTIVE_CHIP : INACTIVE_CHIP
-                  )}
-                >
-                  <SelectValue placeholder="Brand" />
-                </SelectTrigger>
-                <SelectContent className="rounded-none">
-                  <SelectItem value="all" className="text-xs">
-                    All Brands
-                  </SelectItem>
-                  {options.brands.map((brand) => (
-                    <SelectItem key={brand.id} value={brand.slug} className="text-xs">
-                      {brand.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -18,7 +18,6 @@ export type ProductForForm = {
   status: string;
   featured: boolean;
   categoryId: string;
-  brandId: string | null;
   images: Array<{
     id: string;
     imageId: string;
@@ -53,7 +52,6 @@ export async function getProductById(id: string): Promise<ProductForForm> {
     status: product.status,
     featured: product.featured,
     categoryId: product.categoryId,
-    brandId: product.brandId,
     images: product.images
       .filter((i): i is typeof i & { imageId: string; imageUrl: string } =>
         Boolean(i.imageId && i.imageUrl),

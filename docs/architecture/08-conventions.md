@@ -32,7 +32,7 @@ Use `bunx` (not `npx`) in `package.json` scripts and CI commands too.
 | Non-component files    | `kebab-case`                            | `cart.service.ts`                        |
 | Component files        | `PascalCase`                            | `ProductCard.tsx`                        |
 | Feature default export | `<Name>Feature`                         | `ProductsFeature`                        |
-| Server Action files    | `camelCase.ts`, **one file per action** | `createBrand.ts`, `updateOrderStatus.ts` |
+| Server Action files    | `camelCase.ts`, **one file per action** | `createCoupon.ts`, `updateOrderStatus.ts` |
 | Service files          | `<name>.service.ts`                     | `cart.service.ts`                        |
 | nuqs hook files        | `use<Name>Params.ts`                    | `useProductParams.ts`                    |
 | DB columns             | `snake_case` via `@map`                 | `created_at`                             |

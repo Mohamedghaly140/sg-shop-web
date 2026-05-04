@@ -9,7 +9,7 @@ The project is broken into **6 sequential phases**. Each phase has its own docum
 | 1     | Foundation         | Project shell, schema, auth, read-only catalog                  | `phase-1-foundation.md`          |
 | 2     | Commerce Core      | Cart, checkout (anon + registered), Stripe, guest claim         | `phase-2-commerce-core.md`       |
 | 3     | Registered Account | Profile, orders, addresses, wishlist, in-app notifications      | `phase-3-registered-account.md`  |
-| 4     | Admin Dashboard    | Layout, products, orders, customers, categories, brands, coupons | `phase-4-admin-dashboard.md`     |
+| 4     | Admin Dashboard    | Layout, products, orders, customers, categories, coupons         | `phase-4-admin-dashboard.md`     |
 | 5     | Growth Features    | Reviews, analytics, promo banners, low-stock alerts             | `phase-5-growth-features.md`     |
 | 6     | Mobile App         | Expo app consuming existing API routes                          | `phase-6-mobile-app.md`          |
 

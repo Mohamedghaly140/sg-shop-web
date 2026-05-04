@@ -23,7 +23,6 @@ export type ProductDetail = {
   createdAt: Date;
   updatedAt: Date;
   category: { id: string; name: string; slug: string };
-  brand: { id: string; name: string; slug: string } | null;
   subCategories: { id: string; name: string }[];
   images: { id: string; imageUrl: string }[];
 };
@@ -33,7 +32,6 @@ export async function getProductDetail(id: string): Promise<ProductDetail> {
     where: { id },
     include: {
       category: { select: { id: true, name: true, slug: true } },
-      brand: { select: { id: true, name: true, slug: true } },
       images: { orderBy: { sortOrder: "asc" } },
       subCategories: {
         include: { subCategory: { select: { id: true, name: true } } },
@@ -62,7 +60,6 @@ export async function getProductDetail(id: string): Promise<ProductDetail> {
     createdAt: product.createdAt,
     updatedAt: product.updatedAt,
     category: product.category,
-    brand: product.brand,
     subCategories: product.subCategories.map((s) => ({
       id: s.subCategory.id,
       name: s.subCategory.name,

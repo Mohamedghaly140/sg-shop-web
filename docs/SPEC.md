@@ -53,7 +53,7 @@ docs/
 │   ├── 01-dashboard.md             stats cards, recent orders, low stock
 │   ├── 02-orders.md                AdminOrdersFeature, transitions, refunds
 │   ├── 03-products.md              AdminProductsFeature, CRUD, bulk actions
-│   ├── 04-categories-and-brands.md categories, subcategories, brands
+│   ├── 04-categories.md            categories, subcategories
 │   ├── 05-customers.md             customer table, detail, role assignment
 │   ├── 06-coupons.md               coupon CRUD, usage tracking
 │   ├── 07-analytics.md             revenue, orders, products, customers

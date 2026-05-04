@@ -60,7 +60,6 @@ export function parseProductFormData(formData: FormData) {
     status: formData.get("status") ?? ProductStatus.DRAFT,
     featured: formData.get("featured") === "on",
     categoryId: formData.get("categoryId") ?? "",
-    brandId: formData.get("brandId") ?? "",
     subCategoryIds: formData.getAll("subCategoryIds").map(String).filter(Boolean),
   });
 }

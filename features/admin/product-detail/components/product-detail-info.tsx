@@ -57,11 +57,6 @@ export function ProductDetailInfo({ product }: ProductDetailInfoProps) {
             <Row label="Category" value={product.category.name} />
             <Separator />
             <Row
-              label="Brand"
-              value={product.brand?.name ?? <span className="text-muted-foreground">—</span>}
-            />
-            <Separator />
-            <Row
               label="Sub-categories"
               value={
                 product.subCategories.length === 0 ? (

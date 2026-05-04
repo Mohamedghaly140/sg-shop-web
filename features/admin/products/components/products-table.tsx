@@ -59,12 +59,11 @@ export function ProductsTable({ products, pageCount }: ProductsTableProps) {
     params.search ||
       params.status ||
       params.categoryId ||
-      params.brandId ||
       params.featured !== null,
   );
 
   function handleClearFilters() {
-    setParams({ search: null, status: null, categoryId: null, brandId: null, featured: null, page: 1 });
+    setParams({ search: null, status: null, categoryId: null, featured: null, page: 1 });
   }
 
   return (
@@ -152,13 +151,8 @@ export function ProductsTable({ products, pageCount }: ProductsTableProps) {
                         </span>
                       </Link>
                     </TableCell>
-                    <TableCell>
-                      <div className="flex flex-col text-xs">
-                        <span>{product.category?.name ?? "—"}</span>
-                        {product.brand && (
-                          <span className="text-muted-foreground">{product.brand.name}</span>
-                        )}
-                      </div>
+                    <TableCell className="text-xs">
+                      {product.category?.name ?? "—"}
                     </TableCell>
                     <TableCell>
                       {hasDiscount ? (

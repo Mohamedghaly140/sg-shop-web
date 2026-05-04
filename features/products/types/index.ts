@@ -30,7 +30,6 @@ export type StorefrontProductItem = Omit<
 
 export type FilterOptions = {
   categories: { id: string; name: string; slug: string }[];
-  brands: { id: string; name: string; slug: string }[];
   sizes: string[];
   colors: string[];
 };

@@ -21,7 +21,6 @@ The admin dashboard is the internal protected area for managing the store. All r
 | `/admin/products/new`   | `AdminProductFormFeature`    | MANAGER, ADMIN |
 | `/admin/products/[id]`  | `AdminProductFormFeature`    | MANAGER, ADMIN |
 | `/admin/categories`     | `AdminCategoriesFeature`     | MANAGER, ADMIN |
-| `/admin/brands`         | `AdminBrandsFeature`         | MANAGER, ADMIN |
 | `/admin/customers`      | `AdminCustomersFeature`      | MANAGER, ADMIN |
 | `/admin/customers/[id]` | `AdminCustomerDetailFeature` | MANAGER, ADMIN |
 | `/admin/coupons`        | `AdminCouponsFeature`        | MANAGER, ADMIN |
@@ -43,7 +42,7 @@ The admin dashboard is the internal protected area for managing the store. All r
 | Dashboard home      | `01-dashboard.md`                    |
 | Orders              | `02-orders.md`                       |
 | Products            | `03-products.md`                     |
-| Categories & Brands | `04-categories-and-brands.md`        |
+| Categories          | `04-categories.md`                   |
 | Customers           | `05-customers.md`                    |
 | Coupons             | `06-coupons.md`                      |
 | Analytics           | `07-analytics.md`                    |

@@ -2,7 +2,7 @@
 
 ## Goal
 
-Build the internal dashboard for managing the store: products, orders, customers, categories, brands, coupons. Settings and user management round it out for ADMIN.
+Build the internal dashboard for managing the store: products, orders, customers, categories, coupons. Settings and user management round it out for ADMIN.
 
 ## Dependencies
 
@@ -16,7 +16,7 @@ Build the internal dashboard for managing the store: products, orders, customers
 - Dashboard home with stats, recent orders, low stock.
 - Orders management: list, detail, status transitions, cancel, refund, manual order creation.
 - Products management: full CRUD, Cloudinary upload, bulk actions.
-- Categories + subcategories + brands management.
+- Categories + subcategories management.
 - Customers list + detail, role assignment (ADMIN-only).
 - Coupons CRUD.
 - Settings (ADMIN-only): store info, shipping zones, tax config.
@@ -28,7 +28,7 @@ Build the internal dashboard for managing the store: products, orders, customers
 - `admin/01-dashboard.md`
 - `admin/02-orders.md`
 - `admin/03-products.md`
-- `admin/04-categories-and-brands.md`
+- `admin/04-categories.md`
 - `admin/05-customers.md`
 - `admin/06-coupons.md`
 - `admin/08-settings.md`
@@ -43,7 +43,7 @@ Build the internal dashboard for managing the store: products, orders, customers
 ### 1. Admin layout & navigation
 
 - [ ] `app/admin/layout.tsx` — sidebar + topbar shell.
-- [ ] Sidebar groups: Operations (Dashboard, Orders) · Catalog (Products, Categories, Brands) · Customers · Marketing (Coupons) · Settings (ADMIN only) · Users (ADMIN only).
+- [ ] Sidebar groups: Operations (Dashboard, Orders) · Catalog (Products, Categories) · Customers · Marketing (Coupons) · Settings (ADMIN only) · Users (ADMIN only).
 - [ ] Hide ADMIN-only items from MANAGER role.
 - [ ] Confirm `proxy.ts` enforces:
   - `/admin/*` → MANAGER+
@@ -83,15 +83,12 @@ Build the internal dashboard for managing the store: products, orders, customers
 - [ ] Bulk actions: publish, archive, delete on selected rows.
 - [ ] Cloudinary cleanup on image replace and product delete (with try/catch).
 
-### 5. Categories, subcategories, brands
+### 5. Categories and subcategories
 
 - [ ] `features/admin/categories/` — table + dialog form + subcategory side panel.
   - Actions: `createCategory`, `updateCategory`, `deleteCategory`, `createSubCategory`, `updateSubCategory`, `deleteSubCategory`.
   - Block category deletion if products reference it (FK Restrict).
-- [ ] `features/admin/brands/` — table + dialog form.
-  - Actions: `createBrand`, `updateBrand`, `deleteBrand`.
-  - Brand deletion clears `Product.brandId` (FK SetNull); show a confirmation dialog explaining this.
-- [ ] Cloudinary covers/logos upload + cleanup.
+- [ ] Cloudinary covers upload + cleanup.
 
 ### 6. Customers
 
@@ -159,10 +156,9 @@ Build the internal dashboard for managing the store: products, orders, customers
 - [ ] Bulk publish/archive/delete works.
 - [ ] Featured toggle works inline from the list.
 
-### Categories, brands, coupons
+### Categories and coupons
 
 - [ ] Categories with products cannot be deleted.
-- [ ] Brand deletion clears product references with a confirmation dialog.
 - [ ] Coupons can't be deleted once used; can be deactivated.
 - [ ] Coupon application at checkout respects expiry and usage limit.
 

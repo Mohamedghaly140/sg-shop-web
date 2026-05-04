@@ -26,7 +26,6 @@ export function TopProductsTable({ data }: TopProductsTableProps) {
           <TableHead className="w-10">#</TableHead>
           <TableHead>Product</TableHead>
           <TableHead>Category</TableHead>
-          <TableHead>Brand</TableHead>
           <TableHead className="text-right">Units Sold</TableHead>
           <TableHead className="text-right">Revenue</TableHead>
         </TableRow>
@@ -34,7 +33,7 @@ export function TopProductsTable({ data }: TopProductsTableProps) {
       <TableBody>
         {data.length === 0 && (
           <TableRow>
-            <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+            <TableCell colSpan={5} className="py-8 text-center text-muted-foreground">
               No sales data for this period
             </TableCell>
           </TableRow>
@@ -46,9 +45,6 @@ export function TopProductsTable({ data }: TopProductsTableProps) {
             </TableCell>
             <TableCell className="font-medium">{product.name}</TableCell>
             <TableCell className="text-muted-foreground">{product.categoryName}</TableCell>
-            <TableCell className="text-muted-foreground">
-              {product.brandName ?? "—"}
-            </TableCell>
             <TableCell className="text-right">{product.sold.toLocaleString("en-US")}</TableCell>
             <TableCell className="text-right">{fmtEGP(product.revenue)}</TableCell>
           </TableRow>

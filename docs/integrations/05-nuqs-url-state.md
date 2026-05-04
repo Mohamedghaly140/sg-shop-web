@@ -18,7 +18,6 @@ import { useQueryStates } from "nuqs";
 
 const productParams = {
   category: parseAsString.withDefault(""),
-  brand: parseAsString.withDefault(""),
   minPrice: parseAsFloat.withDefault(0),
   maxPrice: parseAsFloat.withDefault(100000),
   size: parseAsString.withDefault(""),
@@ -69,7 +68,7 @@ Changing the sort pushes `?sort=price_asc&page=1` to the URL, which triggers a s
 
 | Feature                    | Params                                                                       |
 | -------------------------- | ---------------------------------------------------------------------------- |
-| Products catalog           | `category`, `brand`, `minPrice`, `maxPrice`, `size`, `color`, `sort`, `page` |
+| Products catalog           | `category`, `minPrice`, `maxPrice`, `size`, `color`, `sort`, `page` |
 | Search                     | `q`, `sort`, `page`                                                          |
 | Account orders             | `status`, `page`                                                             |
 | Admin / orders             | `status`, `search`, `paymentMethod`, `from`, `to`, `page`                    |

@@ -39,7 +39,6 @@
 │   │   ├── orders/...
 │   │   ├── products/...
 │   │   ├── categories/page.tsx
-│   │   ├── brands/page.tsx
 │   │   ├── customers/...
 │   │   ├── coupons/page.tsx
 │   │   ├── analytics/page.tsx
@@ -61,7 +60,6 @@
 │       ├── order-detail/
 │       ├── products/
 │       ├── categories/
-│       ├── brands/
 │       ├── customers/
 │       ├── coupons/
 │       ├── analytics/
