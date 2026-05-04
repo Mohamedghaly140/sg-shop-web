@@ -1,8 +1,8 @@
 # Agent Rules
 
-This repository is the SG Couture full-stack e-commerce app described in `docs/SPEC.MD`. Read that file for architectural tasks or when checking the exact database structure, tech stack, or application architecture.
+This repository is the SG Couture full-stack e-commerce app described in `docs/SPEC.MD`. Read that file for general architectural tasks or to double-check the exact database structure, tech stack, or application architecture.
 
-Keep replies concise and focus on the key information. Avoid unnecessary fluff and long code snippets.
+Keep replies extremely concise and focus on the key information. Avoid unnecessary fluff and long code snippets.
 
 Your training data is likely stale for every library in this stack. Before writing code that touches any of the following, look up the current official docs or local package docs first.
 
@@ -32,7 +32,7 @@ When in doubt about any third-party library, fetch the docs first and code secon
 
 ## Commands
 
-Always use Bun. Do not use `npm`, `npx`, or `yarn`.
+Always use **Bun**. Do not use `npm`, `npx`, or `yarn`.
 
 ```bash
 bun dev                 # start dev server
@@ -46,9 +46,9 @@ bun prisma:seed         # seed the database
 
 ## Architecture
 
-Next.js is the entire backend. There is no separate API service.
+Full-stack e-commerce app. Next.js is the entire backend; there is no separate API service.
 
-- Server Components fetch data directly through Prisma. Avoid client-side waterfalls on initial load.
+- Server Components fetch data directly via Prisma. Avoid client-side waterfalls on initial load.
 - Server Actions handle all web mutations.
 - API Route Handlers under `app/api/` are thin wrappers around the same service functions used by Server Actions. They exist for a future React Native mobile app; the web app must not call them.
 - `proxy.ts` runs before every request and handles Clerk auth checks plus role guards. Route protection and role enforcement belong there, not inside pages.
@@ -67,10 +67,11 @@ features/           # core of the codebase
   <feature>/        # storefront features: products, cart, checkout, account, ...
   admin/
     <feature>/      # admin features: dashboard, orders, products, ...
-lib/                # singleton clients: prisma.ts, stripe.ts, cloudinary.ts, resend.ts
+lib/                # singleton clients + utilities: prisma.ts, cloudinary.ts, slug.ts, utils.ts, env.ts, ...
 components/ui/      # shadcn/ui primitives only; no business logic
+components/shared/  # cross-feature UI: form primitives, cloudinary-uploader, action feedback hook
 emails/             # React Email templates
-types/              # global types such as ActionResult<T>
+types/              # global types: DecimalToString<T, K>, Clerk JWT augmentation
 prisma/             # schema.prisma + migrations
 ```
 
@@ -94,6 +95,7 @@ features/<name>/
 - Roles are `USER`, `MANAGER`, and `ADMIN`. They live in Clerk `publicMetadata.role` and are mirrored to the DB by `POST /api/webhooks/clerk`.
 - Prisma is server-only. `DATABASE_URL` must never reach the client bundle.
 - `lib/require-role.ts` exports `requireAdmin()` and `requireManagerOrAdmin()`. Call these at the top of admin Server Actions and API handlers as a second guard layer beyond middleware.
+- `/admin/settings` and `/admin/users` are ADMIN-only routes. All other `/admin/*` routes are accessible to MANAGER and ADMIN.
 
 ## URL State
 
@@ -103,9 +105,35 @@ All filters, pagination, sort, and search state lives in the URL via nuqs. Defin
 
 Guest carts are keyed by a `sessionToken` cookie stored in a DB row with a 7-day expiry. `Cart.userId` and `Order.userId` are nullable. On sign-in, merge the session cart into the user cart. Anonymous orders carry flat `anon_*` columns instead of foreign key references.
 
+## Server Action Pattern
+
+All mutations use the `ActionState` type from `components/shared/form/utils/to-action-state.ts`.
+
+```ts
+import {
+  fromErrorToActionState,
+  toActionState,
+} from "@/components/shared/form/utils/to-action-state";
+
+export async function myAction(...): Promise<ActionState> {
+  try {
+    // mutation
+    return toActionState("SUCCESS", "Done");
+  } catch (error) {
+    return fromErrorToActionState(error);
+  }
+}
+```
+
+The client-side `useActionFeedback` hook in `components/shared/form/` reads `ActionState` and surfaces toasts via Sonner.
+
+## Caching & Revalidation
+
+Service functions use Next.js request-level `cache()` so they deduplicate within a single request. After mutations, call `revalidatePath()` to invalidate the relevant route. No `revalidateTag()` pattern is in use.
+
 ## Payments
 
-- `CARD`: Stripe Payment Intents. Create the order first with status `PENDING`, then the Stripe webhook for `payment_intent.succeeded` sets `isPaid = true` and transitions the order to `PROCESSING`.
+- `CARD`: Stripe Payment Intents. Create the order first with status `PENDING`, then the Stripe webhook for `payment_intent.succeeded` sets `isPaid = true` and transitions the order to `PROCESSING`. Stripe integration is not yet implemented; `lib/stripe.ts` and `/api/webhooks/stripe` are placeholders.
 - `CASH`: Create the order immediately. Admin marks it paid manually on delivery.
 
 ## Human-Readable Order IDs
@@ -127,13 +155,18 @@ const humanOrderId = result[0].id; // "ORD-000001"
 
 ## Cloudinary Uploads
 
-Images upload directly from the browser to Cloudinary via the Upload Widget. No binary data passes through the Next.js server. The DB stores only `imageId` as the public ID and `imageUrl` as the delivery URL. When deleting a product, category, or brand, call `cloudinary.uploader.destroy(imageId)` in the service function.
+Images upload directly from the browser to Cloudinary via the Upload Widget. No binary data passes through the Next.js server. The DB stores only `imageId` as the public ID and `imageUrl` as the delivery URL. When deleting a product or category, use the `destroyAsset(imageId)` helper from `lib/cloudinary.ts`, not the raw SDK method.
 
 ## Naming Conventions
 
 - Component prop types must be prefixed with the component name, for example `AdminUsersPageProps`, not `Props`.
 - Prefer Prisma-generated types such as `User` and `Order` from `@/generated/prisma/client` over hand-written row types. Use `Pick<User, "id" | "name">` when only a subset of fields is needed.
 - Lucide icons must be prefixed with `Lucide`, for example `LucideSearch`, `LucideTrash2`, and `LucidePlus`. Do not import bare names like `Search`, `Trash2`, or `Plus`.
+- Slug generation must use `makeSlug()` and `allocateUniqueSlug()` from `lib/slug.ts`.
+
+## Tailwind CSS v4
+
+There is no `tailwind.config.js` or `tailwind.config.ts`. All theme customization, including colors, fonts, and spacing, lives in `app/globals.css` using CSS `@theme` and `@layer` blocks. This is the Tailwind v4 CSS-first approach. Do not create a JS config file.
 
 ## Zod v4
 
