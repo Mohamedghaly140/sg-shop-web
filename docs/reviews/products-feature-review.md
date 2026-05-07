@@ -55,17 +55,17 @@ Additionally, `status` is unused in `ProductCard` (sold-out uses `quantity === 0
 
 ---
 
-#### 4. Wishlist button is fully unwired
+#### ~~4. Wishlist button is fully unwired~~ ✅ Fixed
 
 **File:** `features/products/components/product-card.tsx`
 
-The grid card renders a `<button>` for wishlist with an `inWishlist` prop, but no caller ever passes it. The button has no `onClick` handler. The `aria-label` will always read "Add to wishlist" regardless of actual state, which is misleading for screen readers.
+~~The grid card renders a `<button>` for wishlist with an `inWishlist` prop, but no caller ever passes it. The button has no `onClick` handler. The `aria-label` will always read "Add to wishlist" regardless of actual state, which is misleading for screen readers.~~
 
-**Fix:** Either remove the wishlist button entirely until the feature is built, or mark it `disabled` with `aria-label="Wishlist coming soon"`.
+Button marked `disabled`, `aria-label` set to `"Wishlist coming soon"`, `inWishlist` prop removed.
 
 ---
 
-#### 5. `getFilterOptions` loads every active product into memory
+#### ~~5. `getFilterOptions` loads every active product into memory~~ ✅ Fixed
 
 **File:** `features/products/services/get-filter-options.ts`
 
@@ -87,7 +87,7 @@ SELECT DISTINCT UNNEST(colors) AS color FROM "Product" WHERE status = 'ACTIVE' O
 
 ---
 
-#### 6. `activeFilterCount` computed twice from different sources
+#### ~~6. `activeFilterCount` computed twice from different sources~~ ✅ Fixed
 
 **Files:** `features/products/index.tsx` (line 28–35), `features/products/components/product-filter-bar.tsx` (line 35–36)
 
@@ -107,13 +107,13 @@ The spec (`02-product-catalog.md`) states "Cursor-based pagination (page size 24
 
 ### Minor
 
-#### 8. Ellipsis `key` uses array index
+#### ~~8. Ellipsis `key` uses array index~~ ✅ Fixed
 
 **File:** `features/products/components/product-pagination.tsx`
 
 When two ellipsis spans appear (e.g., `1 … 5 6 7 … 20`), both get `key="ellipsis-${i}"` using the array index. Prefer semantic keys like `"ellipsis-before"` and `"ellipsis-after"` to make intent clearer.
 
-#### 9. Price display `"0"` is hard-coded inconsistently
+#### ~~9. Price display `"0"` is hard-coded inconsistently~~ ✅ Fixed
 
 **File:** `features/products/components/product-filter-bar.tsx`
 
@@ -151,4 +151,4 @@ The price button label shows `"LE 0"` as a hard-coded string when `minPrice` is 
 
 1. ~~**Fix badge overlap** (#1) — sold-out sale items stack two labels at `top-3 left-3`~~ ✅ Fixed
 2. ~~**Create `actions/` directory** (#3) — feature structure contract requires it; wire or stub the cart action~~ ✅ Fixed
-3. **Fix `getFilterOptions` scalability** (#5) — replace full-table in-memory deduplication with raw SQL `UNNEST + DISTINCT`
+3. ~~**Fix `getFilterOptions` scalability** (#5) — replace full-table in-memory deduplication with raw SQL `UNNEST + DISTINCT`~~ ✅ Fixed

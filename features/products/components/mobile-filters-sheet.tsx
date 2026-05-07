@@ -24,18 +24,22 @@ import { useProductParams } from "../hooks/use-product-params";
 
 type MobileFiltersSheetProps = {
   options: FilterOptions;
-  activeCount: number;
 };
 
 const ACTIVE_CHIP = "border-foreground bg-foreground text-background";
 const INACTIVE_CHIP =
   "border-border text-muted-foreground hover:border-foreground hover:text-foreground";
 
-export function MobileFiltersSheet({
-  options,
-  activeCount,
-}: MobileFiltersSheetProps) {
+export function MobileFiltersSheet({ options }: MobileFiltersSheetProps) {
   const [params, setParams] = useProductParams();
+
+  const activeCount = [
+    params.category,
+    params.size,
+    params.color,
+    params.minPrice > 0 ? "x" : null,
+    params.maxPrice > 0 ? "x" : null,
+  ].filter(Boolean).length;
 
   const [localMin, setLocalMin] = useState(() =>
     params.minPrice > 0 ? String(params.minPrice) : ""

@@ -11,7 +11,6 @@ const NEW_PRODUCT_DAYS = 14;
 type ProductCardProps = {
   product: StorefrontProductItem;
   layout: "grid" | "list";
-  inWishlist?: boolean;
 };
 
 function getBadge(product: StorefrontProductItem): "sale" | "new" | null {
@@ -21,7 +20,7 @@ function getBadge(product: StorefrontProductItem): "sale" | "new" | null {
   return null;
 }
 
-export function ProductCard({ product, layout, inWishlist }: ProductCardProps) {
+export function ProductCard({ product, layout }: ProductCardProps) {
   const isSoldOut = product.quantity === 0;
   const hasDiscount = Number(product.discount) > 0;
   const badge = layout === "grid" ? getBadge(product) : null;
@@ -126,15 +125,11 @@ export function ProductCard({ product, layout, inWishlist }: ProductCardProps) {
         )}
 
         <button
-          aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
-          className="absolute top-3 right-3 z-10 flex size-8 items-center justify-center bg-background/90 hover:bg-background transition-colors"
+          disabled
+          aria-label="Wishlist coming soon"
+          className="absolute top-3 right-3 z-10 flex size-8 items-center justify-center bg-background/90 opacity-50 cursor-not-allowed"
         >
-          <LucideHeart
-            className={cn(
-              "size-4 transition-colors",
-              inWishlist ? "fill-foreground text-foreground" : "text-foreground"
-            )}
-          />
+          <LucideHeart className="size-4 text-foreground" />
         </button>
       </div>
 

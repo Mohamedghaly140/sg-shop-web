@@ -25,14 +25,6 @@ export default async function ProductsFeature({
     getFilterOptions(),
   ]);
 
-  const activeFilterCount = [
-    params.category,
-    params.size,
-    params.color,
-    params.minPrice > 0 ? "x" : null,
-    params.maxPrice > 0 ? "x" : null,
-  ].filter(Boolean).length;
-
   return (
     <div className="max-w-7xl mx-auto">
       {/* Page header */}
@@ -61,10 +53,7 @@ export default async function ProductsFeature({
 
       {/* Sort / mobile filters bar */}
       <div className="px-4 md:px-8 h-12 flex items-center justify-between border-b border-border lg:border-none">
-        <MobileFiltersSheet
-          options={filterOptions}
-          activeCount={activeFilterCount}
-        />
+        <MobileFiltersSheet options={filterOptions} />
         <ProductSort />
       </div>
 

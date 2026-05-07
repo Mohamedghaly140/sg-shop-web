@@ -149,7 +149,7 @@ export function ProductFilterBar({ options }: ProductFilterBarProps) {
                   )}
                 >
                   {hasPriceFilter
-                    ? `LE ${params.minPrice > 0 ? params.minPrice.toLocaleString() : "0"} – ${params.maxPrice > 0 ? params.maxPrice.toLocaleString() : "∞"}`
+                    ? `LE ${params.minPrice.toLocaleString()} – ${params.maxPrice > 0 ? params.maxPrice.toLocaleString() : "∞"}`
                     : "Price"}
                   <LucideChevronDown className="size-3 shrink-0" />
                 </button>

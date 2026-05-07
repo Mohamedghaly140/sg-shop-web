@@ -79,7 +79,7 @@ export function ProductPagination({ page, pageCount }: ProductPaginationProps) {
       {pageNumbers.map((p, i) =>
         p === "…" ? (
           <span
-            key={`ellipsis-${i}`}
+            key={i === 1 ? "ellipsis-before" : "ellipsis-after"}
             className="flex h-8 w-8 items-center justify-center font-sans text-xs text-muted-foreground"
           >
             …

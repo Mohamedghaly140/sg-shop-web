@@ -185,3 +185,8 @@ Prisma `Decimal` fields cannot be passed as-is to Client Components. Use the `De
 import type { DecimalToString } from "@/types/utils";
 type ProductCardProps = DecimalToString<Product, "price" | "discount">;
 ```
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
