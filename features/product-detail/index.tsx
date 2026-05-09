@@ -33,6 +33,7 @@ export default function ProductDetailFeature({
 
         {/* Right — Product info */}
         <ProductInfo
+          productId={product.id}
           name={product.name}
           description={product.description}
           price={product.price}

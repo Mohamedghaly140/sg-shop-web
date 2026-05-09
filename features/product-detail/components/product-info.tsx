@@ -1,15 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { LucideHeart, LucideStar, LucideStarHalf } from "lucide-react";
+import { toast } from "sonner";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useActionFeedback } from "@/components/shared/form/hooks/use-action-feedback";
+import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
+import SubmitButton from "@/components/shared/submit-button";
+import { addToCartAction } from "../actions/product-detail.actions";
 
 type ProductInfoProps = {
+  productId: string;
   name: string;
   description: string;
   price: string;
@@ -88,6 +94,7 @@ function ProductRatingRow(props: {
 }
 
 export function ProductInfo({
+  productId,
   name,
   description,
   price,
@@ -106,11 +113,23 @@ export function ProductInfo({
   );
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [showStickyBar, setShowStickyBar] = useState(false);
-  const addToCartRef = useRef<HTMLButtonElement>(null);
+  const [sizeError, setSizeError] = useState(false);
+  const addToCartRef = useRef<HTMLFormElement>(null);
+
+  const [actionState, formAction] = useActionState(addToCartAction, EMPTY_ACTION_STATE);
 
   const isSoldOut = quantity === 0;
   const hasDiscount = Number(discount) > 0;
   const discountPercent = hasDiscount ? Math.round(Number(discount)) : 0;
+
+  useActionFeedback(actionState, {
+    onSuccess: ({ actionState: s }) => {
+      if (s.message) toast.success(s.message);
+    },
+    onError: ({ actionState: s }) => {
+      if (s.message) toast.error(s.message);
+    },
+  });
 
   useEffect(() => {
     const el = addToCartRef.current;
@@ -122,6 +141,15 @@ export function ProductInfo({
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    if (sizes.length > 0 && !selectedSize) {
+      e.preventDefault();
+      setSizeError(true);
+    } else {
+      setSizeError(false);
+    }
+  };
 
   return (
     <>
@@ -176,6 +204,7 @@ export function ProductInfo({
               {colors.map(color => (
                 <button
                   key={color}
+                  type="button"
                   onClick={() => setSelectedColor(color)}
                   aria-label={color}
                   aria-pressed={selectedColor === color}
@@ -196,7 +225,10 @@ export function ProductInfo({
           <div className="flex flex-col gap-3">
             <div className="flex items-baseline justify-between">
               <p className="font-sans text-xs text-foreground">Size</p>
-              <button className="font-sans text-[0.625rem] tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors border-b border-current pb-px">
+              <button
+                type="button"
+                className="font-sans text-[0.625rem] tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors border-b border-current pb-px"
+              >
                 Size Guide
               </button>
             </div>
@@ -204,7 +236,11 @@ export function ProductInfo({
               {sizes.map(size => (
                 <button
                   key={size}
-                  onClick={() => setSelectedSize(size)}
+                  type="button"
+                  onClick={() => {
+                    setSelectedSize(size);
+                    setSizeError(false);
+                  }}
                   aria-pressed={selectedSize === size}
                   className={`min-w-12 px-3 py-2 font-sans text-xs border transition-colors duration-200 ${
                     selectedSize === size
@@ -220,14 +256,26 @@ export function ProductInfo({
         )}
 
         {/* Add to Cart */}
-        <button
+        <form
+          id="atc-form"
           ref={addToCartRef}
-          type="button"
-          disabled={isSoldOut}
-          className="w-full font-sans text-[0.6875rem] tracking-[0.2em] uppercase py-3.5 transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-50 bg-foreground text-background hover:bg-gold"
+          action={formAction}
+          onSubmit={handleSubmit}
+          className="w-full"
         >
-          {isSoldOut ? "Sold Out" : "Add to Cart"}
-        </button>
+          <input type="hidden" name="productId" value={productId} />
+          <SubmitButton
+            label={isSoldOut ? "Sold Out" : "Add to Cart"}
+            disabled={isSoldOut}
+            className="w-full font-sans text-[0.6875rem] tracking-[0.2em] uppercase py-3.5 transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-50 bg-foreground text-background hover:bg-gold rounded-none h-auto"
+          />
+        </form>
+
+        {sizeError && (
+          <p className="font-sans text-xs text-destructive -mt-4">
+            Please select a size
+          </p>
+        )}
 
         {/* Save to Wishlist */}
         <button
@@ -290,7 +338,8 @@ export function ProductInfo({
             )}
           </div>
           <button
-            type="button"
+            type="submit"
+            form="atc-form"
             disabled={isSoldOut}
             className="flex-1 font-sans text-[0.6875rem] tracking-[0.2em] uppercase py-3 bg-foreground text-background hover:bg-gold transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
