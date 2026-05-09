@@ -264,6 +264,8 @@ export function ProductInfo({
           className="w-full"
         >
           <input type="hidden" name="productId" value={productId} />
+          {selectedSize && <input type="hidden" name="size" value={selectedSize} />}
+          {selectedColor && <input type="hidden" name="color" value={selectedColor} />}
           <SubmitButton
             label={isSoldOut ? "Sold Out" : "Add to Cart"}
             disabled={isSoldOut}

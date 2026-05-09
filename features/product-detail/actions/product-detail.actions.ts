@@ -17,6 +17,8 @@ import {
 
 const addToCartSchema = z.object({
   productId: z.string().min(1, "Product ID is required"),
+  size: z.string().optional(),
+  color: z.string().optional(),
 });
 
 export async function addToCartAction(
@@ -26,14 +28,22 @@ export async function addToCartAction(
   try {
     const { userId } = await auth();
 
-    const { productId } = addToCartSchema.parse({
+    const { productId, size, color } = addToCartSchema.parse({
       productId: formData.get("productId"),
+      size: formData.get("size") || undefined,
+      color: formData.get("color") || undefined,
     });
 
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get(CART_SESSION_COOKIE)?.value ?? null;
 
-    const { newSessionToken } = await addToCart({ productId, userId, sessionToken });
+    const { newSessionToken } = await addToCart({
+      productId,
+      userId,
+      sessionToken,
+      size: size ?? null,
+      color: color ?? null,
+    });
 
     if (newSessionToken) {
       cookieStore.set(CART_SESSION_COOKIE, newSessionToken, {

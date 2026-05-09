@@ -6,10 +6,14 @@ export async function addToCart({
   productId,
   userId,
   sessionToken,
+  size = null,
+  color = null,
 }: {
   productId: string;
   userId: string | null;
   sessionToken: string | null;
+  size?: string | null;
+  color?: string | null;
 }): Promise<{ newSessionToken: string | null }> {
   const product = await prisma.product.findUniqueOrThrow({
     where: { id: productId },
@@ -43,7 +47,7 @@ export async function addToCart({
   }
 
   const existing = await prisma.cartItem.findFirst({
-    where: { cartId: cart.id, productId },
+    where: { cartId: cart.id, productId, size, color },
     select: { id: true },
   });
 
@@ -54,7 +58,7 @@ export async function addToCart({
     });
   } else {
     await prisma.cartItem.create({
-      data: { cartId: cart.id, productId, quantity: 1, price: product.price },
+      data: { cartId: cart.id, productId, quantity: 1, price: product.price, size, color },
     });
   }
 
