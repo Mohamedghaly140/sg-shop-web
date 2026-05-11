@@ -8,12 +8,14 @@ export async function addToCart({
   sessionToken,
   size = null,
   color = null,
+  quantity = 1,
 }: {
   productId: string;
   userId: string | null;
   sessionToken: string | null;
   size?: string | null;
   color?: string | null;
+  quantity?: number;
 }): Promise<{ newSessionToken: string | null }> {
   const product = await prisma.product.findUniqueOrThrow({
     where: { id: productId },
@@ -54,11 +56,11 @@ export async function addToCart({
   if (existing) {
     await prisma.cartItem.update({
       where: { id: existing.id },
-      data: { quantity: { increment: 1 } },
+      data: { quantity: { increment: quantity } },
     });
   } else {
     await prisma.cartItem.create({
-      data: { cartId: cart.id, productId, quantity: 1, price: product.price, size, color },
+      data: { cartId: cart.id, productId, quantity, price: product.price, size, color },
     });
   }
 

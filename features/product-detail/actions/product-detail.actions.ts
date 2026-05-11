@@ -21,6 +21,7 @@ const addToCartSchema = z.object({
   productId: z.string().min(1, "Product ID is required"),
   size: z.string().optional(),
   color: z.string().optional(),
+  quantity: z.coerce.number().int().min(1).max(99).default(1),
 });
 
 export async function addToCartAction(
@@ -30,10 +31,11 @@ export async function addToCartAction(
   try {
     const { userId } = await auth();
 
-    const { productId, size, color } = addToCartSchema.parse({
+    const { productId, size, color, quantity } = addToCartSchema.parse({
       productId: formData.get("productId"),
       size: formData.get("size") || undefined,
       color: formData.get("color") || undefined,
+      quantity: formData.get("quantity"),
     });
 
     const cookieStore = await cookies();
@@ -45,6 +47,7 @@ export async function addToCartAction(
       sessionToken,
       size: size ?? null,
       color: color ?? null,
+      quantity,
     });
 
     if (newSessionToken) {

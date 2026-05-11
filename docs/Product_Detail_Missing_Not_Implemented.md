@@ -5,9 +5,9 @@ Missing / Not Implemented
 ┌──────────────────────┬────────────────────────────────────────────────────────────┐
 │ Area │ Notes │
 ├──────────────────────┼────────────────────────────────────────────────────────────┤
-│ Wishlist action │ Button is UI-only — no server action wired up │
+│ ~~Wishlist action~~ │ ✅ Done — toggleWishlistAction wired with optimistic UI │
 ├──────────────────────┼────────────────────────────────────────────────────────────┤
-│ Quantity selector │ Always adds qty=1, no input to change it │
+│ ~~Quantity selector~~ │ ✅ Done — +/- selector, capped at stock qty, threaded through action and service │
 ├──────────────────────┼────────────────────────────────────────────────────────────┤
 │ Related products │ No "You may also like" section │
 ├──────────────────────┼────────────────────────────────────────────────────────────┤

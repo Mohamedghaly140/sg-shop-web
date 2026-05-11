@@ -1,8 +1,8 @@
 "use client";
 
-import { type SyntheticEvent, useActionState, useEffect, useOptimistic, useRef, useState } from "react";
+import { type SyntheticEvent, useActionState, useEffect, useOptimistic, useRef, useState, useCallback } from "react";
 import { useFormStatus } from "react-dom";
-import { LucideHeart, LucideLoader2, LucideStar, LucideStarHalf } from "lucide-react";
+import { LucideHeart, LucideMinus, LucidePlus, LucideLoader2, LucideStar, LucideStarHalf } from "lucide-react";
 import Form from "@/components/shared/form/form";
 import { toast } from "sonner";
 import {
@@ -137,8 +137,13 @@ export function ProductInfo({
     colors[0] ?? null,
   );
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedQty, setSelectedQty] = useState(1);
   const [showStickyBar, setShowStickyBar] = useState(false);
   const [sizeError, setSizeError] = useState(false);
+
+  const maxQty = Math.max(quantity, 1);
+  const decQty = useCallback(() => setSelectedQty(q => Math.max(1, q - 1)), []);
+  const incQty = useCallback(() => setSelectedQty(q => Math.min(maxQty, q + 1)), [maxQty]);
   const addToCartRef = useRef<HTMLFormElement>(null);
 
   const [actionState, formAction] = useActionState(addToCartAction, EMPTY_ACTION_STATE);
@@ -282,6 +287,40 @@ export function ProductInfo({
           </div>
         )}
 
+        {/* Quantity selector */}
+        {!isSoldOut && (
+          <div className="flex flex-col gap-3">
+            <p className="font-sans text-xs text-foreground">Quantity</p>
+            <div className="flex items-center border border-border w-fit">
+              <button
+                type="button"
+                onClick={decQty}
+                disabled={selectedQty <= 1}
+                aria-label="Decrease quantity"
+                className="px-3 py-2.5 text-foreground hover:bg-muted transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <LucideMinus size={12} strokeWidth={1.5} />
+              </button>
+              <span
+                aria-live="polite"
+                aria-label={`Quantity: ${selectedQty}`}
+                className="min-w-10 text-center font-sans text-sm tabular-nums select-none"
+              >
+                {selectedQty}
+              </span>
+              <button
+                type="button"
+                onClick={incQty}
+                disabled={selectedQty >= maxQty}
+                aria-label="Increase quantity"
+                className="px-3 py-2.5 text-foreground hover:bg-muted transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <LucidePlus size={12} strokeWidth={1.5} />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Add to Cart */}
         <form
           id="atc-form"
@@ -291,6 +330,7 @@ export function ProductInfo({
           className="w-full"
         >
           <input type="hidden" name="productId" value={productId} />
+          <input type="hidden" name="quantity" value={selectedQty} />
           {selectedSize && <input type="hidden" name="size" value={selectedSize} />}
           {selectedColor && <input type="hidden" name="color" value={selectedColor} />}
           <SubmitButton
