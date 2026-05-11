@@ -38,7 +38,7 @@ export function ProductCard({ product, layout }: ProductCardProps) {
             fill
             className={cn(
               "object-cover transition-transform duration-700 group-hover:scale-105",
-              isSoldOut && "opacity-50"
+              isSoldOut && "opacity-50",
             )}
             sizes="112px"
           />
@@ -76,7 +76,8 @@ export function ProductCard({ product, layout }: ProductCardProps) {
                 <LucideStar className="size-3 fill-gold text-gold" />
                 <span className="font-sans text-xs text-muted-foreground">
                   {Number(product.ratingsAverage).toFixed(1)}
-                  {product.ratingsQuantity > 0 && ` (${product.ratingsQuantity})`}
+                  {product.ratingsQuantity > 0 &&
+                    ` (${product.ratingsQuantity})`}
                 </span>
               </div>
             )}
@@ -102,14 +103,12 @@ export function ProductCard({ product, layout }: ProductCardProps) {
             fill
             className={cn(
               "object-cover transition-transform duration-700 group-hover:scale-105",
-              isSoldOut && "opacity-50"
+              isSoldOut && "opacity-50",
             )}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           />
           <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-300" />
-          {isSoldOut && (
-            <div className="absolute inset-0 bg-background/40" />
-          )}
+          {isSoldOut && <div className="absolute inset-0 bg-background/40" />}
         </Link>
 
         {badge && (
@@ -134,19 +133,25 @@ export function ProductCard({ product, layout }: ProductCardProps) {
       </div>
 
       <Link href={`/products/${product.slug}`}>
-        <p className={cn(
-          "font-sans text-sm font-medium tracking-wide mb-1 transition-colors",
-          isSoldOut ? "text-muted-foreground" : "text-foreground hover:text-muted-foreground"
-        )}>
+        <p
+          className={cn(
+            "font-sans text-sm font-medium tracking-wide mb-1 transition-colors",
+            isSoldOut
+              ? "text-muted-foreground"
+              : "text-foreground hover:text-muted-foreground",
+          )}
+        >
           {product.name}
         </p>
       </Link>
 
       <div className="flex items-center gap-2 mb-2">
-        <p className={cn(
-          "font-sans text-sm",
-          isSoldOut ? "text-muted-foreground" : "text-foreground"
-        )}>
+        <p
+          className={cn(
+            "font-sans text-sm",
+            isSoldOut ? "text-muted-foreground" : "text-foreground",
+          )}
+        >
           LE {Number(product.priceAfterDiscount).toLocaleString()}
         </p>
         {hasDiscount && (
@@ -166,12 +171,12 @@ export function ProductCard({ product, layout }: ProductCardProps) {
         </div>
       )}
 
-      <AddToCartForm
+      {/* <AddToCartForm
         productId={product.id}
         isSoldOut={isSoldOut}
         layout="grid"
         hasRatings={!!product.ratingsAverage}
-      />
+      /> */}
     </div>
   );
 }
