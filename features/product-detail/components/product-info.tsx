@@ -1,7 +1,9 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
-import { LucideHeart, LucideStar, LucideStarHalf } from "lucide-react";
+import { type SyntheticEvent, useActionState, useEffect, useOptimistic, useRef, useState } from "react";
+import { useFormStatus } from "react-dom";
+import { LucideHeart, LucideLoader2, LucideStar, LucideStarHalf } from "lucide-react";
+import Form from "@/components/shared/form/form";
 import { toast } from "sonner";
 import {
   Accordion,
@@ -12,7 +14,7 @@ import {
 import { useActionFeedback } from "@/components/shared/form/hooks/use-action-feedback";
 import { EMPTY_ACTION_STATE } from "@/components/shared/form/utils/to-action-state";
 import SubmitButton from "@/components/shared/submit-button";
-import { addToCartAction } from "../actions/product-detail.actions";
+import { addToCartAction, toggleWishlistAction } from "../actions/product-detail.actions";
 
 type ProductInfoProps = {
   productId: string;
@@ -93,6 +95,29 @@ function ProductRatingRow(props: {
   );
 }
 
+function WishlistSubmitButton({ optimisticInWishlist }: { optimisticInWishlist: boolean }) {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      aria-pressed={optimisticInWishlist}
+      className="w-full font-sans text-[0.6875rem] tracking-[0.2em] uppercase py-3.5 border border-border text-foreground hover:border-foreground transition-colors duration-300 flex items-center justify-center gap-2 disabled:cursor-wait disabled:opacity-50"
+    >
+      {pending ? (
+        <LucideLoader2 size={14} className="animate-spin" />
+      ) : (
+        <LucideHeart
+          size={14}
+          strokeWidth={1.5}
+          className={optimisticInWishlist ? "fill-foreground" : ""}
+        />
+      )}
+      {optimisticInWishlist ? "Saved to Wishlist" : "Save to Wishlist"}
+    </button>
+  );
+}
+
 export function ProductInfo({
   productId,
   name,
@@ -117,6 +142,8 @@ export function ProductInfo({
   const addToCartRef = useRef<HTMLFormElement>(null);
 
   const [actionState, formAction] = useActionState(addToCartAction, EMPTY_ACTION_STATE);
+  const [wishlistState, wishlistFormAction] = useActionState(toggleWishlistAction, EMPTY_ACTION_STATE);
+  const [optimisticInWishlist, setOptimisticInWishlist] = useOptimistic(inWishlist);
 
   const isSoldOut = quantity === 0;
   const hasDiscount = Number(discount) > 0;
@@ -142,7 +169,7 @@ export function ProductInfo({
     return () => observer.disconnect();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
     if (sizes.length > 0 && !selectedSize) {
       e.preventDefault();
       setSizeError(true);
@@ -280,17 +307,17 @@ export function ProductInfo({
         )}
 
         {/* Save to Wishlist */}
-        <button
-          type="button"
-          className="w-full font-sans text-[0.6875rem] tracking-[0.2em] uppercase py-3.5 border border-border text-foreground hover:border-foreground transition-colors duration-300 flex items-center justify-center gap-2"
+        <Form
+          actionState={wishlistState}
+          action={(formData) => {
+            setOptimisticInWishlist(!optimisticInWishlist);
+            wishlistFormAction(formData);
+          }}
+          className="w-full"
         >
-          <LucideHeart
-            size={14}
-            strokeWidth={1.5}
-            className={inWishlist ? "fill-foreground" : ""}
-          />
-          {inWishlist ? "Saved to Wishlist" : "Save to Wishlist"}
-        </button>
+          <input type="hidden" name="productId" value={productId} />
+          <WishlistSubmitButton optimisticInWishlist={optimisticInWishlist} />
+        </Form>
 
         {/* Accordion — Description, Care, Delivery */}
         <Accordion type="multiple" className="border-t border-border">

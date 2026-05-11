@@ -2,6 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import {
@@ -14,6 +15,7 @@ import {
   CART_SESSION_COOKIE,
   CART_SESSION_MAX_AGE,
 } from "@/features/cart/constants";
+import { prisma } from "@/lib/prisma";
 
 const addToCartSchema = z.object({
   productId: z.string().min(1, "Product ID is required"),
@@ -55,6 +57,52 @@ export async function addToCartAction(
     }
 
     return toActionState("SUCCESS", "Item added to cart");
+  } catch (error) {
+    return fromErrorToActionState(error, formData);
+  }
+}
+
+const toggleWishlistSchema = z.object({
+  productId: z.string().min(1),
+});
+
+export async function toggleWishlistAction(
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return toActionState("ERROR", "Sign in to save items to your wishlist");
+    }
+
+    const { productId } = toggleWishlistSchema.parse({
+      productId: formData.get("productId"),
+    });
+
+    const product = await prisma.product.findUniqueOrThrow({
+      where: { id: productId },
+      select: { slug: true },
+    });
+
+    const existing = await prisma.userWishlist.findUnique({
+      where: { userId_productId: { userId, productId } },
+      select: { userId: true },
+    });
+
+    const added = !existing;
+
+    if (existing) {
+      await prisma.userWishlist.delete({
+        where: { userId_productId: { userId, productId } },
+      });
+    } else {
+      await prisma.userWishlist.create({ data: { userId, productId } });
+    }
+
+    revalidatePath(`/products/${product.slug}`);
+    revalidatePath("/account/wishlist");
+    return toActionState("SUCCESS", added ? "Saved to wishlist" : "Removed from wishlist");
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }
