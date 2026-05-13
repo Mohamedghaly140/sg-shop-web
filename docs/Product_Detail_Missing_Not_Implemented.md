@@ -9,13 +9,13 @@ Missing / Not Implemented
 ├──────────────────────┼────────────────────────────────────────────────────────────┤
 │ ~~Quantity selector~~ │ ✅ Done — +/- selector, capped at stock qty, threaded through action and service │
 ├──────────────────────┼────────────────────────────────────────────────────────────┤
-│ Related products │ No "You may also like" section │
+│ ~~Related products~~ │ ✅ Done — RelatedProductsSection with getRelatedProducts service │
 ├──────────────────────┼────────────────────────────────────────────────────────────┤
 │ Reviews list │ Rating summary shown but no review cards / submission form │
 ├──────────────────────┼────────────────────────────────────────────────────────────┤
 │ Size guide modal │ Button exists but does nothing │
 ├──────────────────────┼────────────────────────────────────────────────────────────┤
-│ Breadcrumb │ No navigation trail │
+│ ~~Breadcrumb~~ │ ✅ Done — breadcrumb navigation added to product detail │
 ├──────────────────────┼────────────────────────────────────────────────────────────┤
 │ Loading skeleton │ No loading.tsx for the route │
 ├──────────────────────┼────────────────────────────────────────────────────────────┤

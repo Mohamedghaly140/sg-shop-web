@@ -8,6 +8,8 @@ const shopLinks = [
   { label: "Sale", href: "/products?sale=true" },
 ];
 
+const infoLinks = [{ label: "Our Policy", href: "/policy" }];
+
 const accountLinks = [
   { label: "My Account", href: "/account" },
   { label: "Orders", href: "/account/orders" },
@@ -19,7 +21,7 @@ export function StorefrontFooter() {
   return (
     <footer className="bg-muted mt-auto">
       <div className="max-w-7xl mx-auto px-8 py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand */}
           <div className="space-y-4">
             <p className="font-heading text-xl tracking-[0.2em] uppercase">
@@ -56,6 +58,25 @@ export function StorefrontFooter() {
             </p>
             <ul className="space-y-3">
               {accountLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="font-sans text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Info */}
+          <div className="space-y-4">
+            <p className="font-sans text-xs tracking-[0.15em] uppercase">
+              Info
+            </p>
+            <ul className="space-y-3">
+              {infoLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
