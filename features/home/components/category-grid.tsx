@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { SectionHeader } from "./SectionHeader";
+import { SectionHeader } from "./section-header";
 
 type Category = {
   id: string;

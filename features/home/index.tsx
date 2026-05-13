@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { HeroBanner } from "./components/HeroBanner";
-import { CategoryGrid } from "./components/CategoryGrid";
-import { FeaturedProducts } from "./components/FeaturedProducts";
+import { HeroBanner } from "./components/hero-banner";
+import { CategoryGrid } from "./components/category-grid";
+import { FeaturedProducts } from "./components/featured-products";
 import { getFeaturedProducts, getHomeCategories } from "./services/get-home-data";
 
 export default async function HomeFeature() {
