@@ -2,7 +2,7 @@
 
 import { type SyntheticEvent, useActionState, useEffect, useOptimistic, useRef, useState, useCallback } from "react";
 import { useFormStatus } from "react-dom";
-import { LucideHeart, LucideMinus, LucidePlus, LucideLoader2, LucideStar, LucideStarHalf } from "lucide-react";
+import { LucideHeart, LucideMinus, LucidePlus, LucideLoader2, LucideStar, LucideStarHalf, LucideEye } from "lucide-react";
 import Form from "@/components/shared/form/form";
 import { toast } from "sonner";
 import {
@@ -118,6 +118,29 @@ function WishlistSubmitButton({ optimisticInWishlist }: { optimisticInWishlist: 
   );
 }
 
+function PeopleViewingBadge() {
+  const [count, setCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    setCount(Math.floor(Math.random() * 91) + 10);
+  }, []);
+
+  if (count === null) return null;
+
+  return (
+    <div className="flex items-center gap-2">
+      <span className="relative flex size-2">
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+        <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+      </span>
+      <LucideEye size={13} strokeWidth={1.5} className="text-muted-foreground" />
+      <span className="font-sans text-xs text-muted-foreground">
+        {count} people viewing this
+      </span>
+    </div>
+  );
+}
+
 export function ProductInfo({
   productId,
   name,
@@ -224,6 +247,9 @@ export function ProductInfo({
             </>
           )}
         </div>
+
+        {/* People viewing */}
+        <PeopleViewingBadge />
 
         {/* Color selector */}
         {colors.length > 0 && (
