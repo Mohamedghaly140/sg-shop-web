@@ -48,8 +48,8 @@ The care instructions are a static placeholder, not pulled from the product mode
 **6. "Size Guide" button is a no-op** (`product-info.tsx:261–265`)
 Renders a `<button>` that does nothing. Should open a modal/sheet or be removed until the feature is built.
 
-**7. Related products fires 3 sequential DB queries** (`services/get-related-products.ts`)
-The service runs: fetch current product → fetch by subcategory → fetch by category. The last two are sequential even when they could be parallelised with `Promise.all` when the subcategory result comes back short of the limit.
+**7. ~~Related products fires 3 sequential DB queries~~** (`services/get-related-products.ts`) ✅ Fixed
+~~The service runs: fetch current product → fetch by subcategory → fetch by category. The last two are sequential even when they could be parallelised with `Promise.all` when the subcategory result comes back short of the limit.~~
 
 ---
 
@@ -63,4 +63,4 @@ The service runs: fetch current product → fetch by subcategory → fetch by ca
 | 4 | Missing loading.tsx | Medium |
 | 5 | Hardcoded care content | Low |
 | 6 | Size guide no-op | Low |
-| 7 | Related products query efficiency | Low |
+| 7 | ~~Related products query efficiency~~ ✅ | Low |

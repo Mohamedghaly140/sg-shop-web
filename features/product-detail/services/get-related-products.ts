@@ -22,9 +22,9 @@ export const getRelatedProducts = cache(
 
     const subCategoryIds = current.subCategories.map((s) => s.subCategoryId);
 
-    const bySubcategory =
+    const [bySubcategory, categoryPool] = await Promise.all([
       subCategoryIds.length > 0
-        ? await prisma.product.findMany({
+        ? prisma.product.findMany({
             where: {
               status: ProductStatus.ACTIVE,
               id: { not: productId },
@@ -36,23 +36,24 @@ export const getRelatedProducts = cache(
             take: LIMIT,
             orderBy: { createdAt: "desc" },
           })
-        : [];
+        : Promise.resolve([]),
+      prisma.product.findMany({
+        where: {
+          status: ProductStatus.ACTIVE,
+          categoryId: current.categoryId,
+          id: { not: productId },
+        },
+        select: storefrontProductSelect,
+        take: LIMIT,
+        orderBy: { createdAt: "desc" },
+      }),
+    ]);
 
+    const subcategorySet = new Set(bySubcategory.map((p) => p.id));
     const remaining = LIMIT - bySubcategory.length;
-
-    const byCategory =
-      remaining > 0
-        ? await prisma.product.findMany({
-            where: {
-              status: ProductStatus.ACTIVE,
-              categoryId: current.categoryId,
-              id: { notIn: [productId, ...bySubcategory.map((p) => p.id)] },
-            },
-            select: storefrontProductSelect,
-            take: remaining,
-            orderBy: { createdAt: "desc" },
-          })
-        : [];
+    const byCategory = categoryPool
+      .filter((p) => !subcategorySet.has(p.id))
+      .slice(0, remaining);
 
     return [...bySubcategory, ...byCategory].map((r) => ({
       ...r,
